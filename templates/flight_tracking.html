@@ -1,0 +1,629 @@
+{% extends "base.html" %}
+
+{% block title %}Flight Tracking - Real-time Flight Status | World Tour{% endblock %}
+
+{% block meta_description %}Track your flight in real-time with World Tour. Get live flight status, delays, gate changes, and arrival times. Stay updated with your travel plans.{% endblock %}
+
+{% block content %}
+<div class="flight-tracking-page">
+    <div class="tracking-header">
+        <h1><i class="fas fa-plane"></i> Real-Time Flight Tracking</h1>
+        <p>Track your flight status, delays, and gate information in real-time</p>
+    </div>
+
+    <div class="tracking-container">
+        <!-- Flight Search -->
+        <div class="flight-search-section">
+            <div class="search-form">
+                <div class="form-group">
+                    <label for="flight-number">Flight Number</label>
+                    <input type="text" id="flight-number" placeholder="e.g., AA123" class="form-control">
+                </div>
+                <button id="track-flight" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Track Flight
+                </button>
+            </div>
+        </div>
+
+        <!-- Flight Status Display -->
+        <div id="flight-status" class="flight-status-section" style="display: none;">
+            <div class="status-card">
+                <div class="flight-header">
+                    <div class="flight-info">
+                        <h2 id="flight-number-display"></h2>
+                        <p id="airline-display"></p>
+                    </div>
+                    <div class="status-badge" id="status-badge">
+                        <span id="status-text"></span>
+                    </div>
+                </div>
+
+                <div class="flight-details">
+                    <div class="route-info">
+                        <div class="origin">
+                            <h3 id="origin-code"></h3>
+                            <p id="origin-city"></p>
+                            <div class="time-info">
+                                <span class="label">Departure:</span>
+                                <span id="departure-time"></span>
+                            </div>
+                            <div class="gate-info">
+                                <span class="label">Gate:</span>
+                                <span id="departure-gate"></span>
+                            </div>
+                        </div>
+
+                        <div class="flight-path">
+                            <div class="plane-icon">
+                                <i class="fas fa-plane"></i>
+                            </div>
+                            <div class="flight-duration" id="flight-duration"></div>
+                        </div>
+
+                        <div class="destination">
+                            <h3 id="destination-code"></h3>
+                            <p id="destination-city"></p>
+                            <div class="time-info">
+                                <span class="label">Arrival:</span>
+                                <span id="arrival-time"></span>
+                            </div>
+                            <div class="gate-info">
+                                <span class="label">Gate:</span>
+                                <span id="arrival-gate"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-details">
+                        <div class="status-item">
+                            <span class="label">Aircraft:</span>
+                            <span id="aircraft-type"></span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">Terminal:</span>
+                            <span id="terminal"></span>
+                        </div>
+                        <div class="status-item" id="delay-info" style="display: none;">
+                            <span class="label">Delay:</span>
+                            <span id="delay-minutes" class="delay-text"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="last-updated">
+                    <i class="fas fa-clock"></i>
+                    Last updated: <span id="last-updated-time"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Updates -->
+        <div id="live-updates" class="live-updates-section" style="display: none;">
+            <h3><i class="fas fa-broadcast-tower"></i> Live Updates</h3>
+            <div id="updates-list" class="updates-list">
+                <!-- Updates will be populated here -->
+            </div>
+        </div>
+
+        <!-- Map View -->
+        <div id="flight-map" class="map-section" style="display: none;">
+            <h3><i class="fas fa-map-marked-alt"></i> Flight Path</h3>
+            <div id="map-container" class="map-container">
+                <!-- Map will be embedded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Flights -->
+    <div class="recent-flights-section">
+        <h3>Recently Tracked Flights</h3>
+        <div class="recent-flights-grid" id="recent-flights">
+            <!-- Recent flights will be populated here -->
+        </div>
+    </div>
+</div>
+
+<style>
+.flight-tracking-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.tracking-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.tracking-header h1 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.tracking-header h1 i {
+    color: #667eea;
+    margin-right: 0.5rem;
+}
+
+.flight-search-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.search-form {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+}
+
+.form-group {
+    flex: 1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.flight-status-section {
+    margin-bottom: 2rem;
+}
+
+.status-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.flight-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flight-info h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.flight-info p {
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+}
+
+.status-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.flight-details {
+    padding: 2rem;
+}
+
+.route-info {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.origin, .destination {
+    text-align: center;
+}
+
+.origin h3, .destination h3 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.origin p, .destination p {
+    color: #666;
+    margin: 0 0 1rem 0;
+}
+
+.time-info, .gate-info {
+    margin: 0.5rem 0;
+}
+
+.label {
+    font-weight: 600;
+    color: #333;
+}
+
+.flight-path {
+    text-align: center;
+}
+
+.plane-icon {
+    font-size: 2rem;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.flight-duration {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.status-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delay-text {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.last-updated {
+    background: #f8f9fa;
+    padding: 1rem 2rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.last-updated i {
+    margin-right: 0.5rem;
+}
+
+.live-updates-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.live-updates-section h3 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.live-updates-section h3 i {
+    color: #28a745;
+    margin-right: 0.5rem;
+}
+
+.updates-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.update-item {
+    padding: 1rem;
+    border-left: 4px solid #667eea;
+    background: #f8f9fa;
+    margin-bottom: 1rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.update-item .update-time {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.update-item .update-text {
+    color: #333;
+    font-weight: 500;
+}
+
+.map-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.map-section h3 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.map-section h3 i {
+    color: #667eea;
+    margin-right: 0.5rem;
+}
+
+.map-container {
+    height: 400px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}
+
+.recent-flights-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.recent-flights-section h3 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.recent-flights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.recent-flight-card {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.recent-flight-card:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.recent-flight-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.recent-flight-card p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .search-form {
+        flex-direction: column;
+    }
+    
+    .route-info {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .status-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .recent-flights-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const trackButton = document.getElementById('track-flight');
+    const flightNumberInput = document.getElementById('flight-number');
+    const flightStatus = document.getElementById('flight-status');
+    const liveUpdates = document.getElementById('live-updates');
+    const flightMap = document.getElementById('flight-map');
+
+    // Track flight button click
+    trackButton.addEventListener('click', function() {
+        const flightNumber = flightNumberInput.value.trim();
+        if (!flightNumber) {
+            alert('Please enter a flight number');
+            return;
+        }
+        
+        trackFlight(flightNumber);
+    });
+
+    // Enter key press
+    flightNumberInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            trackButton.click();
+        }
+    });
+
+    function trackFlight(flightNumber) {
+        // Show loading state
+        trackButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Tracking...';
+        trackButton.disabled = true;
+
+        // Make API call to get flight tracking data
+        fetch(`/api/flight-tracking/${flightNumber}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayFlightStatus(data.data);
+                    startLiveUpdates(flightNumber);
+                    addToRecentFlights(flightNumber, data.data);
+                } else {
+                    alert('Flight not found or tracking data unavailable');
+                }
+            })
+            .catch(error => {
+                console.error('Error tracking flight:', error);
+                alert('Error tracking flight. Please try again.');
+            })
+            .finally(() => {
+                trackButton.innerHTML = '<i class="fas fa-search"></i> Track Flight';
+                trackButton.disabled = false;
+            });
+    }
+
+    function displayFlightStatus(flightData) {
+        // Update flight information
+        document.getElementById('flight-number-display').textContent = flightData.flight_number;
+        document.getElementById('airline-display').textContent = flightData.airline || 'Airline';
+        document.getElementById('status-text').textContent = flightData.status;
+        document.getElementById('origin-code').textContent = flightData.origin;
+        document.getElementById('destination-code').textContent = flightData.destination;
+        document.getElementById('departure-time').textContent = formatTime(flightData.departure_time);
+        document.getElementById('arrival-time').textContent = formatTime(flightData.arrival_time);
+        document.getElementById('departure-gate').textContent = flightData.gate || 'TBD';
+        document.getElementById('arrival-gate').textContent = flightData.gate || 'TBD';
+        document.getElementById('aircraft-type').textContent = flightData.aircraft_type || 'TBD';
+        document.getElementById('terminal').textContent = flightData.terminal || 'TBD';
+        document.getElementById('last-updated-time').textContent = formatDateTime(flightData.last_updated);
+
+        // Update status badge color
+        const statusBadge = document.getElementById('status-badge');
+        statusBadge.className = 'status-badge';
+        if (flightData.status === 'delayed') {
+            statusBadge.classList.add('delayed');
+        } else if (flightData.status === 'cancelled') {
+            statusBadge.classList.add('cancelled');
+        }
+
+        // Show delay information if applicable
+        const delayInfo = document.getElementById('delay-info');
+        if (flightData.delay_minutes > 0) {
+            document.getElementById('delay-minutes').textContent = `${flightData.delay_minutes} minutes`;
+            delayInfo.style.display = 'block';
+        } else {
+            delayInfo.style.display = 'none';
+        }
+
+        // Show flight status section
+        flightStatus.style.display = 'block';
+        liveUpdates.style.display = 'block';
+        flightMap.style.display = 'block';
+    }
+
+    function startLiveUpdates(flightNumber) {
+        // Simulate live updates every 30 seconds
+        setInterval(() => {
+            fetch(`/api/flight-tracking/${flightNumber}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateFlightStatus(data.data);
+                        addUpdate(data.data);
+                    }
+                })
+                .catch(error => console.error('Error updating flight status:', error));
+        }, 30000);
+    }
+
+    function updateFlightStatus(flightData) {
+        // Update only changing fields
+        document.getElementById('status-text').textContent = flightData.status;
+        document.getElementById('last-updated-time').textContent = formatDateTime(flightData.last_updated);
+        
+        if (flightData.delay_minutes > 0) {
+            document.getElementById('delay-minutes').textContent = `${flightData.delay_minutes} minutes`;
+            document.getElementById('delay-info').style.display = 'block';
+        }
+    }
+
+    function addUpdate(flightData) {
+        const updatesList = document.getElementById('updates-list');
+        const updateItem = document.createElement('div');
+        updateItem.className = 'update-item';
+        updateItem.innerHTML = `
+            <div class="update-time">${formatDateTime(flightData.last_updated)}</div>
+            <div class="update-text">Flight ${flightData.flight_number} status updated: ${flightData.status}</div>
+        `;
+        updatesList.insertBefore(updateItem, updatesList.firstChild);
+        
+        // Keep only last 10 updates
+        if (updatesList.children.length > 10) {
+            updatesList.removeChild(updatesList.lastChild);
+        }
+    }
+
+    function addToRecentFlights(flightNumber, flightData) {
+        const recentFlights = document.getElementById('recent-flights');
+        const flightCard = document.createElement('div');
+        flightCard.className = 'recent-flight-card';
+        flightCard.innerHTML = `
+            <h4>${flightNumber}</h4>
+            <p>${flightData.origin} → ${flightData.destination}</p>
+            <p>Status: ${flightData.status}</p>
+        `;
+        
+        flightCard.addEventListener('click', () => {
+            flightNumberInput.value = flightNumber;
+            trackFlight(flightNumber);
+        });
+        
+        recentFlights.insertBefore(flightCard, recentFlights.firstChild);
+        
+        // Keep only last 6 recent flights
+        if (recentFlights.children.length > 6) {
+            recentFlights.removeChild(recentFlights.lastChild);
+        }
+    }
+
+    function formatTime(timeString) {
+        if (!timeString) return 'TBD';
+        const date = new Date(timeString);
+        return date.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true 
+        });
+    }
+
+    function formatDateTime(dateTimeString) {
+        if (!dateTimeString) return 'Unknown';
+        const date = new Date(dateTimeString);
+        return date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+    }
+
+    // Load recent flights from localStorage
+    loadRecentFlights();
+});
+
+function loadRecentFlights() {
+    const recentFlights = JSON.parse(localStorage.getItem('recentFlights') || '[]');
+    const recentFlightsContainer = document.getElementById('recent-flights');
+    
+    recentFlights.forEach(flight => {
+        const flightCard = document.createElement('div');
+        flightCard.className = 'recent-flight-card';
+        flightCard.innerHTML = `
+            <h4>${flight.number}</h4>
+            <p>${flight.route}</p>
+            <p>Last tracked: ${flight.lastTracked}</p>
+        `;
+        
+        flightCard.addEventListener('click', () => {
+            document.getElementById('flight-number').value = flight.number;
+            document.getElementById('track-flight').click();
+        });
+        
+        recentFlightsContainer.appendChild(flightCard);
+    });
+}
+</script>
+{% endblock %} 

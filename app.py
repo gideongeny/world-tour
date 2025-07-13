@@ -6049,6 +6049,1283 @@ class SmartContract(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     deployed_at = db.Column(db.DateTime)
 
+# Real-Time Data Models
+class FlightTracking(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    flight_number = db.Column(db.String(20), nullable=False)
+    airline = db.Column(db.String(100), nullable=False)
+    origin = db.Column(db.String(10), nullable=False)
+    destination = db.Column(db.String(10), nullable=False)
+    departure_time = db.Column(db.DateTime, nullable=False)
+    arrival_time = db.Column(db.DateTime, nullable=False)
+    actual_departure = db.Column(db.DateTime)
+    actual_arrival = db.Column(db.DateTime)
+    status = db.Column(db.String(50))  # on_time, delayed, cancelled, diverted
+    delay_minutes = db.Column(db.Integer, default=0)
+    gate = db.Column(db.String(10))
+    terminal = db.Column(db.String(10))
+    aircraft_type = db.Column(db.String(50))
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow)
+    tracking_data = db.Column(db.Text)  # JSON with detailed tracking info
+
+class HotelAvailability(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotel.id'), nullable=False)
+    room_type_id = db.Column(db.Integer, db.ForeignKey('room_type.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    available_rooms = db.Column(db.Integer, nullable=False)
+    total_rooms = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(10), default='USD')
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow)
+    source = db.Column(db.String(50))  # direct, gds, ota
+
+class DynamicPricing(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    destination_id = db.Column(db.Integer, db.ForeignKey('destination.id'), nullable=False)
+    base_price = db.Column(db.Float, nullable=False)
+    current_price = db.Column(db.Float, nullable=False)
+    demand_factor = db.Column(db.Float, default=1.0)
+    supply_factor = db.Column(db.Float, default=1.0)
+    seasonality_factor = db.Column(db.Float, default=1.0)
+    competitor_price = db.Column(db.Float)
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow)
+    algorithm_version = db.Column(db.String(20))
+
+# Advanced Personalization Models
+class UserBehavior(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    session_id = db.Column(db.String(100), nullable=False)
+    page_url = db.Column(db.String(500), nullable=False)
+    action_type = db.Column(db.String(50))  # view, click, search, book, like
+    action_data = db.Column(db.Text)  # JSON with action details
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    ip_address = db.Column(db.String(45))
+    user_agent = db.Column(db.Text)
+    referrer = db.Column(db.String(500))
+    time_spent = db.Column(db.Integer)  # seconds
+
+class UserPreference(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    preference_type = db.Column(db.String(50))  # destination, budget, style, activities
+    preference_value = db.Column(db.String(200))
+    confidence_score = db.Column(db.Float, default=0.0)
+    source = db.Column(db.String(50))  # explicit, inferred, ml
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class PriceAlert(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    destination_id = db.Column(db.Integer, db.ForeignKey('destination.id'), nullable=False)
+    target_price = db.Column(db.Float, nullable=False)
+    current_price = db.Column(db.Float, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    triggered_at = db.Column(db.DateTime)
+
+# Mobile App Models
+class BoardingPass(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    booking_id = db.Column(db.Integer, db.ForeignKey('booking.id'), nullable=False)
+    passenger_name = db.Column(db.String(100), nullable=False)
+    flight_number = db.Column(db.String(20), nullable=False)
+    seat_number = db.Column(db.String(10))
+    gate = db.Column(db.String(10))
+    boarding_time = db.Column(db.DateTime)
+    qr_code = db.Column(db.String(500))
+    is_used = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    booking = db.relationship('Booking', backref='boarding_passes')
+
+# Customer Support Models
+class SupportTicket(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    subject = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(50))  # booking, payment, technical, general
+    priority = db.Column(db.String(20), default='medium')  # low, medium, high, urgent
+    status = db.Column(db.String(20), default='open')  # open, in_progress, resolved, closed
+    assigned_to = db.Column(db.Integer, db.ForeignKey('user.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    resolved_at = db.Column(db.DateTime)
+    user = db.relationship('User', foreign_keys=[user_id], backref='support_tickets')
+    agent = db.relationship('User', foreign_keys=[assigned_to], backref='assigned_tickets')
+    messages = db.relationship('TicketMessage', backref='ticket', lazy=True, cascade='all, delete-orphan')
+
+class TicketMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ticket_id = db.Column(db.Integer, db.ForeignKey('support_ticket.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    is_internal = db.Column(db.Boolean, default=False)  # Internal notes for agents
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='ticket_messages')
+
+class WhatsAppIntegration(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    phone_number = db.Column(db.String(20), nullable=False)
+    whatsapp_id = db.Column(db.String(100))
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='whatsapp_integration')
+
+# Content & Discovery Models
+class VirtualTour(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    destination_id = db.Column(db.Integer, db.ForeignKey('destination.id'), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    video_url = db.Column(db.String(500))
+    thumbnail_url = db.Column(db.String(500))
+    duration = db.Column(db.Integer)  # seconds
+    view_count = db.Column(db.Integer, default=0)
+    is_featured = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    destination = db.relationship('Destination', backref='virtual_tours')
+
+class LocalGuide(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    destination_id = db.Column(db.Integer, db.ForeignKey('destination.id'), nullable=False)
+    bio = db.Column(db.Text)
+    languages = db.Column(db.Text)  # JSON array
+    specialties = db.Column(db.Text)  # JSON array
+    hourly_rate = db.Column(db.Float, nullable=False)
+    rating = db.Column(db.Float, default=0.0)
+    review_count = db.Column(db.Integer, default=0)
+    is_verified = db.Column(db.Boolean, default=False)
+    is_available = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='guide_profile')
+    destination = db.relationship('Destination', backref='local_guides')
+
+class TravelPodcast(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    audio_url = db.Column(db.String(500))
+    duration = db.Column(db.Integer)  # seconds
+    host_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    destination_id = db.Column(db.Integer, db.ForeignKey('destination.id'))
+    episode_number = db.Column(db.Integer)
+    publish_date = db.Column(db.DateTime, default=datetime.utcnow)
+    download_count = db.Column(db.Integer, default=0)
+    host = db.relationship('User', backref='podcasts')
+    destination = db.relationship('Destination', backref='podcasts')
+
+# Security & Compliance Models
+class TwoFactorAuth(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    secret_key = db.Column(db.String(100), nullable=False)
+    backup_codes = db.Column(db.Text)  # JSON array
+    is_enabled = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='two_factor_auth')
+
+class FraudDetection(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    transaction_id = db.Column(db.String(100))
+    risk_score = db.Column(db.Float, nullable=False)
+    risk_factors = db.Column(db.Text)  # JSON array
+    action_taken = db.Column(db.String(50))  # allow, block, review
+    ip_address = db.Column(db.String(45))
+    user_agent = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='fraud_events')
+
+# Advanced Analytics Models
+class ABTest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    test_name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    variant_a = db.Column(db.String(50), nullable=False)
+    variant_b = db.Column(db.String(50), nullable=False)
+    traffic_split = db.Column(db.Float, default=0.5)  # 50% split
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class ABTestResult(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    test_id = db.Column(db.Integer, db.ForeignKey('ab_test.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    variant = db.Column(db.String(50), nullable=False)
+    conversion = db.Column(db.Boolean, default=False)
+    revenue = db.Column(db.Float, default=0.0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    test = db.relationship('ABTest', backref='results')
+    user = db.relationship('User', backref='ab_test_participations')
+
+class ConversionFunnel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    funnel_name = db.Column(db.String(100), nullable=False)
+    step_name = db.Column(db.String(100), nullable=False)
+    step_order = db.Column(db.Integer, nullable=False)
+    user_count = db.Column(db.Integer, default=0)
+    conversion_rate = db.Column(db.Float, default=0.0)
+    date = db.Column(db.Date, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class CustomerLifetimeValue(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    total_revenue = db.Column(db.Float, default=0.0)
+    total_orders = db.Column(db.Integer, default=0)
+    average_order_value = db.Column(db.Float, default=0.0)
+    first_purchase_date = db.Column(db.DateTime)
+    last_purchase_date = db.Column(db.DateTime)
+    predicted_lifetime_value = db.Column(db.Float, default=0.0)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    user = db.relationship('User', backref='lifetime_value')
+
+# Real-Time Data Integration Functions
+def get_flight_tracking(flight_number):
+    """Get real-time flight tracking data"""
+    try:
+        # Check cache first
+        cache_key = f"flight_tracking_{flight_number}"
+        cached_data = redis_client.get(cache_key) if redis_client else None
+        if cached_data:
+            return json.loads(cached_data)
+        
+        # Simulate real-time flight data (replace with actual API calls)
+        flight_data = {
+            'flight_number': flight_number,
+            'status': 'on_time',
+            'delay_minutes': 0,
+            'gate': 'A12',
+            'terminal': '1',
+            'actual_departure': None,
+            'actual_arrival': None,
+            'last_updated': datetime.utcnow().isoformat()
+        }
+        
+        # Cache for 5 minutes
+        if redis_client:
+            redis_client.setex(cache_key, 300, json.dumps(flight_data))
+        return flight_data
+    except Exception as e:
+        log_error('flight_tracking_error', str(e))
+        return None
+
+def get_hotel_availability(hotel_id, check_in, check_out):
+    """Get real-time hotel availability"""
+    try:
+        cache_key = f"hotel_availability_{hotel_id}_{check_in}_{check_out}"
+        cached_data = redis_client.get(cache_key) if redis_client else None
+        if cached_data:
+            return json.loads(cached_data)
+        
+        # Simulate real-time availability (replace with actual API calls)
+        availability_data = {
+            'hotel_id': hotel_id,
+            'available_rooms': 15,
+            'total_rooms': 50,
+            'price': 150.0,
+            'currency': 'USD',
+            'last_updated': datetime.utcnow().isoformat()
+        }
+        
+        # Cache for 10 minutes
+        if redis_client:
+            redis_client.setex(cache_key, 600, json.dumps(availability_data))
+        return availability_data
+    except Exception as e:
+        log_error('hotel_availability_error', str(e))
+        return None
+
+def calculate_dynamic_pricing(destination_id, travel_date, demand_factor=1.0):
+    """Calculate dynamic pricing based on demand and supply"""
+    try:
+        destination = Destination.query.get(destination_id)
+        if not destination:
+            return 0
+        
+        # Base price
+        base_price = destination.price
+        
+        # Demand factor (higher demand = higher price)
+        demand_multiplier = 1.0 + (demand_factor - 1.0) * 0.3
+        
+        # Seasonality factor
+        month = travel_date.month
+        if month in [6, 7, 8, 12]:  # Peak season
+            seasonality_multiplier = 1.2
+        elif month in [1, 2, 11]:  # Low season
+            seasonality_multiplier = 0.8
+        else:  # Shoulder season
+            seasonality_multiplier = 1.0
+        
+        # Calculate final price
+        final_price = base_price * demand_multiplier * seasonality_multiplier
+        
+        # Update dynamic pricing record
+        dynamic_pricing = DynamicPricing.query.filter_by(destination_id=destination_id).first()
+        if not dynamic_pricing:
+            dynamic_pricing = DynamicPricing(
+                destination_id=destination_id,
+                base_price=base_price,
+                current_price=final_price,
+                demand_factor=demand_factor,
+                seasonality_factor=seasonality_multiplier
+            )
+            db.session.add(dynamic_pricing)
+        else:
+            dynamic_pricing.current_price = final_price
+            dynamic_pricing.demand_factor = demand_factor
+            dynamic_pricing.seasonality_factor = seasonality_multiplier
+            dynamic_pricing.last_updated = datetime.utcnow()
+        
+        db.session.commit()
+        return final_price
+    except Exception as e:
+        log_error('dynamic_pricing_error', str(e))
+        return destination.price if destination else 0
+
+# Advanced Personalization Functions
+def track_user_behavior(user_id, session_id, page_url, action_type, action_data=None):
+    """Track user behavior for personalization"""
+    try:
+        behavior = UserBehavior(
+            user_id=user_id,
+            session_id=session_id,
+            page_url=page_url,
+            action_type=action_type,
+            action_data=json.dumps(action_data) if action_data else None,
+            ip_address=request.remote_addr,
+            user_agent=request.user_agent.string,
+            referrer=request.referrer
+        )
+        db.session.add(behavior)
+        db.session.commit()
+    except Exception as e:
+        log_error('user_behavior_tracking_error', str(e))
+
+def get_user_preferences(user_id):
+    """Get user preferences for personalization"""
+    try:
+        preferences = UserPreference.query.filter_by(user_id=user_id).all()
+        return {pref.preference_type: pref.preference_value for pref in preferences}
+    except Exception as e:
+        log_error('user_preferences_error', str(e))
+        return {}
+
+def update_user_preferences(user_id, preference_type, preference_value, confidence_score=0.8):
+    """Update user preferences"""
+    try:
+        existing_pref = UserPreference.query.filter_by(
+            user_id=user_id, 
+            preference_type=preference_type
+        ).first()
+        
+        if existing_pref:
+            existing_pref.preference_value = preference_value
+            existing_pref.confidence_score = confidence_score
+            existing_pref.updated_at = datetime.utcnow()
+        else:
+            new_pref = UserPreference(
+                user_id=user_id,
+                preference_type=preference_type,
+                preference_value=preference_value,
+                confidence_score=confidence_score
+            )
+            db.session.add(new_pref)
+        
+        db.session.commit()
+    except Exception as e:
+        log_error('update_preferences_error', str(e))
+
+def get_personalized_recommendations_ml(user_id, limit=6):
+    """Get ML-powered personalized recommendations"""
+    try:
+        # Get user behavior data
+        user_behaviors = UserBehavior.query.filter_by(user_id=user_id).order_by(
+            UserBehavior.timestamp.desc()
+        ).limit(100).all()
+        
+        # Get user preferences
+        preferences = get_user_preferences(user_id)
+        
+        # Get all destinations
+        all_destinations = Destination.query.filter_by(available=True).all()
+        
+        # Calculate recommendation scores
+        recommendations = []
+        for destination in all_destinations:
+            score = 0.0
+            
+            # Base score from destination rating
+            score += destination.rating * 0.3
+            
+            # Preference matching
+            if 'destination' in preferences:
+                if preferences['destination'].lower() in destination.country.lower():
+                    score += 0.4
+            
+            # Budget matching
+            if 'budget' in preferences:
+                budget_pref = preferences['budget'].lower()
+                if budget_pref == 'low' and destination.price < 1000:
+                    score += 0.3
+                elif budget_pref == 'medium' and 1000 <= destination.price <= 3000:
+                    score += 0.3
+                elif budget_pref == 'high' and destination.price > 3000:
+                    score += 0.3
+            
+            # Category matching
+            if 'style' in preferences:
+                if preferences['style'].lower() in destination.category.lower():
+                    score += 0.2
+            
+            recommendations.append((destination, score))
+        
+        # Sort by score and return top recommendations
+        recommendations.sort(key=lambda x: x[1], reverse=True)
+        return [dest for dest, score in recommendations[:limit]]
+    except Exception as e:
+        log_error('ml_recommendations_error', str(e))
+        return Destination.query.filter_by(available=True).limit(limit).all()
+
+# Mobile App Functions
+def generate_boarding_pass(booking_id, passenger_name, flight_number):
+    """Generate boarding pass with QR code"""
+    try:
+        # Generate QR code
+        qr_data = f"BOARDING_PASS:{booking_id}:{passenger_name}:{flight_number}"
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        
+        # Create QR code image
+        qr_image = qr.make_image(fill_color="black", back_color="white")
+        
+        # Save to BytesIO
+        img_buffer = BytesIO()
+        qr_image.save(img_buffer, format='PNG')
+        img_buffer.seek(0)
+        
+        # Convert to base64 for storage
+        qr_base64 = base64.b64encode(img_buffer.getvalue()).decode()
+        
+        # Create boarding pass
+        boarding_pass = BoardingPass(
+            booking_id=booking_id,
+            passenger_name=passenger_name,
+            flight_number=flight_number,
+            qr_code=f"data:image/png;base64,{qr_base64}"
+        )
+        
+        db.session.add(boarding_pass)
+        db.session.commit()
+        
+        return boarding_pass
+    except Exception as e:
+        log_error('boarding_pass_generation_error', str(e))
+        return None
+
+def send_push_notification(user_id, title, message, notification_type='general'):
+    """Send push notification to mobile devices"""
+    try:
+        # Get user's mobile devices
+        devices = MobileDevice.query.filter_by(user_id=user_id, is_active=True).all()
+        
+        for device in devices:
+            # Create notification record
+            notification = PushNotification(
+                user_id=user_id,
+                title=title,
+                message=message,
+                notification_type=notification_type
+            )
+            db.session.add(notification)
+        
+        db.session.commit()
+        
+        # In production, integrate with Firebase Cloud Messaging or Apple Push Notification Service
+        return True
+    except Exception as e:
+        log_error('push_notification_error', str(e))
+        return False
+
+# Customer Support Functions
+def create_support_ticket(user_id, subject, description, category='general', priority='medium'):
+    """Create a new support ticket"""
+    try:
+        ticket = SupportTicket(
+            user_id=user_id,
+            subject=subject,
+            description=description,
+            category=category,
+            priority=priority
+        )
+        db.session.add(ticket)
+        db.session.commit()
+        
+        # Send notification to support team
+        # In production, integrate with helpdesk system like Zendesk
+        
+        return ticket
+    except Exception as e:
+        log_error('support_ticket_creation_error', str(e))
+        return None
+
+def send_whatsapp_message(phone_number, message):
+    """Send WhatsApp message (integrate with WhatsApp Business API)"""
+    try:
+        # In production, integrate with WhatsApp Business API
+        # For now, simulate sending
+        print(f"WhatsApp message to {phone_number}: {message}")
+        return True
+    except Exception as e:
+        log_error('whatsapp_message_error', str(e))
+        return False
+
+# Security & Compliance Functions
+def generate_2fa_secret():
+    """Generate 2FA secret key"""
+    import secrets
+    return secrets.token_hex(16)
+
+def verify_2fa_code(secret_key, code):
+    """Verify 2FA code"""
+    try:
+        import pyotp
+        totp = pyotp.TOTP(secret_key)
+        return totp.verify(code)
+    except Exception as e:
+        log_error('2fa_verification_error', str(e))
+        return False
+
+def detect_fraud(user_id, transaction_data):
+    """Detect potential fraud"""
+    try:
+        risk_score = 0.0
+        risk_factors = []
+        
+        # Check for suspicious patterns
+        recent_transactions = Booking.query.filter_by(user_id=user_id).order_by(
+            Booking.created_at.desc()
+        ).limit(10).all()
+        
+        # High value transaction
+        if transaction_data.get('amount', 0) > 5000:
+            risk_score += 0.3
+            risk_factors.append('high_value')
+        
+        # Multiple transactions in short time
+        if len(recent_transactions) > 5:
+            risk_score += 0.2
+            risk_factors.append('multiple_transactions')
+        
+        # Unusual location
+        if transaction_data.get('ip_country') != 'US':  # Example
+            risk_score += 0.1
+            risk_factors.append('unusual_location')
+        
+        # Create fraud detection record
+        fraud_record = FraudDetection(
+            user_id=user_id,
+            transaction_id=transaction_data.get('transaction_id'),
+            risk_score=risk_score,
+            risk_factors=json.dumps(risk_factors),
+            action_taken='allow' if risk_score < 0.5 else 'review',
+            ip_address=request.remote_addr,
+            user_agent=request.user_agent.string
+        )
+        db.session.add(fraud_record)
+        db.session.commit()
+        
+        return risk_score < 0.5  # Allow if risk score is low
+    except Exception as e:
+        log_error('fraud_detection_error', str(e))
+        return True  # Allow by default if error
+
+# Advanced Analytics Functions
+def run_ab_test(test_name, user_id, variant_a, variant_b):
+    """Run A/B test"""
+    try:
+        # Get or create A/B test
+        ab_test = ABTest.query.filter_by(test_name=test_name, is_active=True).first()
+        if not ab_test:
+            ab_test = ABTest(
+                test_name=test_name,
+                variant_a=variant_a,
+                variant_b=variant_b,
+                start_date=datetime.utcnow()
+            )
+            db.session.add(ab_test)
+            db.session.commit()
+        
+        # Assign variant based on user ID hash
+        user_hash = hash(str(user_id)) % 100
+        variant = variant_a if user_hash < 50 else variant_b
+        
+        # Record participation
+        participation = ABTestResult(
+            test_id=ab_test.id,
+            user_id=user_id,
+            variant=variant
+        )
+        db.session.add(participation)
+        db.session.commit()
+        
+        return variant
+    except Exception as e:
+        log_error('ab_test_error', str(e))
+        return variant_a
+
+def track_conversion_funnel(funnel_name, step_name, step_order, user_id=None):
+    """Track conversion funnel"""
+    try:
+        # Get today's funnel data
+        today = datetime.utcnow().date()
+        funnel_data = ConversionFunnel.query.filter_by(
+            funnel_name=funnel_name,
+            step_name=step_name,
+            date=today
+        ).first()
+        
+        if funnel_data:
+            funnel_data.user_count += 1
+        else:
+            funnel_data = ConversionFunnel(
+                funnel_name=funnel_name,
+                step_name=step_name,
+                step_order=step_order,
+                user_count=1,
+                date=today
+            )
+            db.session.add(funnel_data)
+        
+        db.session.commit()
+    except Exception as e:
+        log_error('conversion_funnel_error', str(e))
+
+def calculate_customer_lifetime_value(user_id):
+    """Calculate customer lifetime value"""
+    try:
+        # Get user's booking history
+        bookings = Booking.query.filter_by(user_id=user_id).all()
+        
+        if not bookings:
+            return 0.0
+        
+        total_revenue = sum(booking.total_price for booking in bookings)
+        total_orders = len(bookings)
+        average_order_value = total_revenue / total_orders
+        first_purchase = min(booking.created_at for booking in bookings)
+        last_purchase = max(booking.created_at for booking in bookings)
+        
+        # Simple CLV calculation (can be enhanced with ML)
+        predicted_lifetime_value = total_revenue * 1.5  # Assume 50% growth
+        
+        # Update CLV record
+        clv_record = CustomerLifetimeValue.query.filter_by(user_id=user_id).first()
+        if not clv_record:
+            clv_record = CustomerLifetimeValue(user_id=user_id)
+            db.session.add(clv_record)
+        
+        clv_record.total_revenue = total_revenue
+        clv_record.total_orders = total_orders
+        clv_record.average_order_value = average_order_value
+        clv_record.first_purchase_date = first_purchase
+        clv_record.last_purchase_date = last_purchase
+        clv_record.predicted_lifetime_value = predicted_lifetime_value
+        clv_record.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        return predicted_lifetime_value
+    except Exception as e:
+        log_error('clv_calculation_error', str(e))
+        return 0.0
+
+# New API Endpoints for Advanced Features
+@app.route('/api/flight-tracking/<flight_number>')
+def api_flight_tracking(flight_number):
+    """Get real-time flight tracking data"""
+    try:
+        tracking_data = get_flight_tracking(flight_number)
+        if tracking_data:
+            return jsonify({
+                'success': True,
+                'data': tracking_data
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Flight tracking data not available'
+            }), 404
+    except Exception as e:
+        log_error('api_flight_tracking_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/hotel-availability/<int:hotel_id>')
+def api_hotel_availability(hotel_id):
+    """Get real-time hotel availability"""
+    try:
+        check_in = request.args.get('check_in')
+        check_out = request.args.get('check_out')
+        
+        if not check_in or not check_out:
+            return jsonify({
+                'success': False,
+                'error': 'check_in and check_out dates required'
+            }), 400
+        
+        availability_data = get_hotel_availability(hotel_id, check_in, check_out)
+        if availability_data:
+            return jsonify({
+                'success': True,
+                'data': availability_data
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Availability data not available'
+            }), 404
+    except Exception as e:
+        log_error('api_hotel_availability_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/dynamic-pricing/<int:destination_id>')
+def api_dynamic_pricing(destination_id):
+    """Get dynamic pricing for destination"""
+    try:
+        travel_date_str = request.args.get('travel_date')
+        demand_factor = float(request.args.get('demand_factor', 1.0))
+        
+        if not travel_date_str:
+            return jsonify({
+                'success': False,
+                'error': 'travel_date required'
+            }), 400
+        
+        travel_date = datetime.strptime(travel_date_str, '%Y-%m-%d').date()
+        price = calculate_dynamic_pricing(destination_id, travel_date, demand_factor)
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'destination_id': destination_id,
+                'travel_date': travel_date_str,
+                'price': price,
+                'currency': 'USD'
+            }
+        })
+    except Exception as e:
+        log_error('api_dynamic_pricing_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/user-behavior', methods=['POST'])
+@login_required
+def api_track_behavior():
+    """Track user behavior for personalization"""
+    try:
+        data = request.get_json()
+        page_url = data.get('page_url')
+        action_type = data.get('action_type')
+        action_data = data.get('action_data')
+        
+        if not page_url or not action_type:
+            return jsonify({
+                'success': False,
+                'error': 'page_url and action_type required'
+            }), 400
+        
+        track_user_behavior(
+            current_user.id,
+            session.get('session_id', str(uuid.uuid4())),
+            page_url,
+            action_type,
+            action_data
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': 'Behavior tracked successfully'
+        })
+    except Exception as e:
+        log_error('api_track_behavior_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/recommendations/ml')
+@login_required
+def api_ml_recommendations():
+    """Get ML-powered personalized recommendations"""
+    try:
+        limit = int(request.args.get('limit', 6))
+        recommendations = get_personalized_recommendations_ml(current_user.id, limit)
+        
+        return jsonify({
+            'success': True,
+            'data': [{
+                'id': dest.id,
+                'name': dest.name,
+                'country': dest.country,
+                'price': dest.price,
+                'rating': dest.rating,
+                'image_url': dest.image_url
+            } for dest in recommendations]
+        })
+    except Exception as e:
+        log_error('api_ml_recommendations_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/boarding-pass/<int:booking_id>', methods=['POST'])
+@login_required
+def api_generate_boarding_pass(booking_id):
+    """Generate boarding pass with QR code"""
+    try:
+        data = request.get_json()
+        passenger_name = data.get('passenger_name')
+        flight_number = data.get('flight_number')
+        
+        if not passenger_name or not flight_number:
+            return jsonify({
+                'success': False,
+                'error': 'passenger_name and flight_number required'
+            }), 400
+        
+        boarding_pass = generate_boarding_pass(booking_id, passenger_name, flight_number)
+        if boarding_pass:
+            return jsonify({
+                'success': True,
+                'data': {
+                    'id': boarding_pass.id,
+                    'qr_code': boarding_pass.qr_code,
+                    'passenger_name': boarding_pass.passenger_name,
+                    'flight_number': boarding_pass.flight_number
+                }
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to generate boarding pass'
+            }), 500
+    except Exception as e:
+        log_error('api_generate_boarding_pass_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/support/ticket', methods=['POST'])
+@login_required
+def api_create_support_ticket():
+    """Create support ticket"""
+    try:
+        data = request.get_json()
+        subject = data.get('subject')
+        description = data.get('description')
+        category = data.get('category', 'general')
+        priority = data.get('priority', 'medium')
+        
+        if not subject or not description:
+            return jsonify({
+                'success': False,
+                'error': 'subject and description required'
+            }), 400
+        
+        ticket = create_support_ticket(
+            current_user.id,
+            subject,
+            description,
+            category,
+            priority
+        )
+        
+        if ticket:
+            return jsonify({
+                'success': True,
+                'data': {
+                    'id': ticket.id,
+                    'subject': ticket.subject,
+                    'status': ticket.status,
+                    'created_at': ticket.created_at.isoformat()
+                }
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to create ticket'
+            }), 500
+    except Exception as e:
+        log_error('api_create_support_ticket_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/2fa/setup', methods=['POST'])
+@login_required
+def api_setup_2fa():
+    """Setup two-factor authentication"""
+    try:
+        secret_key = generate_2fa_secret()
+        
+        # Create or update 2FA record
+        two_fa = TwoFactorAuth.query.filter_by(user_id=current_user.id).first()
+        if not two_fa:
+            two_fa = TwoFactorAuth(
+                user_id=current_user.id,
+                secret_key=secret_key
+            )
+            db.session.add(two_fa)
+        else:
+            two_fa.secret_key = secret_key
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'secret_key': secret_key,
+                'qr_code': f"otpauth://totp/WorldTour:{current_user.email}?secret={secret_key}&issuer=WorldTour"
+            }
+        })
+    except Exception as e:
+        log_error('api_setup_2fa_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/2fa/verify', methods=['POST'])
+@login_required
+def api_verify_2fa():
+    """Verify 2FA code"""
+    try:
+        data = request.get_json()
+        code = data.get('code')
+        
+        if not code:
+            return jsonify({
+                'success': False,
+                'error': 'code required'
+            }), 400
+        
+        two_fa = TwoFactorAuth.query.filter_by(user_id=current_user.id).first()
+        if not two_fa:
+            return jsonify({
+                'success': False,
+                'error': '2FA not setup'
+            }), 400
+        
+        is_valid = verify_2fa_code(two_fa.secret_key, code)
+        
+        if is_valid:
+            two_fa.is_enabled = True
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': '2FA verified and enabled'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Invalid code'
+            }), 400
+    except Exception as e:
+        log_error('api_verify_2fa_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/analytics/funnel', methods=['POST'])
+def api_track_funnel():
+    """Track conversion funnel"""
+    try:
+        data = request.get_json()
+        funnel_name = data.get('funnel_name')
+        step_name = data.get('step_name')
+        step_order = data.get('step_order')
+        user_id = current_user.id if current_user.is_authenticated else None
+        
+        if not funnel_name or not step_name or step_order is None:
+            return jsonify({
+                'success': False,
+                'error': 'funnel_name, step_name, and step_order required'
+            }), 400
+        
+        track_conversion_funnel(funnel_name, step_name, step_order, user_id)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Funnel tracked successfully'
+        })
+    except Exception as e:
+        log_error('api_track_funnel_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/analytics/clv/<int:user_id>')
+@login_required
+def api_customer_lifetime_value(user_id):
+    """Get customer lifetime value"""
+    try:
+        if current_user.id != user_id and not current_user.is_admin:
+            return jsonify({
+                'success': False,
+                'error': 'Unauthorized'
+            }), 403
+        
+        clv = calculate_customer_lifetime_value(user_id)
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'user_id': user_id,
+                'lifetime_value': clv
+            }
+        })
+    except Exception as e:
+        log_error('api_clv_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+# New Routes for Advanced Features
+@app.route('/flight-tracking')
+def flight_tracking_page():
+    """Flight tracking page"""
+    return render_template('flight_tracking.html')
+
+@app.route('/analytics-dashboard')
+@login_required
+def analytics_dashboard():
+    """Analytics dashboard page"""
+    if not current_user.is_admin:
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('home'))
+    return render_template('analytics_dashboard.html')
+
+@app.route('/mobile-features')
+def mobile_features():
+    """Mobile features showcase page"""
+    return render_template('mobile_features.html')
+
+@app.route('/api/analytics/metrics')
+@login_required
+def api_analytics_metrics():
+    """Get analytics metrics"""
+    try:
+        if not current_user.is_admin:
+            return jsonify({
+                'success': False,
+                'error': 'Unauthorized'
+            }), 403
+        
+        # Get metrics from database
+        total_users = User.query.count()
+        total_bookings = Booking.query.count()
+        total_revenue = db.session.query(db.func.sum(Booking.total_price)).scalar() or 0
+        
+        # Calculate conversion rate (simplified)
+        total_visitors = 10000  # Simulated
+        conversion_rate = (total_bookings / total_visitors * 100) if total_visitors > 0 else 0
+        
+        # Simulate trends
+        revenue_trend = {
+            'labels': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            'data': [12000, 15000, 18000, 22000, 25000, 28000]
+        }
+        
+        users_trend = {
+            'labels': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            'data': [100, 150, 200, 250, 300, 350]
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'total_users': total_users,
+                'total_bookings': total_bookings,
+                'total_revenue': total_revenue,
+                'conversion_rate': conversion_rate,
+                'users_change': 15.5,
+                'bookings_change': 22.3,
+                'revenue_change': 18.7,
+                'conversion_change': 5.2,
+                'revenue_trend': revenue_trend,
+                'users_trend': users_trend
+            }
+        })
+    except Exception as e:
+        log_error('api_analytics_metrics_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/analytics/funnel')
+def api_analytics_funnel():
+    """Get conversion funnel data"""
+    try:
+        # Simulate funnel data
+        funnel_data = {
+            'visitors': 10000,
+            'views': 7500,
+            'started': 2500,
+            'completed': 1500
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': funnel_data
+        })
+    except Exception as e:
+        log_error('api_analytics_funnel_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/analytics/ab-tests')
+@login_required
+def api_analytics_ab_tests():
+    """Get A/B test results"""
+    try:
+        if not current_user.is_admin:
+            return jsonify({
+                'success': False,
+                'error': 'Unauthorized'
+            }), 403
+        
+        # Simulate A/B test data
+        ab_tests = [
+            {
+                'name': 'Homepage Layout',
+                'variant_a_conversion': 12.5,
+                'variant_b_conversion': 15.2,
+                'winner': 'Variant B'
+            },
+            {
+                'name': 'Booking Button Color',
+                'variant_a_conversion': 8.3,
+                'variant_b_conversion': 8.1,
+                'winner': 'Variant A'
+            },
+            {
+                'name': 'Search Filters',
+                'variant_a_conversion': 22.1,
+                'variant_b_conversion': 24.8,
+                'winner': 'Variant B'
+            }
+        ]
+        
+        return jsonify({
+            'success': True,
+            'data': ab_tests
+        })
+    except Exception as e:
+        log_error('api_analytics_ab_tests_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/analytics/clv')
+@login_required
+def api_analytics_clv():
+    """Get CLV analytics data"""
+    try:
+        if not current_user.is_admin:
+            return jsonify({
+                'success': False,
+                'error': 'Unauthorized'
+            }), 403
+        
+        # Simulate CLV data
+        clv_data = {
+            'average_clv': 2500,
+            'top_10_percent_clv': 8500,
+            'growth': 12.5
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': clv_data
+        })
+    except Exception as e:
+        log_error('api_analytics_clv_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
+@app.route('/api/analytics/activity')
+def api_analytics_activity():
+    """Get real-time activity feed"""
+    try:
+        # Simulate activity data
+        activities = [
+            {
+                'type': 'booking',
+                'description': 'New booking: Paris trip for $2,500',
+                'timestamp': datetime.utcnow().isoformat()
+            },
+            {
+                'type': 'user',
+                'description': 'New user registered: john.doe@email.com',
+                'timestamp': (datetime.utcnow() - timedelta(minutes=5)).isoformat()
+            },
+            {
+                'type': 'payment',
+                'description': 'Payment processed: $1,800 for Tokyo package',
+                'timestamp': (datetime.utcnow() - timedelta(minutes=10)).isoformat()
+            },
+            {
+                'type': 'review',
+                'description': 'New 5-star review for Bali destination',
+                'timestamp': (datetime.utcnow() - timedelta(minutes=15)).isoformat()
+            },
+            {
+                'type': 'search',
+                'description': 'Popular search: "flights to London"',
+                'timestamp': (datetime.utcnow() - timedelta(minutes=20)).isoformat()
+            }
+        ]
+        
+        return jsonify({
+            'success': True,
+            'data': activities
+        })
+    except Exception as e:
+        log_error('api_analytics_activity_error', str(e))
+        return jsonify({
+            'success': False,
+            'error': 'Internal server error'
+        }), 500
+
 # Register get_locale as a template global
 app.jinja_env.globals['get_locale'] = get_locale
 

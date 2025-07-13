@@ -203,6 +203,8 @@
                         <li><a class="dropdown-item" href="{{ url_for('video_content') }}"><i class="fas fa-video"></i> Videos</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('travel_insurance') }}"><i class="fas fa-shield-alt"></i> Insurance</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('offline_maps') }}"><i class="fas fa-map"></i> Offline Maps</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('flight_tracking_page') }}"><i class="fas fa-plane"></i> Flight Tracking</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('mobile_features') }}"><i class="fas fa-mobile-alt"></i> Mobile App</a></li>
                         {% if current_user.is_authenticated %}
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{{ url_for('itinerary_builder') }}"><i class="fas fa-route"></i> Itinerary Builder</a></li>
@@ -211,6 +213,10 @@
                         <li><a class="dropdown-item" href="{{ url_for('group_bookings') }}"><i class="fas fa-users"></i> Group Bookings</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('social_feed') }}"><i class="fas fa-share-alt"></i> Social Feed</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('notifications') }}"><i class="fas fa-bell"></i> Notifications</a></li>
+                        {% endif %}
+                        {% if current_user.is_authenticated and current_user.is_admin %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('analytics_dashboard') }}"><i class="fas fa-chart-line"></i> Analytics Dashboard</a></li>
                         {% endif %}
                     </ul>
                 </div>
