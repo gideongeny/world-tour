@@ -822,7 +822,7 @@ def home():
                          personalized_destinations=personalized_destinations)
 
 def get_personalized_recommendations(user_id, limit=6):
-    """Get personalized destination recommendations based on user behavior"""
+    """Get AI-powered personalized destination recommendations"""
     try:
         # Get user's booking history
         user_bookings = Booking.query.filter_by(user_id=user_id).all()
@@ -836,8 +836,14 @@ def get_personalized_recommendations(user_id, limit=6):
         wishlist_items = WishlistItem.query.filter_by(user_id=user_id).all()
         wishlist_destinations = [w.destination_id for w in wishlist_items]
         
-        # Analyze user preferences
-        preferences = analyze_user_preferences(user_id)
+        # Get user's search history
+        search_history = UserAnalytics.query.filter_by(
+            user_id=user_id, 
+            action_performed='search'
+        ).order_by(UserAnalytics.timestamp.desc()).limit(20).all()
+        
+        # Analyze user preferences with AI
+        preferences = analyze_user_preferences_ai(user_id, search_history)
         
         # Build recommendation query
         query = Destination.query.filter_by(available=True)
@@ -847,7 +853,7 @@ def get_personalized_recommendations(user_id, limit=6):
             excluded_ids = list(set(booked_destinations + reviewed_destinations))
             query = query.filter(~Destination.id.in_(excluded_ids))
         
-        # Apply preference filters
+        # Apply AI preference filters
         if preferences.get('preferred_categories'):
             query = query.filter(Destination.category.in_(preferences['preferred_categories']))
         
@@ -858,14 +864,162 @@ def get_personalized_recommendations(user_id, limit=6):
             min_price, max_price = preferences['price_range']
             query = query.filter(Destination.price.between(min_price, max_price))
         
-        # Order by relevance score
-        recommendations = query.order_by(Destination.rating.desc()).limit(limit).all()
+        if preferences.get('preferred_climate'):
+            query = query.filter(Destination.climate.in_(preferences['preferred_climate']))
+        
+        # Calculate AI relevance score
+        destinations = query.all()
+        scored_destinations = []
+        
+        for dest in destinations:
+            score = calculate_ai_relevance_score(dest, preferences, user_reviews, search_history)
+            scored_destinations.append((dest, score))
+        
+        # Sort by AI score and return top recommendations
+        scored_destinations.sort(key=lambda x: x[1], reverse=True)
+        recommendations = [dest for dest, score in scored_destinations[:limit]]
         
         return recommendations
         
     except Exception as e:
-        print(f"Error getting personalized recommendations: {e}")
+        print(f"Error getting AI recommendations: {e}")
         return []
+
+def analyze_user_preferences_ai(user_id, search_history):
+    """AI-powered user preference analysis"""
+    preferences = {}
+    
+    try:
+        # Analyze booking history with sentiment
+        bookings = Booking.query.filter_by(user_id=user_id).all()
+        if bookings:
+            booked_destinations = Destination.query.filter(
+                Destination.id.in_([b.destination_id for b in bookings if b.destination_id])
+            ).all()
+            
+            # Analyze categories with frequency and sentiment
+            categories = [d.category for d in booked_destinations if d.category]
+            if categories:
+                from collections import Counter
+                category_counts = Counter(categories)
+                # Weight by booking frequency and user satisfaction
+                weighted_categories = []
+                for cat, count in category_counts.most_common():
+                    # Get average rating for this category
+                    cat_destinations = [d for d in booked_destinations if d.category == cat]
+                    avg_rating = sum(d.rating for d in cat_destinations) / len(cat_destinations)
+                    weighted_categories.append((cat, count * avg_rating))
+                
+                weighted_categories.sort(key=lambda x: x[1], reverse=True)
+                preferences['preferred_categories'] = [cat for cat, score in weighted_categories[:3]]
+            
+            # Analyze countries with seasonal patterns
+            countries = [d.country for d in booked_destinations if d.country]
+            if countries:
+                country_counts = Counter(countries)
+                preferences['preferred_countries'] = [country for country, count in country_counts.most_common(3)]
+            
+            # Analyze price sensitivity
+            prices = [d.price for d in booked_destinations if d.price]
+            if prices:
+                avg_price = sum(prices) / len(prices)
+                std_price = (sum((p - avg_price) ** 2 for p in prices) / len(prices)) ** 0.5
+                preferences['price_range'] = (avg_price - std_price, avg_price + std_price)
+                preferences['price_sensitivity'] = 'low' if std_price < avg_price * 0.3 else 'high'
+        
+        # Analyze search patterns
+        if search_history:
+            search_terms = [s.page_visited for s in search_history if s.page_visited]
+            # Extract destination names from search terms
+            destination_terms = []
+            for term in search_terms:
+                if 'destination' in term.lower() or 'travel' in term.lower():
+                    destination_terms.append(term)
+            
+            if destination_terms:
+                # Find destinations matching search patterns
+                matching_destinations = Destination.query.filter(
+                    Destination.name.contains(search_terms[0]) | 
+                    Destination.country.contains(search_terms[0])
+                ).all()
+                
+                if matching_destinations:
+                    # Add categories from searched destinations
+                    searched_categories = [d.category for d in matching_destinations if d.category]
+                    if searched_categories:
+                        if 'preferred_categories' not in preferences:
+                            preferences['preferred_categories'] = []
+                        preferences['preferred_categories'].extend(searched_categories[:2])
+        
+        # Analyze review sentiment
+        reviews = Review.query.filter_by(user_id=user_id).all()
+        if reviews:
+            high_rated_destinations = Destination.query.filter(
+                Destination.id.in_([r.destination_id for r in reviews if r.rating >= 4])
+            ).all()
+            
+            if high_rated_destinations:
+                # Analyze climate preferences from highly rated destinations
+                climates = [d.climate for d in high_rated_destinations if d.climate]
+                if climates:
+                    climate_counts = Counter(climates)
+                    preferences['preferred_climate'] = [climate for climate, count in climate_counts.most_common(2)]
+        
+        return preferences
+        
+    except Exception as e:
+        print(f"Error in AI preference analysis: {e}")
+        return {}
+
+def calculate_ai_relevance_score(destination, preferences, user_reviews, search_history):
+    """Calculate AI relevance score for a destination"""
+    score = 0.0
+    
+    try:
+        # Base score from destination rating
+        score += destination.rating * 0.3
+        
+        # Category match score
+        if preferences.get('preferred_categories') and destination.category:
+            if destination.category in preferences['preferred_categories']:
+                score += 0.4
+        
+        # Country match score
+        if preferences.get('preferred_countries') and destination.country:
+            if destination.country in preferences['preferred_countries']:
+                score += 0.3
+        
+        # Price match score
+        if preferences.get('price_range') and destination.price:
+            min_price, max_price = preferences['price_range']
+            if min_price <= destination.price <= max_price:
+                score += 0.2
+            elif destination.price < min_price:
+                score += 0.1  # Bonus for budget-friendly options
+        
+        # Climate match score
+        if preferences.get('preferred_climate') and destination.climate:
+            if destination.climate in preferences['preferred_climate']:
+                score += 0.2
+        
+        # Popularity boost (more reviews = more popular)
+        if destination.reviews_count:
+            score += min(destination.reviews_count / 100, 0.1)  # Cap at 0.1
+        
+        # Seasonal relevance
+        current_month = datetime.now().month
+        if destination.best_time_to_visit:
+            # Simple seasonal matching (can be enhanced)
+            if current_month in [6, 7, 8] and 'summer' in destination.best_time_to_visit.lower():
+                score += 0.1
+            elif current_month in [12, 1, 2] and 'winter' in destination.best_time_to_visit.lower():
+                score += 0.1
+        
+        return score
+        
+    except Exception as e:
+        print(f"Error calculating AI score: {e}")
+        return 0.0
 
 def analyze_user_preferences(user_id):
     """Analyze user preferences based on their behavior"""
@@ -1300,6 +1454,7 @@ def reply_to_review(review_id):
 @app.route('/search')
 def search():
     query = request.args.get('q', '')
+    voice_query = request.args.get('voice_query', '')  # Voice search query
     category = request.args.get('category', '')
     price_min = request.args.get('price_min', type=float)
     price_max = request.args.get('price_max', type=float)
@@ -1310,6 +1465,20 @@ def search():
     climate = request.args.get('climate', '')
     sort_by = request.args.get('sort_by', 'name')
     sort_order = request.args.get('sort_order', 'asc')
+    
+    # Process voice query if provided
+    if voice_query:
+        processed_query = process_voice_query(voice_query)
+        query = processed_query.get('query', voice_query)
+        # Apply voice-extracted filters
+        if processed_query.get('category'):
+            category = processed_query['category']
+        if processed_query.get('price_range'):
+            price_min, price_max = processed_query['price_range']
+        if processed_query.get('duration'):
+            duration_min, duration_max = processed_query['duration']
+        if processed_query.get('country'):
+            country = processed_query['country']
     
     # Build query
     destinations_query = Destination.query.filter(Destination.available == True)
@@ -1377,6 +1546,7 @@ def search():
     return render_template('search.html', 
                          destinations=destinations, 
                          query=query,
+                         voice_query=voice_query,
                          category=category,
                          price_min=price_min,
                          price_max=price_max,
@@ -1390,6 +1560,142 @@ def search():
                          categories=[c[0] for c in categories if c[0]],
                          countries=[c[0] for c in countries if c[0]],
                          climates=[c[0] for c in climates if c[0]])
+
+def process_voice_query(voice_text):
+    """Process voice search query and extract structured data"""
+    processed = {'query': voice_text}
+    
+    try:
+        voice_lower = voice_text.lower()
+        
+        # Extract category
+        category_keywords = {
+            'beach': ['beach', 'coastal', 'ocean', 'sea', 'island'],
+            'mountain': ['mountain', 'alpine', 'ski', 'hiking', 'trekking'],
+            'city': ['city', 'urban', 'metropolitan', 'downtown'],
+            'cultural': ['cultural', 'heritage', 'museum', 'historical', 'ancient'],
+            'adventure': ['adventure', 'extreme', 'thrilling', 'exciting'],
+            'luxury': ['luxury', 'premium', 'exclusive', 'high-end', '5-star'],
+            'budget': ['budget', 'cheap', 'affordable', 'economy', 'low-cost']
+        }
+        
+        for category, keywords in category_keywords.items():
+            if any(keyword in voice_lower for keyword in keywords):
+                processed['category'] = category
+                break
+        
+        # Extract price range
+        price_patterns = [
+            (r'under (\d+)', lambda m: (0, float(m.group(1)))),
+            (r'over (\d+)', lambda m: (float(m.group(1)), 9999)),
+            (r'between (\d+) and (\d+)', lambda m: (float(m.group(1)), float(m.group(2)))),
+            (r'(\d+) to (\d+)', lambda m: (float(m.group(1)), float(m.group(2))))
+        ]
+        
+        import re
+        for pattern, handler in price_patterns:
+            match = re.search(pattern, voice_lower)
+            if match:
+                processed['price_range'] = handler(match)
+                break
+        
+        # Extract duration
+        duration_patterns = [
+            (r'(\d+) days?', lambda m: (int(m.group(1)), int(m.group(1)))),
+            (r'(\d+) to (\d+) days?', lambda m: (int(m.group(1)), int(m.group(2)))),
+            (r'weekend', lambda m: (2, 3)),
+            (r'week', lambda m: (7, 7)),
+            (r'(\d+) weeks?', lambda m: (int(m.group(1)) * 7, int(m.group(1)) * 7))
+        ]
+        
+        for pattern, handler in duration_patterns:
+            match = re.search(pattern, voice_lower)
+            if match:
+                processed['duration'] = handler(match)
+                break
+        
+        # Extract country/destination
+        # This would typically use a more sophisticated NLP approach
+        # For now, we'll use a simple keyword approach
+        country_keywords = [
+            'france', 'italy', 'spain', 'germany', 'uk', 'england', 'scotland',
+            'japan', 'china', 'india', 'thailand', 'vietnam', 'singapore',
+            'usa', 'canada', 'mexico', 'brazil', 'argentina', 'peru',
+            'australia', 'new zealand', 'fiji', 'tahiti'
+        ]
+        
+        for country in country_keywords:
+            if country in voice_lower:
+                processed['country'] = country.title()
+                break
+        
+        return processed
+        
+    except Exception as e:
+        print(f"Error processing voice query: {e}")
+        return {'query': voice_text}
+
+@app.route('/api/voice-search', methods=['POST'])
+def voice_search_api():
+    """API endpoint for voice search"""
+    try:
+        data = request.get_json()
+        voice_text = data.get('voice_text', '')
+        
+        if not voice_text:
+            return jsonify({'error': 'No voice text provided'}), 400
+        
+        # Process voice query
+        processed = process_voice_query(voice_text)
+        
+        # Perform search
+        query = processed.get('query', voice_text)
+        destinations_query = Destination.query.filter_by(available=True)
+        
+        if query:
+            destinations_query = destinations_query.filter(
+                Destination.name.contains(query) | 
+                Destination.country.contains(query) |
+                Destination.description.contains(query)
+            )
+        
+        # Apply extracted filters
+        if processed.get('category'):
+            destinations_query = destinations_query.filter_by(category=processed['category'])
+        
+        if processed.get('price_range'):
+            min_price, max_price = processed['price_range']
+            destinations_query = destinations_query.filter(Destination.price.between(min_price, max_price))
+        
+        if processed.get('duration'):
+            min_duration, max_duration = processed['duration']
+            destinations_query = destinations_query.filter(Destination.duration.between(min_duration, max_duration))
+        
+        if processed.get('country'):
+            destinations_query = destinations_query.filter(Destination.country.contains(processed['country']))
+        
+        destinations = destinations_query.limit(10).all()
+        
+        results = [{
+            'id': d.id,
+            'name': d.name,
+            'country': d.country,
+            'price': d.price,
+            'rating': d.rating,
+            'image_url': d.image_url,
+            'category': d.category
+        } for d in destinations]
+        
+        return jsonify({
+            'success': True,
+            'query': voice_text,
+            'processed': processed,
+            'results': results,
+            'count': len(results)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/wishlist/add/<int:destination_id>', methods=['POST'])
 @login_required
@@ -4842,6 +5148,167 @@ def video_detail(video_id):
     
     return render_template('video_detail.html', video=video, youtube_id=youtube_id)
 
+@app.route('/vr/<int:destination_id>')
+def virtual_reality_tour(destination_id):
+    """Virtual reality tour for a destination"""
+    destination = Destination.query.get_or_404(destination_id)
+    
+    # Get VR content for this destination
+    vr_content = get_vr_content(destination_id)
+    
+    return render_template('vr_tour.html', 
+                         destination=destination,
+                         vr_content=vr_content)
+
+def get_vr_content(destination_id):
+    """Get VR content for a destination"""
+    # In a real implementation, this would fetch from a VR content database
+    # For now, we'll return simulated VR data
+    vr_data = {
+        'panoramic_images': [
+            {
+                'id': 1,
+                'title': 'Beach View',
+                'image_url': f'/static/vr/{destination_id}/panorama1.jpg',
+                'description': '360° view of the pristine beach',
+                'hotspots': [
+                    {'x': 50, 'y': 30, 'title': 'Beach Bar', 'description': 'Relax with a cocktail'},
+                    {'x': 70, 'y': 60, 'title': 'Water Sports', 'description': 'Try surfing or kayaking'}
+                ]
+            },
+            {
+                'id': 2,
+                'title': 'Hotel Lobby',
+                'image_url': f'/static/vr/{destination_id}/panorama2.jpg',
+                'description': 'Luxurious hotel lobby with ocean views',
+                'hotspots': [
+                    {'x': 40, 'y': 50, 'title': 'Reception', 'description': 'Check-in desk'},
+                    {'x': 80, 'y': 20, 'title': 'Restaurant', 'description': 'Fine dining with sea views'}
+                ]
+            },
+            {
+                'id': 3,
+                'title': 'City Center',
+                'image_url': f'/static/vr/{destination_id}/panorama3.jpg',
+                'description': 'Vibrant city center with local culture',
+                'hotspots': [
+                    {'x': 30, 'y': 40, 'title': 'Local Market', 'description': 'Explore local crafts and food'},
+                    {'x': 60, 'y': 70, 'title': 'Historical Site', 'description': 'Ancient architecture and history'}
+                ]
+            }
+        ],
+        'virtual_tour': {
+            'tour_id': f'tour_{destination_id}',
+            'duration': '15 minutes',
+            'stops': [
+                {'name': 'Airport Transfer', 'duration': '2 min'},
+                {'name': 'Hotel Check-in', 'duration': '3 min'},
+                {'name': 'Beach Exploration', 'duration': '5 min'},
+                {'name': 'Local Cuisine', 'duration': '3 min'},
+                {'name': 'Cultural Sites', 'duration': '2 min'}
+            ]
+        },
+        'interactive_elements': [
+            {
+                'type': 'hotel_booking',
+                'position': {'x': 50, 'y': 50},
+                'title': 'Book This Hotel',
+                'description': 'Reserve your room with exclusive VR discount'
+            },
+            {
+                'type': 'activity_booking',
+                'position': {'x': 70, 'y': 30},
+                'title': 'Book Activities',
+                'description': 'Reserve water sports and tours'
+            },
+            {
+                'type': 'restaurant_reservation',
+                'position': {'x': 30, 'y': 70},
+                'title': 'Dining Reservations',
+                'description': 'Book tables at top restaurants'
+            }
+        ]
+    }
+    
+    return vr_data
+
+@app.route('/api/vr/experience/<int:destination_id>')
+def vr_experience_api(destination_id):
+    """API endpoint for VR experience data"""
+    try:
+        destination = Destination.query.get_or_404(destination_id)
+        vr_content = get_vr_content(destination_id)
+        
+        return jsonify({
+            'success': True,
+            'destination': {
+                'id': destination.id,
+                'name': destination.name,
+                'country': destination.country,
+                'description': destination.description,
+                'image_url': destination.image_url
+            },
+            'vr_content': vr_content
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/vr/booking/<int:destination_id>', methods=['POST'])
+@login_required
+def vr_booking(destination_id):
+    """Handle bookings made through VR experience"""
+    try:
+        data = request.get_json()
+        booking_type = data.get('type')  # hotel, activity, restaurant
+        item_id = data.get('item_id')
+        date = data.get('date')
+        guests = data.get('guests', 1)
+        
+        destination = Destination.query.get_or_404(destination_id)
+        
+        # Create booking based on type
+        if booking_type == 'hotel':
+            # Create hotel booking
+            booking = Booking(
+                user_id=current_user.id,
+                destination_id=destination_id,
+                start_date=datetime.strptime(date, '%Y-%m-%d'),
+                end_date=datetime.strptime(date, '%Y-%m-%d') + timedelta(days=1),
+                guests=guests,
+                total_price=destination.price * guests,
+                status='pending',
+                payment_status='pending'
+            )
+            db.session.add(booking)
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': 'Hotel booking created through VR experience!',
+                'booking_id': booking.id
+            })
+        
+        elif booking_type == 'activity':
+            # Create activity booking
+            return jsonify({
+                'success': True,
+                'message': 'Activity booking feature coming soon!'
+            })
+        
+        elif booking_type == 'restaurant':
+            # Create restaurant reservation
+            return jsonify({
+                'success': True,
+                'message': 'Restaurant reservation feature coming soon!'
+            })
+        
+        else:
+            return jsonify({'error': 'Invalid booking type'}), 400
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Interactive Maps Routes
 @app.route('/maps/interactive/<int:destination_id>')
 def interactive_map(destination_id):
@@ -5534,6 +6001,53 @@ class PushNotification(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     read_at = db.Column(db.DateTime)
     user = db.relationship('User', backref='push_notifications')
+
+# Blockchain and Cryptocurrency Models
+class BlockchainTransaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_id = db.Column(db.String(100), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    booking_id = db.Column(db.Integer, db.ForeignKey('booking.id'))
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(10), default='USD')
+    status = db.Column(db.String(20), default='pending')  # pending, confirmed, failed
+    blockchain_type = db.Column(db.String(20))  # ethereum, bitcoin, polygon
+    wallet_address = db.Column(db.String(100))
+    gas_fee = db.Column(db.Float, default=0.0)
+    tx_hash = db.Column(db.String(100))
+    block_number = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    confirmed_at = db.Column(db.DateTime)
+    user = db.relationship('User', backref='blockchain_transactions')
+    booking = db.relationship('Booking', backref='blockchain_transactions')
+
+class CryptoTransaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_id = db.Column(db.String(100), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    booking_id = db.Column(db.Integer, db.ForeignKey('booking.id'))
+    fiat_amount = db.Column(db.Float, nullable=False)
+    crypto_amount = db.Column(db.Float, nullable=False)
+    crypto_type = db.Column(db.String(10))  # BTC, ETH, USDT, USDC
+    exchange_rate = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, confirmed, failed
+    wallet_address = db.Column(db.String(100))
+    tx_hash = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    confirmed_at = db.Column(db.DateTime)
+    user = db.relationship('User', backref='crypto_transactions')
+    booking = db.relationship('Booking', backref='crypto_transactions')
+
+class SmartContract(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    contract_address = db.Column(db.String(100), unique=True, nullable=False)
+    contract_type = db.Column(db.String(50))  # booking, insurance, loyalty
+    network = db.Column(db.String(20))  # ethereum, polygon, binance
+    abi = db.Column(db.Text)  # Contract ABI
+    bytecode = db.Column(db.Text)  # Contract bytecode
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    deployed_at = db.Column(db.DateTime)
 
 # Register get_locale as a template global
 app.jinja_env.globals['get_locale'] = get_locale
