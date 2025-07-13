@@ -542,8 +542,29 @@ class Review(db.Model):
     destination_id = db.Column(db.Integer, db.ForeignKey('destination.id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text)
+    photos = db.Column(db.Text)  # Comma-separated photo URLs
+    likes_count = db.Column(db.Integer, default=0)
+    helpful_count = db.Column(db.Integer, default=0)
+    is_verified_booking = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     destination = db.relationship('Destination', backref='reviews')
+    likes = db.relationship('ReviewLike', backref='review', lazy=True, cascade='all, delete-orphan')
+    replies = db.relationship('ReviewReply', backref='review', lazy=True, cascade='all, delete-orphan')
+
+class ReviewLike(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    review_id = db.Column(db.Integer, db.ForeignKey('review.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='review_likes')
+
+class ReviewReply(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    review_id = db.Column(db.Integer, db.ForeignKey('review.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='review_replies')
 
 class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -779,6 +800,11 @@ def payment_cancel():
 @app.route('/')
 @cache_result(timeout=300)  # Cache homepage for 5 minutes
 def home():
+    # Get personalized recommendations if user is logged in
+    personalized_destinations = []
+    if current_user.is_authenticated:
+        personalized_destinations = get_personalized_recommendations(current_user.id)
+    
     # Optimize queries with specific column selection
     featured_destinations = Destination.query.with_entities(
         Destination.id, Destination.name, Destination.country, 
@@ -792,7 +818,107 @@ def home():
     
     return render_template('index.html', 
                          featured_destinations=featured_destinations,
-                         latest_destinations=latest_destinations)
+                         latest_destinations=latest_destinations,
+                         personalized_destinations=personalized_destinations)
+
+def get_personalized_recommendations(user_id, limit=6):
+    """Get personalized destination recommendations based on user behavior"""
+    try:
+        # Get user's booking history
+        user_bookings = Booking.query.filter_by(user_id=user_id).all()
+        booked_destinations = [b.destination_id for b in user_bookings if b.destination_id]
+        
+        # Get user's review history
+        user_reviews = Review.query.filter_by(user_id=user_id).all()
+        reviewed_destinations = [r.destination_id for r in user_reviews]
+        
+        # Get user's wishlist
+        wishlist_items = WishlistItem.query.filter_by(user_id=user_id).all()
+        wishlist_destinations = [w.destination_id for w in wishlist_items]
+        
+        # Analyze user preferences
+        preferences = analyze_user_preferences(user_id)
+        
+        # Build recommendation query
+        query = Destination.query.filter_by(available=True)
+        
+        # Exclude already booked/reviewed destinations
+        if booked_destinations or reviewed_destinations:
+            excluded_ids = list(set(booked_destinations + reviewed_destinations))
+            query = query.filter(~Destination.id.in_(excluded_ids))
+        
+        # Apply preference filters
+        if preferences.get('preferred_categories'):
+            query = query.filter(Destination.category.in_(preferences['preferred_categories']))
+        
+        if preferences.get('preferred_countries'):
+            query = query.filter(Destination.country.in_(preferences['preferred_countries']))
+        
+        if preferences.get('price_range'):
+            min_price, max_price = preferences['price_range']
+            query = query.filter(Destination.price.between(min_price, max_price))
+        
+        # Order by relevance score
+        recommendations = query.order_by(Destination.rating.desc()).limit(limit).all()
+        
+        return recommendations
+        
+    except Exception as e:
+        print(f"Error getting personalized recommendations: {e}")
+        return []
+
+def analyze_user_preferences(user_id):
+    """Analyze user preferences based on their behavior"""
+    preferences = {}
+    
+    try:
+        # Analyze booking history
+        bookings = Booking.query.filter_by(user_id=user_id).all()
+        if bookings:
+            # Get categories from booked destinations
+            booked_destinations = Destination.query.filter(
+                Destination.id.in_([b.destination_id for b in bookings if b.destination_id])
+            ).all()
+            
+            categories = [d.category for d in booked_destinations if d.category]
+            if categories:
+                # Get most common categories
+                from collections import Counter
+                category_counts = Counter(categories)
+                preferences['preferred_categories'] = [cat for cat, count in category_counts.most_common(3)]
+            
+            # Get countries
+            countries = [d.country for d in booked_destinations if d.country]
+            if countries:
+                country_counts = Counter(countries)
+                preferences['preferred_countries'] = [country for country, count in country_counts.most_common(3)]
+            
+            # Get price range
+            prices = [d.price for d in booked_destinations if d.price]
+            if prices:
+                avg_price = sum(prices) / len(prices)
+                preferences['price_range'] = (avg_price * 0.7, avg_price * 1.3)
+        
+        # Analyze review ratings
+        reviews = Review.query.filter_by(user_id=user_id).all()
+        if reviews:
+            high_rated_destinations = Destination.query.filter(
+                Destination.id.in_([r.destination_id for r in reviews if r.rating >= 4])
+            ).all()
+            
+            if high_rated_destinations:
+                # Add categories from highly rated destinations
+                high_rated_categories = [d.category for d in high_rated_destinations if d.category]
+                if high_rated_categories:
+                    if 'preferred_categories' not in preferences:
+                        preferences['preferred_categories'] = []
+                    preferences['preferred_categories'].extend(high_rated_categories[:2])
+        
+        return preferences
+        
+    except Exception as e:
+        print(f"Error analyzing user preferences: {e}")
+        return {}
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -1058,6 +1184,7 @@ def contact():
 def submit_review(destination_id):
     rating = int(request.form.get('rating'))
     comment = request.form.get('comment')
+    photos = request.files.getlist('photos')
     
     # Check if user already reviewed this destination
     existing_review = Review.query.filter_by(
@@ -1069,14 +1196,38 @@ def submit_review(destination_id):
         flash('You have already reviewed this destination.')
         return redirect(url_for('destination_detail', destination_id=destination_id))
     
+    # Check if user has booked this destination (verified review)
+    has_booking = Booking.query.filter_by(
+        user_id=current_user.id,
+        destination_id=destination_id,
+        status='confirmed'
+    ).first() is not None
+    
     review = Review(
         user_id=current_user.id,
         destination_id=destination_id,
         rating=rating,
-        comment=comment
+        comment=comment,
+        is_verified_booking=has_booking
     )
     
     db.session.add(review)
+    db.session.flush()  # Get review ID
+    
+    # Handle photo uploads
+    photo_urls = []
+    for photo in photos:
+        if photo and photo.filename:
+            # Save photo to static/uploads/reviews/
+            filename = secure_filename(f"{review.id}_{photo.filename}")
+            photo_path = os.path.join('static', 'uploads', 'reviews', filename)
+            os.makedirs(os.path.dirname(photo_path), exist_ok=True)
+            photo.save(photo_path)
+            photo_urls.append(f"/static/uploads/reviews/{filename}")
+    
+    # Add photos to review
+    if photo_urls:
+        review.photos = ','.join(photo_urls)
     
     # Update destination rating
     destination = Destination.query.get(destination_id)
@@ -1089,6 +1240,62 @@ def submit_review(destination_id):
     
     flash('Review submitted successfully!')
     return redirect(url_for('destination_detail', destination_id=destination_id))
+
+@app.route('/review/<int:review_id>/like', methods=['POST'])
+@login_required
+def like_review(review_id):
+    """Like or unlike a review"""
+    review = Review.query.get_or_404(review_id)
+    
+    # Check if user already liked this review
+    existing_like = ReviewLike.query.filter_by(
+        user_id=current_user.id,
+        review_id=review_id
+    ).first()
+    
+    if existing_like:
+        # Unlike
+        db.session.delete(existing_like)
+        review.likes_count = max(0, review.likes_count - 1)
+        action = 'unliked'
+    else:
+        # Like
+        like = ReviewLike(
+            user_id=current_user.id,
+            review_id=review_id
+        )
+        db.session.add(like)
+        review.likes_count += 1
+        action = 'liked'
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'action': action,
+        'likes_count': review.likes_count
+    })
+
+@app.route('/review/<int:review_id>/reply', methods=['POST'])
+@login_required
+def reply_to_review(review_id):
+    """Reply to a review"""
+    content = request.form.get('content', '').strip()
+    
+    if not content:
+        flash('Please provide a reply content')
+        return redirect(url_for('destination_detail', destination_id=review_id))
+    
+    reply = ReviewReply(
+        review_id=review_id,
+        user_id=current_user.id,
+        content=content
+    )
+    db.session.add(reply)
+    db.session.commit()
+    
+    flash('Reply submitted successfully!')
+    return redirect(url_for('destination_detail', destination_id=review_id))
 
 @app.route('/search')
 def search():
@@ -1729,10 +1936,174 @@ def add_comment(post_id):
 @app.route('/loyalty')
 def loyalty():
     if current_user.is_authenticated:
-        # In a real app, you'd fetch actual user data
-        points_history = []
-        return render_template('loyalty.html', points_history=points_history)
-    return render_template('loyalty.html', points_history=[])
+        # Get user's loyalty information
+        user_loyalty = UserLoyalty.query.filter_by(user_id=current_user.id).first()
+        if not user_loyalty:
+            # Create loyalty account for new user
+            default_tier = LoyaltyTier.query.filter_by(name='Bronze').first()
+            if not default_tier:
+                # Create default tiers if they don't exist
+                create_default_loyalty_tiers()
+                default_tier = LoyaltyTier.query.filter_by(name='Bronze').first()
+            
+            user_loyalty = UserLoyalty(
+                user_id=current_user.id,
+                tier_id=default_tier.id
+            )
+            db.session.add(user_loyalty)
+            db.session.commit()
+        
+        # Get loyalty tiers
+        tiers = LoyaltyTier.query.order_by(LoyaltyTier.min_points).all()
+        
+        # Get recent transactions
+        transactions = LoyaltyTransaction.query.filter_by(user_id=current_user.id).order_by(LoyaltyTransaction.created_at.desc()).limit(10).all()
+        
+        # Get available rewards
+        available_rewards = get_available_rewards(user_loyalty.points_balance)
+        
+        return render_template('loyalty.html', 
+                             user_loyalty=user_loyalty,
+                             tiers=tiers,
+                             transactions=transactions,
+                             available_rewards=available_rewards)
+    else:
+        return render_template('loyalty.html')
+
+def create_default_loyalty_tiers():
+    """Create default loyalty tiers"""
+    tiers = [
+        {
+            'name': 'Bronze',
+            'min_points': 0,
+            'discount_percentage': 0.0,
+            'benefits': 'Basic member benefits',
+            'color': '#cd7f32'
+        },
+        {
+            'name': 'Silver',
+            'min_points': 1000,
+            'discount_percentage': 5.0,
+            'benefits': '5% discount on bookings, priority support',
+            'color': '#c0c0c0'
+        },
+        {
+            'name': 'Gold',
+            'min_points': 5000,
+            'discount_percentage': 10.0,
+            'benefits': '10% discount, free cancellation, exclusive deals',
+            'color': '#ffd700'
+        },
+        {
+            'name': 'Platinum',
+            'min_points': 15000,
+            'discount_percentage': 15.0,
+            'benefits': '15% discount, VIP support, room upgrades',
+            'color': '#e5e4e2'
+        }
+    ]
+    
+    for tier_data in tiers:
+        tier = LoyaltyTier(**tier_data)
+        db.session.add(tier)
+    
+    db.session.commit()
+
+def get_available_rewards(points_balance):
+    """Get available rewards based on points balance"""
+    rewards = []
+    
+    if points_balance >= 500:
+        rewards.append({
+            'name': 'Free Airport Transfer',
+            'points_required': 500,
+            'description': 'Complimentary airport transfer for your next booking',
+            'type': 'service'
+        })
+    
+    if points_balance >= 1000:
+        rewards.append({
+            'name': 'Room Upgrade',
+            'points_required': 1000,
+            'description': 'Free room upgrade on your next hotel booking',
+            'type': 'upgrade'
+        })
+    
+    if points_balance >= 2000:
+        rewards.append({
+            'name': 'Free Activity',
+            'points_required': 2000,
+            'description': 'Choose one free activity from our selection',
+            'type': 'activity'
+        })
+    
+    if points_balance >= 5000:
+        rewards.append({
+            'name': 'Free Flight',
+            'points_required': 5000,
+            'description': 'Free domestic flight ticket',
+            'type': 'flight'
+        })
+    
+    return rewards
+
+@app.route('/loyalty/earn-points', methods=['POST'])
+@login_required
+def earn_loyalty_points():
+    """Earn loyalty points for booking"""
+    booking_id = request.form.get('booking_id')
+    points = request.form.get('points', type=int)
+    
+    if not booking_id or not points:
+        return jsonify({'error': 'Invalid booking or points'}), 400
+    
+    # Verify booking belongs to user
+    booking = Booking.query.filter_by(id=booking_id, user_id=current_user.id).first()
+    if not booking:
+        return jsonify({'error': 'Booking not found'}), 404
+    
+    # Add points transaction
+    transaction = LoyaltyTransaction(
+        user_id=current_user.id,
+        points=points,
+        transaction_type='booking',
+        description=f'Points earned for booking #{booking_id}',
+        booking_id=booking_id
+    )
+    db.session.add(transaction)
+    
+    # Update user loyalty points
+    user_loyalty = UserLoyalty.query.filter_by(user_id=current_user.id).first()
+    user_loyalty.points_balance += points
+    user_loyalty.total_spent += booking.total_price
+    
+    # Check for tier upgrade
+    check_tier_upgrade(user_loyalty)
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'points_earned': points,
+        'new_balance': user_loyalty.points_balance
+    })
+
+def check_tier_upgrade(user_loyalty):
+    """Check if user should be upgraded to higher tier"""
+    current_tier = user_loyalty.tier
+    next_tier = LoyaltyTier.query.filter(
+        LoyaltyTier.min_points > current_tier.min_points
+    ).order_by(LoyaltyTier.min_points).first()
+    
+    if next_tier and user_loyalty.points_balance >= next_tier.min_points:
+        user_loyalty.tier_id = next_tier.id
+        # Send upgrade notification
+        send_notification_task(
+            user_loyalty.user_id,
+            'Tier Upgrade!',
+            f'Congratulations! You have been upgraded to {next_tier.name} tier with {next_tier.discount_percentage}% discount!',
+            'loyalty_upgrade'
+        )
 
 @app.route('/hotels')
 def hotels():
