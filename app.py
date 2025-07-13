@@ -134,7 +134,7 @@ def after_request(response):
     # Add cache headers for static assets
     if request.path.startswith('/static/'):
         response.headers['Cache-Control'] = 'public, max-age=31536000'
-        response.headers['Expires'] = 'Thu, 31 Dec 2024 23:59:59 GMT'
+        response.headers['Expires'] = 'Thu, 31 Dec 2025 23:59:59 GMT'
     
     # Add compression headers
     response.headers['Vary'] = 'Accept-Encoding'
@@ -2623,8 +2623,8 @@ def init_db():
                     airline='Air France',
                     origin='New York',
                     destination='Paris',
-                    departure_time=datetime(2024, 6, 15, 14, 30),
-                    arrival_time=datetime(2024, 6, 16, 6, 45),
+                            departure_time=datetime(2025, 6, 15, 14, 30),
+        arrival_time=datetime(2025, 6, 16, 6, 45),
                     price=850.0,
                     seats_available=45
                 ),
@@ -2633,8 +2633,8 @@ def init_db():
                     airline='Japan Airlines',
                     origin='Los Angeles',
                     destination='Tokyo',
-                    departure_time=datetime(2024, 6, 20, 11, 15),
-                    arrival_time=datetime(2024, 6, 21, 15, 30),
+                            departure_time=datetime(2025, 6, 20, 11, 15),
+        arrival_time=datetime(2025, 6, 21, 15, 30),
                     price=1200.0,
                     seats_available=32
                 ),
@@ -2643,8 +2643,8 @@ def init_db():
                     airline='British Airways',
                     origin='London',
                     destination='New York',
-                    departure_time=datetime(2024, 6, 25, 9, 0),
-                    arrival_time=datetime(2024, 6, 25, 12, 30),
+                            departure_time=datetime(2025, 6, 25, 9, 0),
+        arrival_time=datetime(2025, 6, 25, 12, 30),
                     price=750.0,
                     seats_available=28
                 )
@@ -2844,8 +2844,8 @@ def init_db():
                     destination_id=paris_dest.id if paris_dest else 1,
                     title='Paris Fashion Week',
                     description='The world\'s most prestigious fashion event featuring top designers and celebrities.',
-                    event_date=datetime(2024, 9, 25, 10, 0),
-                    end_date=datetime(2024, 10, 3, 18, 0),
+                            event_date=datetime(2025, 9, 25, 10, 0),
+        end_date=datetime(2025, 10, 3, 18, 0),
                     location='Various venues across Paris',
                     event_type='fashion',
                     price_range='Free to $500+',
@@ -2855,8 +2855,8 @@ def init_db():
                     destination_id=paris_dest.id if paris_dest else 1,
                     title='Bastille Day Celebrations',
                     description='France\'s national day with military parades, fireworks, and street parties.',
-                    event_date=datetime(2024, 7, 14, 10, 0),
-                    end_date=datetime(2024, 7, 14, 23, 0),
+                            event_date=datetime(2025, 7, 14, 10, 0),
+        end_date=datetime(2025, 7, 14, 23, 0),
                     location='Champs-Élysées and throughout Paris',
                     event_type='cultural',
                     price_range='Free',
@@ -2866,8 +2866,8 @@ def init_db():
                     destination_id=tokyo_dest.id if tokyo_dest else 2,
                     title='Cherry Blossom Festival',
                     description='Celebrate the beautiful sakura season with traditional events and hanami parties.',
-                    event_date=datetime(2024, 3, 25, 9, 0),
-                    end_date=datetime(2024, 3, 25, 18, 0),
+                            event_date=datetime(2025, 3, 25, 9, 0),
+        end_date=datetime(2025, 3, 25, 18, 0),
                     location='Ueno Park and other locations',
                     event_type='cultural',
                     price_range='Free to $50',
@@ -2877,8 +2877,8 @@ def init_db():
                     destination_id=tokyo_dest.id if tokyo_dest else 2,
                     title='Tokyo Game Show',
                     description='Asia\'s largest gaming convention featuring the latest video games and technology.',
-                    event_date=datetime(2024, 9, 20, 10, 0),
-                    end_date=datetime(2024, 9, 23, 18, 0),
+                            event_date=datetime(2025, 9, 20, 10, 0),
+        end_date=datetime(2025, 9, 23, 18, 0),
                     location='Makuhari Messe',
                     event_type='entertainment',
                     price_range='$20-$100',
