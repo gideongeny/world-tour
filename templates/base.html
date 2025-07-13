@@ -164,18 +164,35 @@
             
             <div class="navbar-nav ms-auto" id="navbarNav">
                 <a href="{{ url_for('home') }}" class="nav-link">{{ t('home') }}</a>
-                <a href="{{ url_for('travel') }}" class="nav-link">{{ t('destinations') }}</a>
+                
+                <!-- Destinations Dropdown -->
+                <div class="nav-item dropdown pro-dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="destinationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-map-marker-alt"></i> {{ t('destinations') }}
+                    </a>
+                    <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="destinationsDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('travel') }}"><i class="fas fa-globe"></i> {{ t('all_destinations') }}</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('travel', category='luxury') }}"><i class="fas fa-crown"></i> {{ t('luxury_destinations') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('travel', category='budget') }}"><i class="fas fa-dollar-sign"></i> {{ t('budget_destinations') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('travel', category='adventure') }}"><i class="fas fa-mountain"></i> {{ t('adventure_destinations') }}</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('travel_guides') }}"><i class="fas fa-book"></i> {{ t('travel_guides') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('interactive_map', destination_id=1) }}"><i class="fas fa-map"></i> {{ t('interactive_maps') }}</a></li>
+                    </ul>
+                </div>
+                
                 <a href="{{ url_for('flights') }}" class="nav-link">{{ t('flights') }}</a>
                 <a href="{{ url_for('hotels') }}" class="nav-link">{{ t('hotels') }}</a>
                 <a href="{{ url_for('packages') }}" class="nav-link">{{ t('packages') }}</a>
                 
                 <!-- Advanced Features Dropdown -->
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="advancedDropdown" role="button" data-bs-toggle="dropdown">
+                <div class="nav-item dropdown pro-dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="advancedDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-star"></i> Features
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ url_for('travel_guides') }}"><i class="fas fa-book"></i> Travel Guides</a></li>
+                    <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="advancedDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('travel_guides') }}"><i class="fas fa-book"></i> {{ t('travel_guides') }}</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('local_events') }}"><i class="fas fa-calendar"></i> Local Events</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('video_content') }}"><i class="fas fa-video"></i> Videos</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('travel_insurance') }}"><i class="fas fa-shield-alt"></i> Insurance</a></li>
@@ -193,7 +210,24 @@
                 </div>
                 
                 <a href="{{ url_for('blog') }}" class="nav-link">{{ t('blog') }}</a>
-                <a href="{{ url_for('offers') }}" class="nav-link">{{ t('offers') }}</a>
+                
+                <!-- Special Offers Dropdown -->
+                <div class="nav-item dropdown pro-dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="offersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-tags"></i> {{ t('offers') }}
+                    </a>
+                    <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="offersDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('offers') }}"><i class="fas fa-percentage"></i> {{ t('all_special_offers') }}</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=flash"><i class="fas fa-bolt"></i> {{ t('flash_deals') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=seasonal"><i class="fas fa-calendar"></i> {{ t('seasonal_offers') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=last_minute"><i class="fas fa-clock"></i> {{ t('last_minute_deals') }}</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('loyalty') }}"><i class="fas fa-gem"></i> {{ t('loyalty_rewards') }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('group_bookings') }}"><i class="fas fa-users"></i> {{ t('group_discounts') }}</a></li>
+                    </ul>
+                </div>
+                
                 <a href="{{ url_for('contact') }}" class="nav-link">{{ t('contact') }}</a>
                 
                 <!-- Language Selector -->

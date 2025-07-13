@@ -79,8 +79,30 @@
         <h1>{{ t('discover_amazing') }}</h1>
         <p>{{ t('explore_world') }}</p>
         <div class="hero-buttons">
-            <a href="{{ url_for('travel') }}" class="btn btn-primary btn-large">{{ t('destinations') }}</a>
-            <a href="{{ url_for('offers') }}" class="btn btn-outline btn-large">{{ t('special_offers') }}</a>
+            <div class="dropdown pro-dropdown">
+                <button class="btn btn-primary btn-large dropdown-toggle" type="button" id="heroDestinationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-map-marker-alt"></i> {{ t('destinations') }}
+                </button>
+                <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="heroDestinationsDropdown">
+                    <li><a class="dropdown-item" href="{{ url_for('travel') }}"><i class="fas fa-globe"></i> {{ t('all_destinations') }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ url_for('travel', category='luxury') }}"><i class="fas fa-crown"></i> {{ t('luxury_destinations') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('travel', category='budget') }}"><i class="fas fa-dollar-sign"></i> {{ t('budget_destinations') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('travel', category='adventure') }}"><i class="fas fa-mountain"></i> {{ t('adventure_destinations') }}</a></li>
+                </ul>
+            </div>
+            <div class="dropdown pro-dropdown">
+                <button class="btn btn-outline btn-large dropdown-toggle" type="button" id="heroOffersDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-tags"></i> {{ t('special_offers') }}
+                </button>
+                <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="heroOffersDropdown">
+                    <li><a class="dropdown-item" href="{{ url_for('offers') }}"><i class="fas fa-percentage"></i> {{ t('all_special_offers') }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=flash"><i class="fas fa-bolt"></i> {{ t('flash_deals') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=seasonal"><i class="fas fa-calendar"></i> {{ t('seasonal_offers') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=last_minute"><i class="fas fa-clock"></i> {{ t('last_minute_deals') }}</a></li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="hero-overlay"></div>

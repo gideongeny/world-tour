@@ -40,6 +40,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Performance optimizations
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # 1 year cache for static files
 app.config['TEMPLATES_AUTO_RELOAD'] = False  # Disable auto-reload in production
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_pre_ping': True,
+    'pool_recycle': 300,
+    'pool_timeout': 20,
+    'max_overflow': 0
+}
+
+# Enable compression
+Compress(app)
 
 # Database connection pooling (only for non-SQLite databases)
 if not app.config['SQLALCHEMY_DATABASE_URI'].startswith('sqlite'):
@@ -125,6 +134,10 @@ def after_request(response):
     # Add cache headers for static assets
     if request.path.startswith('/static/'):
         response.headers['Cache-Control'] = 'public, max-age=31536000'
+        response.headers['Expires'] = 'Thu, 31 Dec 2024 23:59:59 GMT'
+    
+    # Add compression headers
+    response.headers['Vary'] = 'Accept-Encoding'
     
     # Log performance
     if hasattr(g, 'start'):
@@ -169,7 +182,7 @@ def inject_format_price():
     return dict(format_price=format_price)
 
 def get_text(key, language=None):
-    """Simple translation function"""
+    """Enhanced translation function with more languages and keys"""
     if language is None:
         language = session.get('language', 'en')
     
@@ -209,7 +222,19 @@ def get_text(key, language=None):
             'help_center': 'Help Center',
             'my_tickets': 'My Tickets',
             'contact_info': 'Contact',
-            'all_rights_reserved': 'All rights reserved.'
+            'all_rights_reserved': 'All rights reserved.',
+            'luxury_destinations': 'Luxury Destinations',
+            'budget_destinations': 'Budget Destinations',
+            'adventure_destinations': 'Adventure Destinations',
+            'all_destinations': 'All Destinations',
+            'travel_guides': 'Travel Guides',
+            'interactive_maps': 'Interactive Maps',
+            'flash_deals': 'Flash Deals',
+            'seasonal_offers': 'Seasonal Offers',
+            'last_minute_deals': 'Last Minute Deals',
+            'all_special_offers': 'All Special Offers',
+            'loyalty_rewards': 'Loyalty Rewards',
+            'group_discounts': 'Group Discounts'
         },
         'es': {
             'home': 'Inicio',
@@ -246,7 +271,19 @@ def get_text(key, language=None):
             'help_center': 'Centro de Ayuda',
             'my_tickets': 'Mis Tickets',
             'contact_info': 'Contacto',
-            'all_rights_reserved': 'Todos los derechos reservados.'
+            'all_rights_reserved': 'Todos los derechos reservados.',
+            'luxury_destinations': 'Destinos de Lujo',
+            'budget_destinations': 'Destinos Económicos',
+            'adventure_destinations': 'Destinos de Aventura',
+            'all_destinations': 'Todos los Destinos',
+            'travel_guides': 'Guías de Viaje',
+            'interactive_maps': 'Mapas Interactivos',
+            'flash_deals': 'Ofertas Relámpago',
+            'seasonal_offers': 'Ofertas de Temporada',
+            'last_minute_deals': 'Ofertas de Último Minuto',
+            'all_special_offers': 'Todas las Ofertas Especiales',
+            'loyalty_rewards': 'Recompensas de Lealtad',
+            'group_discounts': 'Descuentos de Grupo'
         },
         'fr': {
             'home': 'Accueil',
@@ -283,7 +320,117 @@ def get_text(key, language=None):
             'help_center': 'Centre d\'Aide',
             'my_tickets': 'Mes Tickets',
             'contact_info': 'Contact',
-            'all_rights_reserved': 'Tous droits réservés.'
+            'all_rights_reserved': 'Tous droits réservés.',
+            'luxury_destinations': 'Destinations de Luxe',
+            'budget_destinations': 'Destinations Économiques',
+            'adventure_destinations': 'Destinations d\'Aventure',
+            'all_destinations': 'Toutes les Destinations',
+            'travel_guides': 'Guides de Voyage',
+            'interactive_maps': 'Cartes Interactives',
+            'flash_deals': 'Offres Flash',
+            'seasonal_offers': 'Offres Saisonnières',
+            'last_minute_deals': 'Offres de Dernière Minute',
+            'all_special_offers': 'Toutes les Offres Spéciales',
+            'loyalty_rewards': 'Récompenses de Fidélité',
+            'group_discounts': 'Remises de Groupe'
+        },
+        'de': {
+            'home': 'Startseite',
+            'destinations': 'Reiseziele',
+            'flights': 'Flüge',
+            'hotels': 'Hotels',
+            'packages': 'Pakete',
+            'blog': 'Blog',
+            'offers': 'Angebote',
+            'contact': 'Kontakt',
+            'login': 'Anmelden',
+            'register': 'Registrieren',
+            'profile': 'Profil',
+            'logout': 'Abmelden',
+            'search': 'Suchen',
+            'book_now': 'Jetzt Buchen',
+            'view_details': 'Details Anzeigen',
+            'price_from': 'Ab',
+            'per_person': 'pro Person',
+            'per_night': 'pro Nacht',
+            'welcome_message': 'Willkommen bei World Tour',
+            'discover_amazing': 'Entdecken Sie Unglaubliche Reiseziele',
+            'explore_world': 'Erkunden Sie die Welt mit Uns',
+            'featured_destinations': 'Empfohlene Reiseziele',
+            'popular_destinations': 'Beliebte Reiseziele',
+            'special_offers': 'Sonderangebote',
+            'newsletter_signup': 'Newsletter abonnieren',
+            'get_best_deals': 'Erhalten Sie die besten Angebote und Reisetipps',
+            'subscribe': 'Abonnieren',
+            'email_placeholder': 'E-Mail eingeben',
+            'footer_description': 'Ihr Tor zu unglaublichen Reiseerlebnissen auf der ganzen Welt.',
+            'quick_links': 'Schnelllinks',
+            'support': 'Support',
+            'help_center': 'Hilfecenter',
+            'my_tickets': 'Meine Tickets',
+            'contact_info': 'Kontakt',
+            'all_rights_reserved': 'Alle Rechte vorbehalten.',
+            'luxury_destinations': 'Luxus-Reiseziele',
+            'budget_destinations': 'Budget-Reiseziele',
+            'adventure_destinations': 'Abenteuer-Reiseziele',
+            'all_destinations': 'Alle Reiseziele',
+            'travel_guides': 'Reiseführer',
+            'interactive_maps': 'Interaktive Karten',
+            'flash_deals': 'Blitzangebote',
+            'seasonal_offers': 'Saisonangebote',
+            'last_minute_deals': 'Last-Minute-Angebote',
+            'all_special_offers': 'Alle Sonderangebote',
+            'loyalty_rewards': 'Treueprämien',
+            'group_discounts': 'Gruppenrabatte'
+        },
+        'it': {
+            'home': 'Home',
+            'destinations': 'Destinazioni',
+            'flights': 'Voli',
+            'hotels': 'Hotel',
+            'packages': 'Pacchetti',
+            'blog': 'Blog',
+            'offers': 'Offerte',
+            'contact': 'Contatto',
+            'login': 'Accedi',
+            'register': 'Registrati',
+            'profile': 'Profilo',
+            'logout': 'Esci',
+            'search': 'Cerca',
+            'book_now': 'Prenota Ora',
+            'view_details': 'Visualizza Dettagli',
+            'price_from': 'Da',
+            'per_person': 'per persona',
+            'per_night': 'per notte',
+            'welcome_message': 'Benvenuto su World Tour',
+            'discover_amazing': 'Scopri Destinazioni Incredibili',
+            'explore_world': 'Esplora il Mondo con Noi',
+            'featured_destinations': 'Destinazioni in Evidenza',
+            'popular_destinations': 'Destinazioni Popolari',
+            'special_offers': 'Offerte Speciali',
+            'newsletter_signup': 'Iscriviti alla nostra newsletter',
+            'get_best_deals': 'Ottieni le migliori offerte e consigli di viaggio',
+            'subscribe': 'Iscriviti',
+            'email_placeholder': 'Inserisci la tua email',
+            'footer_description': 'La tua porta d\'accesso a incredibili esperienze di viaggio in tutto il mondo.',
+            'quick_links': 'Link Rapidi',
+            'support': 'Supporto',
+            'help_center': 'Centro Assistenza',
+            'my_tickets': 'I Miei Biglietti',
+            'contact_info': 'Contatto',
+            'all_rights_reserved': 'Tutti i diritti riservati.',
+            'luxury_destinations': 'Destinazioni di Lusso',
+            'budget_destinations': 'Destinazioni Economiche',
+            'adventure_destinations': 'Destinazioni d\'Avventura',
+            'all_destinations': 'Tutte le Destinazioni',
+            'travel_guides': 'Guide di Viaggio',
+            'interactive_maps': 'Mappe Interattive',
+            'flash_deals': 'Offerte Flash',
+            'seasonal_offers': 'Offerte Stagionali',
+            'last_minute_deals': 'Offerte Last Minute',
+            'all_special_offers': 'Tutte le Offerte Speciali',
+            'loyalty_rewards': 'Premi Fedeltà',
+            'group_discounts': 'Sconti di Gruppo'
         }
     }
     
@@ -520,8 +667,43 @@ def send_email(subject, recipients, body):
         return False
 
 def get_weather(city):
-    """Get weather information for a city (simulated)"""
-    # In a real app, you'd use a weather API like OpenWeatherMap
+    """Get weather information for a city with caching"""
+    cache_key = f"weather_{city.lower().replace(' ', '_')}"
+    
+    # Check cache first
+    try:
+        cached_weather = cache.get(cache_key)
+        if cached_weather:
+            return cached_weather
+    except:
+        pass
+    
+    try:
+        # Using OpenWeatherMap API (free tier)
+        api_key = "demo_key"  # In production, use real API key
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+        response = requests.get(url, timeout=5)
+        
+        if response.status_code == 200:
+            data = response.json()
+            weather = {
+                'temp': round(data['main']['temp']),
+                'condition': data['weather'][0]['main'],
+                'humidity': data['main']['humidity'],
+                'wind_speed': round(data['wind']['speed'] * 3.6),  # Convert m/s to km/h
+                'description': data['weather'][0]['description'],
+                'icon': data['weather'][0]['icon']
+            }
+            # Cache for 30 minutes
+            try:
+                cache.set(cache_key, weather, timeout=1800)
+            except:
+                pass
+            return weather
+    except Exception as e:
+        print(f"Weather API error: {e}")
+    
+    # Fallback to simulated weather if API fails
     weather_data = {
         'paris': {'temp': 18, 'condition': 'Partly Cloudy', 'humidity': 65},
         'tokyo': {'temp': 22, 'condition': 'Sunny', 'humidity': 55},
@@ -534,54 +716,40 @@ def get_weather(city):
     return weather_data.get(city.lower(), {'temp': 20, 'condition': 'Unknown', 'humidity': 50})
 
 def process_payment(amount, card_details=None):
-    """Create a Stripe Checkout session and return the session URL"""
-    session = stripe.checkout.Session.create(
-        payment_method_types=[
-            'card', 'ideal', 'bancontact', 'sofort', 'alipay', 'link'
-        ],
-        line_items=[{
-            'price_data': {
-                'currency': 'usd',
-                'product_data': {
-                    'name': 'World Tour Booking',
-                },
-                'unit_amount': int(amount * 100),
-            },
-            'quantity': 1,
-        }],
-        mode='payment',
-        success_url=url_for('payment_success', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url=url_for('payment_cancel', _external=True),
-    )
-    return {'success': True, 'session_url': session.url, 'payment_id': session.id}
+    """Simulate payment processing for demo purposes"""
+    try:
+        import time
+        time.sleep(1)
+        import uuid
+        payment_id = str(uuid.uuid4())
+        return {
+            'success': True,
+            'payment_id': payment_id,
+            'message': 'Payment processed successfully'
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'message': f'Payment error: {str(e)}'
+        }
 
 @app.route('/create-checkout-session', methods=['POST'])
 @login_required
 def create_checkout_session():
-    data = request.get_json()
-    amount = data.get('amount')
-    if not amount:
-        return jsonify({'error': 'Amount required'}), 400
-    session = stripe.checkout.Session.create(
-        payment_method_types=[
-            'card', 'ideal', 'bancontact', 'sofort', 'alipay', 'link'
-        ],
-        line_items=[{
-            'price_data': {
-                'currency': 'usd',
-                'product_data': {
-                    'name': 'World Tour Booking',
-                },
-                'unit_amount': int(float(amount) * 100),
-            },
-            'quantity': 1,
-        }],
-        mode='payment',
-        success_url=url_for('payment_success', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url=url_for('payment_cancel', _external=True),
-        customer_email=current_user.email
-    )
-    return jsonify({'sessionId': session.id, 'sessionUrl': session.url})
+    """Simulate checkout session creation for demo purposes"""
+    try:
+        data = request.get_json()
+        amount = data.get('amount')
+        if not amount:
+            return jsonify({'error': 'Amount required'}), 400
+        import uuid
+        session_id = str(uuid.uuid4())
+        return jsonify({
+            'sessionId': session_id,
+            'sessionUrl': url_for('payment_success', _external=True) + f'?session_id={session_id}'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/payment_success')
 def payment_success():
@@ -593,9 +761,19 @@ def payment_cancel():
 
 # Routes
 @app.route('/')
+@cache_result(timeout=300)  # Cache homepage for 5 minutes
 def home():
-    featured_destinations = Destination.query.filter_by(available=True).order_by(Destination.rating.desc()).limit(6).all()
-    latest_destinations = Destination.query.filter_by(available=True).order_by(Destination.created_at.desc()).limit(3).all()
+    # Optimize queries with specific column selection
+    featured_destinations = Destination.query.with_entities(
+        Destination.id, Destination.name, Destination.country, 
+        Destination.price, Destination.rating, Destination.image_url
+    ).filter_by(available=True).order_by(Destination.rating.desc()).limit(6).all()
+    
+    latest_destinations = Destination.query.with_entities(
+        Destination.id, Destination.name, Destination.country, 
+        Destination.price, Destination.rating, Destination.image_url
+    ).filter_by(available=True).order_by(Destination.created_at.desc()).limit(3).all()
+    
     return render_template('index.html', 
                          featured_destinations=featured_destinations,
                          latest_destinations=latest_destinations)
@@ -1176,8 +1354,34 @@ def api_destinations():
     } for d in destinations])
 
 def get_exchange_rate(from_currency, to_currency):
-    """Get exchange rate from currency API (simulated for demo)"""
-    # In production, use a real API like exchangerate-api.com
+    """Get exchange rate from currency API with caching"""
+    cache_key = f"exchange_rate_{from_currency}_{to_currency}"
+    
+    # Check cache first
+    try:
+        cached_rate = cache.get(cache_key)
+        if cached_rate:
+            return cached_rate
+    except:
+        pass
+    
+    try:
+        # Using a free currency API
+        url = f"https://api.exchangerate-api.com/v4/latest/{from_currency.upper()}"
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            rate = data['rates'].get(to_currency.upper(), 1.0)
+            # Cache for 1 hour
+            try:
+                cache.set(cache_key, rate, timeout=3600)
+            except:
+                pass
+            return rate
+    except Exception as e:
+        print(f"Currency API error: {e}")
+    
+    # Fallback to static rates if API fails
     rates = {
         'USD': {'EUR': 0.85, 'GBP': 0.73, 'JPY': 110.0, 'CAD': 1.25, 'AUD': 1.35},
         'EUR': {'USD': 1.18, 'GBP': 0.86, 'JPY': 129.0, 'CAD': 1.47, 'AUD': 1.59},
@@ -3984,7 +4188,22 @@ def video_detail(video_id):
     video = VideoContent.query.get_or_404(video_id)
     video.view_count += 1
     db.session.commit()
-    return render_template('video_detail.html', video=video)
+    
+    # Extract YouTube video ID from URL if it's a YouTube link
+    youtube_id = None
+    if 'youtube.com' in video.video_url or 'youtu.be' in video.video_url:
+        import re
+        youtube_patterns = [
+            r'(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)',
+            r'youtube\.com\/embed\/([^&\n?#]+)'
+        ]
+        for pattern in youtube_patterns:
+            match = re.search(pattern, video.video_url)
+            if match:
+                youtube_id = match.group(1)
+                break
+    
+    return render_template('video_detail.html', video=video, youtube_id=youtube_id)
 
 # Interactive Maps Routes
 @app.route('/maps/interactive/<int:destination_id>')

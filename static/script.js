@@ -1,7 +1,40 @@
-// Mobile Navigation Toggle
+// Mobile Navigation Toggle and Dropdown Handling
 document.addEventListener('DOMContentLoaded', function() {
     const navToggle = document.getElementById('nav-toggle');
     const navbarNav = document.getElementById('navbarNav');
+    
+    // Handle hero dropdowns on mobile
+    const heroDropdowns = document.querySelectorAll('.hero-buttons .dropdown');
+    heroDropdowns.forEach(dropdown => {
+        const button = dropdown.querySelector('.dropdown-toggle');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        
+        if (button && menu) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Close other dropdowns
+                heroDropdowns.forEach(otherDropdown => {
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.querySelector('.dropdown-menu').classList.remove('show');
+                    }
+                });
+                
+                // Toggle current dropdown
+                menu.classList.toggle('show');
+            });
+        }
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+            heroDropdowns.forEach(dropdown => {
+                dropdown.querySelector('.dropdown-menu').classList.remove('show');
+            });
+        }
+    });
     
     if (navToggle && navbarNav) {
         const isMobile = () => window.innerWidth <= 768;

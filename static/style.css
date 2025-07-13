@@ -35,6 +35,93 @@ body {
     }
 }
 
+/* Global Form Styling */
+input, select, textarea {
+    background-color: white !important;
+    color: #333 !important;
+    border: 1px solid #e9ecef !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #6c757d !important;
+}
+
+input:focus, select:focus, textarea:focus {
+    background-color: white !important;
+    color: #333 !important;
+    border-color: #667eea !important;
+    outline: none !important;
+}
+
+.form-control {
+    background-color: white !important;
+    color: #333 !important;
+    border: 1px solid #e9ecef !important;
+}
+
+.form-control:focus {
+    background-color: white !important;
+    color: #333 !important;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+/* Fix dark containers */
+.card {
+    background-color: white !important;
+    color: #333 !important;
+}
+
+.modal-content {
+    background-color: white !important;
+    color: #333 !important;
+}
+
+.dropdown-menu {
+    background-color: white !important;
+    color: #333 !important;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 0.5rem 0;
+    min-width: 220px;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+    color: #333 !important;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white !important;
+    transform: translateX(5px);
+}
+
+.dropdown-item i {
+    margin-right: 0.75rem;
+    width: 16px;
+    text-align: center;
+}
+
+.dropdown-divider {
+    margin: 0.5rem 0;
+    border-color: #e9ecef;
+}
+
 /* Navigation */
 .navbar {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -423,6 +510,74 @@ body {
     }
 }
 
+/* Hero Dropdown Styles */
+.hero-buttons .dropdown {
+    position: relative;
+}
+
+.hero-buttons .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    min-width: 250px;
+    z-index: 1000;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-top: 0.5rem;
+}
+
+.hero-buttons .dropdown-item {
+    padding: 0.75rem 1rem;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.hero-buttons .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.hero-buttons .dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #667eea;
+}
+
+.hero-buttons .dropdown-item i {
+    margin-right: 0.5rem;
+    width: 16px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .hero-buttons .dropdown-menu {
+        position: static;
+        margin-top: 0.25rem;
+        box-shadow: none;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        display: none;
+    }
+    
+    .hero-buttons .dropdown-menu.show {
+        display: block;
+    }
+    
+    .hero-buttons .dropdown-item {
+        color: #333;
+        padding: 0.5rem 1rem;
+    }
+    
+    .hero-buttons .dropdown-item:hover {
+        background-color: rgba(102, 126, 234, 0.1);
+    }
+}
+
 /* Search Section */
 .search-section {
     background: white;
@@ -470,6 +625,20 @@ body {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    background-color: white;
+    color: #333;
+}
+
+.search-form input::placeholder {
+    color: #6c757d;
+}
+
+.search-form input:focus,
+.search-form select:focus {
+    outline: none;
+    border-color: #667eea;
+    background-color: white;
+    color: #333;
 }
 
 @media (max-width: 768px) {
@@ -481,11 +650,7 @@ body {
     }
 }
 
-.search-form input:focus,
-.search-form select:focus {
-    outline: none;
-    border-color: #667eea;
-}
+/* This is now handled above */
 
 /* Destinations Grid */
 .destinations-grid {
