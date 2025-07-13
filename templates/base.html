@@ -295,30 +295,11 @@
         </div>
     </footer>
 
-    <!-- Deferred JavaScript loading -->
-    <script>
-        // Load Bootstrap JS asynchronously
-        function loadScript(src) {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-        
-        // Load non-critical scripts after page load
-        window.addEventListener('load', function() {
-            // Load Bootstrap JS
-            loadScript('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
-                .then(() => {
-                    // Load custom JS after Bootstrap
-                    return loadScript('{{ url_for("static", filename="script.js") }}?v=1.1');
-                })
-                .catch(err => console.error('Script loading failed:', err));
-        });
-    </script>
+    <!-- Bootstrap JS - Load immediately for mobile navigation -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}?v=1.1"></script>
     
     <!-- PWA Service Worker Registration -->
     <script>
