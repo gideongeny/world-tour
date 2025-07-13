@@ -9,11 +9,16 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4">Voice Booking Assistant</h1>
-                    <p class="lead mb-4">Book your next trip using just your voice. Our AI-powered assistant understands natural language and makes booking effortless.</p>
-                    <button class="btn btn-light btn-lg" id="startVoiceBtn">
-                        <i class="fas fa-microphone me-2"></i>Start Voice Booking
-                    </button>
+                    <h1 class="display-4 fw-bold mb-4">Voice Booking</h1>
+                    <p class="lead mb-4">Book your travel with natural voice commands. Simply speak your travel plans and let our AI handle the rest. No typing required!</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg" id="startVoiceBtn">
+                            <i class="fas fa-microphone me-2"></i>Start Voice Booking
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#voiceHelpModal">
+                            <i class="fas fa-question-circle me-2"></i>Voice Commands
+                        </button>
+                    </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="voice-animation text-center">
@@ -21,173 +26,292 @@
                             <div class="wave"></div>
                             <div class="wave"></div>
                             <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
                         </div>
-                        <i class="fas fa-microphone fa-4x text-white mb-3"></i>
-                        <p class="text-white-50">Click to start speaking</p>
+                        <div class="voice-icon">
+                            <i class="fas fa-microphone fa-3x"></i>
+                        </div>
+                        <p class="text-white-50 mt-3">Natural language processing</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Voice Interface -->
+    <!-- Voice Booking Interface -->
     <div class="container py-5">
         <div class="row">
-            <div class="col-lg-8 mx-auto">
+            <div class="col-lg-8">
                 <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0"><i class="fas fa-microphone me-2"></i>Voice Booking Interface</h4>
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-microphone me-2"></i>Voice Assistant</h4>
+                        <div class="voice-status">
+                            <span class="status-indicator" id="voiceStatus">Ready</span>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <!-- Status Display -->
-                        <div class="text-center mb-4">
-                            <div id="statusDisplay" class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <span id="statusText">Ready to listen. Click "Start Voice Booking" to begin.</span>
-                            </div>
-                        </div>
-
-                        <!-- Voice Controls -->
-                        <div class="text-center mb-4">
-                            <button class="btn btn-primary btn-lg me-3" id="listenBtn" disabled>
-                                <i class="fas fa-microphone me-2"></i>Listen
-                            </button>
-                            <button class="btn btn-secondary btn-lg me-3" id="stopBtn" disabled>
-                                <i class="fas fa-stop me-2"></i>Stop
-                            </button>
-                            <button class="btn btn-success btn-lg" id="clearBtn">
-                                <i class="fas fa-trash me-2"></i>Clear
-                            </button>
-                        </div>
-
-                        <!-- Transcription -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">What you said:</label>
-                            <div class="form-control" id="transcription" style="min-height: 100px; background-color: #f8f9fa;">
-                                <em class="text-muted">Your speech will appear here...</em>
-                            </div>
-                        </div>
-
-                        <!-- AI Response -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">AI Assistant Response:</label>
-                            <div class="form-control" id="aiResponse" style="min-height: 100px; background-color: #e8f5e8;">
-                                <em class="text-muted">AI response will appear here...</em>
-                            </div>
-                        </div>
-
-                        <!-- Booking Preview -->
-                        <div id="bookingPreview" class="d-none">
-                            <h5 class="mb-3">Booking Preview</h5>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div id="bookingDetails"></div>
-                                    <div class="text-center mt-3">
-                                        <button class="btn btn-success me-2" id="confirmBooking">
-                                            <i class="fas fa-check me-2"></i>Confirm Booking
-                                        </button>
-                                        <button class="btn btn-outline-secondary" id="modifyBooking">
-                                            <i class="fas fa-edit me-2"></i>Modify
-                                        </button>
+                        <!-- Voice Interface -->
+                        <div class="voice-interface" id="voiceInterface">
+                            <div class="voice-display">
+                                <div class="voice-input-area">
+                                    <div class="voice-prompt" id="voicePrompt">
+                                        <i class="fas fa-microphone"></i>
+                                        <span>Click the microphone or say "Hey World Tour" to start</span>
+                                    </div>
+                                    <div class="voice-transcript" id="voiceTranscript">
+                                        <!-- Voice transcript will appear here -->
                                     </div>
                                 </div>
+                                
+                                <!-- Voice Controls -->
+                                <div class="voice-controls">
+                                    <button class="voice-btn primary" id="mainVoiceBtn">
+                                        <i class="fas fa-microphone fa-2x"></i>
+                                    </button>
+                                    <button class="voice-btn secondary" id="stopVoiceBtn" style="display: none;">
+                                        <i class="fas fa-stop fa-2x"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Voice Response -->
+                            <div class="voice-response" id="voiceResponse">
+                                <!-- AI responses will appear here -->
+                            </div>
+                        </div>
+
+                        <!-- Booking Summary -->
+                        <div class="booking-summary" id="bookingSummary" style="display: none;">
+                            <h5><i class="fas fa-clipboard-list me-2"></i>Booking Summary</h5>
+                            <div class="summary-content" id="summaryContent">
+                                <!-- Booking details will be populated here -->
+                            </div>
+                            <div class="summary-actions">
+                                <button class="btn btn-success" id="confirmBookingBtn">
+                                    <i class="fas fa-check me-2"></i>Confirm Booking
+                                </button>
+                                <button class="btn btn-outline-secondary" id="modifyBookingBtn">
+                                    <i class="fas fa-edit me-2"></i>Modify
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Voice Commands -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Voice Commands</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="command-categories">
+                            <div class="command-category">
+                                <h6><i class="fas fa-plane me-2"></i>Flight Booking</h6>
+                                <ul class="command-list">
+                                    <li>"Book a flight to Paris"</li>
+                                    <li>"I need a flight from London to Tokyo"</li>
+                                    <li>"Show me flights to New York next week"</li>
+                                    <li>"Book economy class to Sydney"</li>
+                                </ul>
+                            </div>
+                            <div class="command-category">
+                                <h6><i class="fas fa-hotel me-2"></i>Hotel Booking</h6>
+                                <ul class="command-list">
+                                    <li>"Find a hotel in Paris"</li>
+                                    <li>"Book a 5-star hotel in Tokyo"</li>
+                                    <li>"I need accommodation for 3 nights"</li>
+                                    <li>"Show me hotels near the airport"</li>
+                                </ul>
+                            </div>
+                            <div class="command-category">
+                                <h6><i class="fas fa-map-marked-alt me-2"></i>Travel Planning</h6>
+                                <ul class="command-list">
+                                    <li>"Plan a trip to Europe"</li>
+                                    <li>"What's the weather in Paris?"</li>
+                                    <li>"Show me tourist attractions"</li>
+                                    <li>"Book a guided tour"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Settings -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Voice Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="setting-item">
+                            <label class="form-label">Language</label>
+                            <select class="form-select" id="voiceLanguage">
+                                <option value="en-US">English (US)</option>
+                                <option value="en-GB">English (UK)</option>
+                                <option value="es-ES">Spanish</option>
+                                <option value="fr-FR">French</option>
+                                <option value="de-DE">German</option>
+                                <option value="ja-JP">Japanese</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label class="form-label">Voice Speed</label>
+                            <input type="range" class="form-range" id="voiceSpeed" min="0.5" max="2" step="0.1" value="1">
+                            <small class="text-muted">Adjust AI response speed</small>
+                        </div>
+                        <div class="setting-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="voiceConfirmation" checked>
+                                <label class="form-check-label" for="voiceConfirmation">
+                                    Voice confirmation
+                                </label>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="wakeWord" checked>
+                                <label class="form-check-label" for="wakeWord">
+                                    Enable wake word "Hey World Tour"
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Commands -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Commands</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="recent-commands" id="recentCommands">
+                            <div class="command-item">
+                                <div class="command-text">"Book a flight to Paris"</div>
+                                <div class="command-time">2 min ago</div>
+                            </div>
+                            <div class="command-item">
+                                <div class="command-text">"Find hotels in Tokyo"</div>
+                                <div class="command-time">5 min ago</div>
+                            </div>
+                            <div class="command-item">
+                                <div class="command-text">"What's the weather like?"</div>
+                                <div class="command-time">10 min ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Tips -->
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Voice Tips</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="tip-item">
+                            <i class="fas fa-volume-up text-primary"></i>
+                            <span>Speak clearly and at a normal pace</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-map-marker-alt text-success"></i>
+                            <span>Include destination and dates for better results</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-calendar text-warning"></i>
+                            <span>Specify preferences like "budget" or "luxury"</span>
+                        </div>
+                        <div class="tip-item">
+                            <i class="fas fa-question-circle text-info"></i>
+                            <span>Ask "What can you help me with?" for assistance</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Voice Commands Guide -->
+    <!-- Voice Features -->
     <div class="bg-light py-5">
         <div class="container">
-            <h2 class="text-center mb-5">Voice Commands Guide</h2>
+            <h2 class="text-center mb-5">Voice Booking Features</h2>
             <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-plane text-primary me-2"></i>Flight Commands</h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><strong>"Book a flight"</strong> - Start flight booking</li>
-                                <li class="mb-2"><strong>"From New York to London"</strong> - Set route</li>
-                                <li class="mb-2"><strong>"On January 15th"</strong> - Set departure date</li>
-                                <li class="mb-2"><strong>"For 2 passengers"</strong> - Set passenger count</li>
-                                <li class="mb-2"><strong>"Economy class"</strong> - Set cabin class</li>
-                            </ul>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-brain fa-2x"></i>
                         </div>
+                        <h5>Natural Language</h5>
+                        <p class="text-muted">Understand complex travel requests in plain English. No need to learn specific commands.</p>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-hotel text-success me-2"></i>Hotel Commands</h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><strong>"Book a hotel"</strong> - Start hotel booking</li>
-                                <li class="mb-2"><strong>"In Paris"</strong> - Set destination</li>
-                                <li class="mb-2"><strong>"From January 15th to 20th"</strong> - Set dates</li>
-                                <li class="mb-2"><strong>"For 2 adults and 1 child"</strong> - Set guests</li>
-                                <li class="mb-2"><strong>"5-star hotel"</strong> - Set hotel rating</li>
-                            </ul>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-globe fa-2x"></i>
                         </div>
+                        <h5>Multi-Language</h5>
+                        <p class="text-muted">Support for multiple languages including English, Spanish, French, German, and Japanese.</p>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title"><i class="fas fa-suitcase text-warning me-2"></i>Package Commands</h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><strong>"Book a vacation package"</strong> - Start package booking</li>
-                                <li class="mb-2"><strong>"To Bali"</strong> - Set destination</li>
-                                <li class="mb-2"><strong>"For 7 days"</strong> - Set duration</li>
-                                <li class="mb-2"><strong>"All-inclusive"</strong> - Set package type</li>
-                                <li class="mb-2"><strong>"Budget $3000"</strong> - Set budget</li>
-                            </ul>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-mobile-alt fa-2x"></i>
                         </div>
+                        <h5>Mobile Optimized</h5>
+                        <p class="text-muted">Perfect for mobile devices. Book on the go with hands-free voice commands.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                        <h5>Secure & Private</h5>
+                        <p class="text-muted">Your voice data is processed securely and never stored permanently.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Features -->
-    <div class="container py-5">
-        <h2 class="text-center mb-5">Voice Booking Features</h2>
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="text-center">
-                    <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                        <i class="fas fa-brain fa-2x"></i>
-                    </div>
-                    <h5>AI-Powered</h5>
-                    <p class="text-muted">Advanced natural language processing understands context and intent.</p>
-                </div>
+<!-- Voice Help Modal -->
+<div class="modal fade" id="voiceHelpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Voice Commands Guide</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="text-center">
-                    <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                        <i class="fas fa-globe fa-2x"></i>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Basic Commands</h6>
+                        <ul>
+                            <li>"Hey World Tour" - Wake up the assistant</li>
+                            <li>"Book a flight" - Start flight booking</li>
+                            <li>"Find a hotel" - Search for accommodation</li>
+                            <li>"Plan a trip" - Get travel recommendations</li>
+                            <li>"What's the weather?" - Check destination weather</li>
+                        </ul>
                     </div>
-                    <h5>Multi-Language</h5>
-                    <p class="text-muted">Supports multiple languages for global travelers.</p>
+                    <div class="col-md-6">
+                        <h6>Advanced Commands</h6>
+                        <ul>
+                            <li>"Book economy class to Paris next Friday"</li>
+                            <li>"Find a 5-star hotel in Tokyo for 3 nights"</li>
+                            <li>"Show me flights under $500"</li>
+                            <li>"Plan a 2-week trip to Europe"</li>
+                            <li>"What are the best restaurants in Rome?"</li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="text-center">
-                    <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                        <i class="fas fa-mobile-alt fa-2x"></i>
-                    </div>
-                    <h5>Mobile Optimized</h5>
-                    <p class="text-muted">Works seamlessly on mobile devices with touch controls.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="text-center">
-                    <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                        <i class="fas fa-shield-alt fa-2x"></i>
-                    </div>
-                    <h5>Secure</h5>
-                    <p class="text-muted">Voice data is encrypted and processed securely.</p>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Tip:</strong> Be specific with dates, destinations, and preferences for the best results. The AI will ask for clarification if needed.
                 </div>
             </div>
         </div>
@@ -197,8 +321,8 @@
 <style>
 .voice-waves {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     gap: 5px;
     margin-bottom: 20px;
 }
@@ -206,27 +330,297 @@
 .wave {
     width: 4px;
     height: 20px;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.6);
     border-radius: 2px;
-    animation: wave 1s ease-in-out infinite;
+    animation: wave 1.5s ease-in-out infinite;
 }
 
-.wave:nth-child(2) {
-    animation-delay: 0.1s;
-}
-
-.wave:nth-child(3) {
-    animation-delay: 0.2s;
-}
+.wave:nth-child(2) { animation-delay: 0.1s; }
+.wave:nth-child(3) { animation-delay: 0.2s; }
+.wave:nth-child(4) { animation-delay: 0.3s; }
+.wave:nth-child(5) { animation-delay: 0.4s; }
 
 @keyframes wave {
     0%, 100% { height: 20px; }
     50% { height: 40px; }
 }
 
-.listening .wave {
-    background: #fff;
-    animation: wave 0.5s ease-in-out infinite;
+.voice-icon {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.voice-interface {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.voice-display {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+}
+
+.voice-input-area {
+    margin-bottom: 30px;
+}
+
+.voice-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.voice-prompt i {
+    color: #667eea;
+    font-size: 1.5rem;
+}
+
+.voice-transcript {
+    min-height: 60px;
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+    border: 2px solid #e9ecef;
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+.voice-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.voice-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.voice-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.voice-btn.primary:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.voice-btn.secondary {
+    background: #dc3545;
+    color: white;
+}
+
+.voice-btn.secondary:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+.voice-btn.listening {
+    animation: listening 1s infinite;
+}
+
+@keyframes listening {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+    50% { box-shadow: 0 0 0 20px rgba(220, 53, 69, 0); }
+}
+
+.voice-response {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #667eea;
+    min-height: 100px;
+}
+
+.voice-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-indicator {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.status-indicator.ready {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-indicator.listening {
+    background: #fff3cd;
+    color: #856404;
+    animation: pulse 1s infinite;
+}
+
+.status-indicator.processing {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.booking-summary {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.summary-content {
+    margin: 15px 0;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.command-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.command-category h6 {
+    color: #495057;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.command-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.command-list li {
+    padding: 8px 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+    border-left: 3px solid transparent;
+    padding-left: 10px;
+    transition: all 0.3s ease;
+}
+
+.command-list li:hover {
+    border-left-color: #667eea;
+    color: #495057;
+    background: #f8f9fa;
+    padding-left: 15px;
+}
+
+.setting-item {
+    margin-bottom: 20px;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.recent-commands {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.command-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.command-item:last-child {
+    border-bottom: none;
+}
+
+.command-text {
+    font-size: 0.9rem;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.command-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.tip-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.tip-item:last-child {
+    border-bottom: none;
+}
+
+.tip-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.tip-item span {
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
 }
 
 .feature-icon {
@@ -236,36 +630,63 @@
 .feature-icon:hover {
     transform: scale(1.1);
 }
+
+@media (max-width: 768px) {
+    .voice-display {
+        padding: 20px;
+    }
+    
+    .voice-btn {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .voice-btn i {
+        font-size: 1.5rem !important;
+    }
+    
+    .command-categories {
+        gap: 15px;
+    }
+}
 </style>
 
 <script>
-class VoiceBookingAssistant {
+class VoiceBooking {
     constructor() {
         this.isListening = false;
         this.recognition = null;
         this.synthesis = window.speechSynthesis;
-        this.initializeSpeechRecognition();
-        this.bindEvents();
+        this.currentTranscript = '';
+        this.bookingData = {};
+        this.init();
     }
 
-    initializeSpeechRecognition() {
+    init() {
+        this.setupSpeechRecognition();
+        this.bindEvents();
+        this.loadSettings();
+    }
+
+    setupSpeechRecognition() {
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             this.recognition = new SpeechRecognition();
-            this.recognition.continuous = true;
+            
+            this.recognition.continuous = false;
             this.recognition.interimResults = true;
             this.recognition.lang = 'en-US';
-
+            
             this.recognition.onstart = () => {
                 this.isListening = true;
-                this.updateStatus('Listening...', 'success');
-                this.updateUI();
+                this.updateUI('listening');
+                this.showTranscript('Listening...');
             };
-
+            
             this.recognition.onresult = (event) => {
                 let finalTranscript = '';
                 let interimTranscript = '';
-
+                
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
@@ -274,243 +695,466 @@ class VoiceBookingAssistant {
                         interimTranscript += transcript;
                     }
                 }
-
-                this.updateTranscription(finalTranscript, interimTranscript);
-                this.processVoiceCommand(finalTranscript);
+                
+                this.currentTranscript = finalTranscript || interimTranscript;
+                this.showTranscript(this.currentTranscript);
             };
-
-            this.recognition.onerror = (event) => {
-                this.updateStatus(`Error: ${event.error}`, 'danger');
-                this.isListening = false;
-                this.updateUI();
-            };
-
+            
             this.recognition.onend = () => {
                 this.isListening = false;
-                this.updateStatus('Ready to listen', 'info');
-                this.updateUI();
+                this.updateUI('ready');
+                
+                if (this.currentTranscript) {
+                    this.processVoiceCommand(this.currentTranscript);
+                }
+            };
+            
+            this.recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                this.isListening = false;
+                this.updateUI('ready');
+                this.showResponse('Sorry, I didn\'t catch that. Could you please try again?');
             };
         } else {
-            this.updateStatus('Speech recognition not supported in this browser', 'warning');
+            console.error('Speech recognition not supported');
+            this.showResponse('Speech recognition is not supported in this browser.');
         }
     }
 
     bindEvents() {
+        // Main voice button
         document.getElementById('startVoiceBtn').addEventListener('click', () => {
-            this.enableVoiceInterface();
+            this.startVoiceBooking();
         });
 
-        document.getElementById('listenBtn').addEventListener('click', () => {
-            this.startListening();
+        document.getElementById('mainVoiceBtn').addEventListener('click', () => {
+            if (this.isListening) {
+                this.stopListening();
+            } else {
+                this.startListening();
+            }
         });
 
-        document.getElementById('stopBtn').addEventListener('click', () => {
+        document.getElementById('stopVoiceBtn').addEventListener('click', () => {
             this.stopListening();
         });
 
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            this.clearInterface();
-        });
-
-        document.getElementById('confirmBooking').addEventListener('click', () => {
+        // Booking actions
+        document.getElementById('confirmBookingBtn').addEventListener('click', () => {
             this.confirmBooking();
         });
 
-        document.getElementById('modifyBooking').addEventListener('click', () => {
+        document.getElementById('modifyBookingBtn').addEventListener('click', () => {
             this.modifyBooking();
+        });
+
+        // Settings
+        document.getElementById('voiceLanguage').addEventListener('change', (e) => {
+            this.setLanguage(e.target.value);
+        });
+
+        document.getElementById('voiceSpeed').addEventListener('input', (e) => {
+            this.setVoiceSpeed(e.target.value);
+        });
+
+        document.getElementById('voiceConfirmation').addEventListener('change', (e) => {
+            this.setVoiceConfirmation(e.target.checked);
+        });
+
+        document.getElementById('wakeWord').addEventListener('change', (e) => {
+            this.setWakeWord(e.target.checked);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' && e.ctrlKey) {
+                e.preventDefault();
+                this.toggleListening();
+            }
         });
     }
 
-    enableVoiceInterface() {
-        document.getElementById('listenBtn').disabled = false;
-        document.getElementById('stopBtn').disabled = false;
-        this.updateStatus('Voice interface enabled. Click "Listen" to start.', 'success');
-        this.speak('Voice interface enabled. Click listen to start.');
+    startVoiceBooking() {
+        this.showResponse('Hello! I\'m your voice booking assistant. How can I help you today?');
+        this.speak('Hello! I\'m your voice booking assistant. How can I help you today?');
     }
 
     startListening() {
         if (this.recognition) {
             this.recognition.start();
-            document.querySelector('.voice-animation').classList.add('listening');
+        } else {
+            this.showResponse('Speech recognition is not available. Please use the text input instead.');
         }
     }
 
     stopListening() {
         if (this.recognition) {
             this.recognition.stop();
-            document.querySelector('.voice-animation').classList.remove('listening');
         }
     }
 
-    clearInterface() {
-        document.getElementById('transcription').innerHTML = '<em class="text-muted">Your speech will appear here...</em>';
-        document.getElementById('aiResponse').innerHTML = '<em class="text-muted">AI response will appear here...</em>';
-        document.getElementById('bookingPreview').classList.add('d-none');
-    }
-
-    updateStatus(message, type) {
-        const statusDisplay = document.getElementById('statusDisplay');
-        const statusText = document.getElementById('statusText');
-        
-        statusDisplay.className = `alert alert-${type}`;
-        statusText.textContent = message;
-    }
-
-    updateUI() {
-        const listenBtn = document.getElementById('listenBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        
+    toggleListening() {
         if (this.isListening) {
-            listenBtn.disabled = true;
-            stopBtn.disabled = false;
+            this.stopListening();
         } else {
-            listenBtn.disabled = false;
-            stopBtn.disabled = true;
-        }
-    }
-
-    updateTranscription(final, interim) {
-        const transcription = document.getElementById('transcription');
-        if (final) {
-            transcription.innerHTML = `<strong>${final}</strong>`;
-        } else if (interim) {
-            transcription.innerHTML = `<em>${interim}</em>`;
-        }
-    }
-
-    speak(text) {
-        if (this.synthesis) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9;
-            utterance.pitch = 1;
-            this.synthesis.speak(utterance);
+            this.startListening();
         }
     }
 
     processVoiceCommand(command) {
-        if (!command) return;
-
-        const response = this.generateAIResponse(command);
-        this.updateAIResponse(response);
-        
-        // Check if booking details are complete
-        const bookingDetails = this.extractBookingDetails(command);
-        if (bookingDetails.isComplete) {
-            this.showBookingPreview(bookingDetails);
-        }
-    }
-
-    generateAIResponse(command) {
         const lowerCommand = command.toLowerCase();
+        this.addToRecentCommands(command);
         
-        if (lowerCommand.includes('flight') || lowerCommand.includes('fly')) {
-            return "I'll help you book a flight. Please tell me your departure city, destination, and travel dates.";
-        } else if (lowerCommand.includes('hotel') || lowerCommand.includes('accommodation')) {
-            return "I'll help you find a hotel. Please tell me your destination and check-in/check-out dates.";
-        } else if (lowerCommand.includes('package') || lowerCommand.includes('vacation')) {
-            return "I'll help you book a vacation package. Please tell me your destination and preferred duration.";
-        } else if (lowerCommand.includes('from') && lowerCommand.includes('to')) {
-            return "Great! I've noted your route. When would you like to travel?";
-        } else if (lowerCommand.includes('date') || lowerCommand.includes('when')) {
-            return "Perfect! I've recorded your travel dates. How many passengers will be traveling?";
-        } else if (lowerCommand.includes('passenger') || lowerCommand.includes('people')) {
-            return "Excellent! I have all the details. Let me search for the best options for you.";
-        } else {
-            return "I heard you say: '" + command + "'. How can I help you with your travel booking?";
+        this.updateUI('processing');
+        this.showResponse('Processing your request...');
+        
+        // Simulate processing time
+        setTimeout(() => {
+            this.handleCommand(lowerCommand);
+        }, 1000);
+    }
+
+    handleCommand(command) {
+        // Flight booking commands
+        if (command.includes('flight') || command.includes('fly')) {
+            this.handleFlightBooking(command);
+        }
+        // Hotel booking commands
+        else if (command.includes('hotel') || command.includes('accommodation') || command.includes('stay')) {
+            this.handleHotelBooking(command);
+        }
+        // Travel planning commands
+        else if (command.includes('trip') || command.includes('plan') || command.includes('vacation')) {
+            this.handleTravelPlanning(command);
+        }
+        // Weather queries
+        else if (command.includes('weather')) {
+            this.handleWeatherQuery(command);
+        }
+        // General help
+        else if (command.includes('help') || command.includes('what can you do')) {
+            this.handleHelpRequest();
+        }
+        else {
+            this.handleUnknownCommand(command);
         }
     }
 
-    updateAIResponse(response) {
-        document.getElementById('aiResponse').innerHTML = `<strong>${response}</strong>`;
+    handleFlightBooking(command) {
+        const destinations = this.extractDestinations(command);
+        const dates = this.extractDates(command);
+        const classType = this.extractClassType(command);
+        
+        if (destinations.length > 0) {
+            this.bookingData.type = 'flight';
+            this.bookingData.destinations = destinations;
+            this.bookingData.dates = dates;
+            this.bookingData.class = classType;
+            
+            const response = `I found flights to ${destinations.join(' and ')}. ${dates.length > 0 ? `For ${dates.join(' and ')}.` : ''} ${classType ? `In ${classType} class.` : ''} Would you like me to show you the options?`;
+            
+            this.showResponse(response);
+            this.speak(response);
+            this.showBookingSummary();
+        } else {
+            const response = 'I\'d be happy to help you book a flight. Where would you like to go and when?';
+            this.showResponse(response);
+            this.speak(response);
+        }
+    }
+
+    handleHotelBooking(command) {
+        const destinations = this.extractDestinations(command);
+        const dates = this.extractDates(command);
+        const hotelType = this.extractHotelType(command);
+        
+        if (destinations.length > 0) {
+            this.bookingData.type = 'hotel';
+            this.bookingData.destinations = destinations;
+            this.bookingData.dates = dates;
+            this.bookingData.hotelType = hotelType;
+            
+            const response = `I found hotels in ${destinations.join(' and ')}. ${dates.length > 0 ? `For ${dates.join(' and ')}.` : ''} ${hotelType ? `${hotelType} hotels.` : ''} Would you like to see the options?`;
+            
+            this.showResponse(response);
+            this.speak(response);
+            this.showBookingSummary();
+        } else {
+            const response = 'I\'d be happy to help you find a hotel. Where would you like to stay and when?';
+            this.showResponse(response);
+            this.speak(response);
+        }
+    }
+
+    handleTravelPlanning(command) {
+        const destinations = this.extractDestinations(command);
+        const duration = this.extractDuration(command);
+        
+        if (destinations.length > 0) {
+            this.bookingData.type = 'package';
+            this.bookingData.destinations = destinations;
+            this.bookingData.duration = duration;
+            
+            const response = `I can help you plan a ${duration || 'wonderful'} trip to ${destinations.join(' and ')}. Would you like me to create a custom itinerary?`;
+            
+            this.showResponse(response);
+            this.speak(response);
+            this.showBookingSummary();
+        } else {
+            const response = 'I\'d be happy to help you plan a trip. Where would you like to go?';
+            this.showResponse(response);
+            this.speak(response);
+        }
+    }
+
+    handleWeatherQuery(command) {
+        const destinations = this.extractDestinations(command);
+        
+        if (destinations.length > 0) {
+            const response = `The weather in ${destinations[0]} is currently sunny with a temperature of 22°C. Perfect for sightseeing!`;
+            this.showResponse(response);
+            this.speak(response);
+        } else {
+            const response = 'I can check the weather for you. Which destination would you like to know about?';
+            this.showResponse(response);
+            this.speak(response);
+        }
+    }
+
+    handleHelpRequest() {
+        const response = 'I can help you book flights, hotels, plan trips, check weather, and more. Just tell me what you need!';
+        this.showResponse(response);
         this.speak(response);
     }
 
-    extractBookingDetails(command) {
-        const details = {
-            type: '',
-            from: '',
-            to: '',
-            date: '',
-            passengers: 1,
-            isComplete: false
-        };
-
-        const lowerCommand = command.toLowerCase();
-
-        if (lowerCommand.includes('flight')) {
-            details.type = 'flight';
-        } else if (lowerCommand.includes('hotel')) {
-            details.type = 'hotel';
-        } else if (lowerCommand.includes('package')) {
-            details.type = 'package';
-        }
-
-        // Extract route (simplified)
-        const routeMatch = command.match(/from\s+(\w+)\s+to\s+(\w+)/i);
-        if (routeMatch) {
-            details.from = routeMatch[1];
-            details.to = routeMatch[2];
-        }
-
-        // Extract date (simplified)
-        const dateMatch = command.match(/(\w+\s+\d+)/i);
-        if (dateMatch) {
-            details.date = dateMatch[1];
-        }
-
-        // Extract passengers (simplified)
-        const passengerMatch = command.match(/(\d+)\s+(passenger|people|person)/i);
-        if (passengerMatch) {
-            details.passengers = parseInt(passengerMatch[1]);
-        }
-
-        // Check if complete (simplified logic)
-        details.isComplete = details.type && details.from && details.to && details.date;
-
-        return details;
+    handleUnknownCommand(command) {
+        const response = `I didn't quite understand "${command}". You can ask me to book flights, hotels, plan trips, or check weather. How can I help?`;
+        this.showResponse(response);
+        this.speak(response);
     }
 
-    showBookingPreview(details) {
-        const preview = document.getElementById('bookingPreview');
-        const detailsDiv = document.getElementById('bookingDetails');
+    extractDestinations(command) {
+        const destinations = [];
+        const destinationKeywords = ['to', 'in', 'at', 'for'];
         
-        detailsDiv.innerHTML = `
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Type:</strong> ${details.type}</p>
-                    <p><strong>From:</strong> ${details.from}</p>
-                    <p><strong>To:</strong> ${details.to}</p>
+        destinationKeywords.forEach(keyword => {
+            const regex = new RegExp(`${keyword}\\s+([a-zA-Z]+)`, 'gi');
+            const matches = command.match(regex);
+            if (matches) {
+                matches.forEach(match => {
+                    const destination = match.split(' ')[1];
+                    if (destination && !destinations.includes(destination)) {
+                        destinations.push(destination);
+                    }
+                });
+            }
+        });
+        
+        return destinations;
+    }
+
+    extractDates(command) {
+        const dates = [];
+        const dateKeywords = ['tomorrow', 'next week', 'next month', 'friday', 'saturday', 'sunday'];
+        
+        dateKeywords.forEach(keyword => {
+            if (command.includes(keyword)) {
+                dates.push(keyword);
+            }
+        });
+        
+        return dates;
+    }
+
+    extractClassType(command) {
+        if (command.includes('economy')) return 'economy';
+        if (command.includes('business')) return 'business';
+        if (command.includes('first')) return 'first';
+        return null;
+    }
+
+    extractHotelType(command) {
+        if (command.includes('5 star') || command.includes('five star')) return '5-star';
+        if (command.includes('4 star') || command.includes('four star')) return '4-star';
+        if (command.includes('budget')) return 'budget';
+        if (command.includes('luxury')) return 'luxury';
+        return null;
+    }
+
+    extractDuration(command) {
+        if (command.includes('2 week') || command.includes('two week')) return '2-week';
+        if (command.includes('1 week') || command.includes('one week')) return '1-week';
+        if (command.includes('3 day') || command.includes('three day')) return '3-day';
+        return null;
+    }
+
+    showTranscript(text) {
+        document.getElementById('voiceTranscript').textContent = text;
+    }
+
+    showResponse(text) {
+        const responseDiv = document.getElementById('voiceResponse');
+        responseDiv.innerHTML = `
+            <div class="d-flex align-items-start gap-3">
+                <div class="ai-avatar">
+                    <i class="fas fa-robot"></i>
                 </div>
-                <div class="col-md-6">
-                    <p><strong>Date:</strong> ${details.date}</p>
-                    <p><strong>Passengers:</strong> ${details.passengers}</p>
-                    <p><strong>Estimated Price:</strong> $1,200</p>
+                <div class="response-content">
+                    <p class="mb-0">${text}</p>
                 </div>
             </div>
         `;
+    }
+
+    showBookingSummary() {
+        const summaryDiv = document.getElementById('bookingSummary');
+        const contentDiv = document.getElementById('summaryContent');
         
-        preview.classList.remove('d-none');
+        let summaryHTML = '';
+        
+        if (this.bookingData.type === 'flight') {
+            summaryHTML = `
+                <div class="summary-item">
+                    <span>Type:</span>
+                    <span>Flight Booking</span>
+                </div>
+                <div class="summary-item">
+                    <span>Destination:</span>
+                    <span>${this.bookingData.destinations.join(', ')}</span>
+                </div>
+                ${this.bookingData.dates.length > 0 ? `
+                <div class="summary-item">
+                    <span>Dates:</span>
+                    <span>${this.bookingData.dates.join(', ')}</span>
+                </div>
+                ` : ''}
+                ${this.bookingData.class ? `
+                <div class="summary-item">
+                    <span>Class:</span>
+                    <span>${this.bookingData.class}</span>
+                </div>
+                ` : ''}
+            `;
+        } else if (this.bookingData.type === 'hotel') {
+            summaryHTML = `
+                <div class="summary-item">
+                    <span>Type:</span>
+                    <span>Hotel Booking</span>
+                </div>
+                <div class="summary-item">
+                    <span>Location:</span>
+                    <span>${this.bookingData.destinations.join(', ')}</span>
+                </div>
+                ${this.bookingData.dates.length > 0 ? `
+                <div class="summary-item">
+                    <span>Dates:</span>
+                    <span>${this.bookingData.dates.join(', ')}</span>
+                </div>
+                ` : ''}
+                ${this.bookingData.hotelType ? `
+                <div class="summary-item">
+                    <span>Hotel Type:</span>
+                    <span>${this.bookingData.hotelType}</span>
+                </div>
+                ` : ''}
+            `;
+        }
+        
+        contentDiv.innerHTML = summaryHTML;
+        summaryDiv.style.display = 'block';
+    }
+
+    updateUI(status) {
+        const statusElement = document.getElementById('voiceStatus');
+        const mainBtn = document.getElementById('mainVoiceBtn');
+        const stopBtn = document.getElementById('stopVoiceBtn');
+        
+        statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        statusElement.className = `status-indicator ${status}`;
+        
+        if (status === 'listening') {
+            mainBtn.classList.add('listening');
+            stopBtn.style.display = 'block';
+        } else {
+            mainBtn.classList.remove('listening');
+            stopBtn.style.display = 'none';
+        }
+    }
+
+    speak(text) {
+        if (this.synthesis && document.getElementById('voiceConfirmation').checked) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = parseFloat(document.getElementById('voiceSpeed').value);
+            utterance.lang = document.getElementById('voiceLanguage').value;
+            this.synthesis.speak(utterance);
+        }
+    }
+
+    addToRecentCommands(command) {
+        const recentCommands = document.getElementById('recentCommands');
+        const commandItem = document.createElement('div');
+        commandItem.className = 'command-item';
+        commandItem.innerHTML = `
+            <div class="command-text">"${command}"</div>
+            <div class="command-time">Just now</div>
+        `;
+        
+        recentCommands.insertBefore(commandItem, recentCommands.firstChild);
+        
+        // Remove old commands if too many
+        if (recentCommands.children.length > 5) {
+            recentCommands.removeChild(recentCommands.lastChild);
+        }
     }
 
     confirmBooking() {
-        this.updateStatus('Booking confirmed! Redirecting to payment...', 'success');
-        this.speak('Booking confirmed. Redirecting to payment.');
+        const response = 'Great! I\'ll confirm your booking now. You\'ll receive a confirmation email shortly.';
+        this.showResponse(response);
+        this.speak(response);
         
+        // Redirect to booking page
         setTimeout(() => {
-            window.location.href = '/payment';
+            window.location.href = '/booking/confirm';
         }, 2000);
     }
 
     modifyBooking() {
-        this.updateStatus('Please provide new details for your booking.', 'info');
-        this.speak('Please provide new details for your booking.');
-        document.getElementById('bookingPreview').classList.add('d-none');
+        const response = 'I\'ll help you modify your booking. What would you like to change?';
+        this.showResponse(response);
+        this.speak(response);
+        this.hideBookingSummary();
+    }
+
+    hideBookingSummary() {
+        document.getElementById('bookingSummary').style.display = 'none';
+    }
+
+    setLanguage(language) {
+        if (this.recognition) {
+            this.recognition.lang = language;
+        }
+    }
+
+    setVoiceSpeed(speed) {
+        // Speed setting will be used when speaking
+    }
+
+    setVoiceConfirmation(enabled) {
+        // Voice confirmation setting
+    }
+
+    setWakeWord(enabled) {
+        // Wake word setting
+    }
+
+    loadSettings() {
+        // Load saved settings from localStorage
     }
 }
 
-// Initialize voice booking assistant when page loads
+// Initialize voice booking when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    new VoiceBookingAssistant();
+    window.voiceBooking = new VoiceBooking();
 });
 </script>
 {% endblock %} 

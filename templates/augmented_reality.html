@@ -1,0 +1,1077 @@
+{% extends "base.html" %}
+
+{% block title %}Augmented Reality - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section bg-gradient-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Augmented Reality</h1>
+                    <p class="lead mb-4">See hotels and destinations in your own space with AR. Preview rooms, explore landmarks, and visualize your trip before you book.</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg" id="startARBtn">
+                            <i class="fas fa-camera me-2"></i>Start AR Experience
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#arHelpModal">
+                            <i class="fas fa-question-circle me-2"></i>How to Use
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ar-animation text-center">
+                        <div class="ar-device">
+                            <div class="ar-screen">
+                                <div class="ar-overlay">
+                                    <div class="ar-element"></div>
+                                    <div class="ar-element"></div>
+                                    <div class="ar-element"></div>
+                                </div>
+                            </div>
+                            <div class="ar-camera"></div>
+                        </div>
+                        <p class="text-white-50 mt-3">AR-powered travel preview</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR Experience Interface -->
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-camera me-2"></i>AR Experience</h4>
+                        <div class="ar-controls">
+                            <button class="btn btn-light btn-sm" id="captureBtn">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <button class="btn btn-light btn-sm" id="recordBtn">
+                                <i class="fas fa-video"></i>
+                            </button>
+                            <button class="btn btn-light btn-sm" id="shareBtn">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- AR Viewer -->
+                        <div class="ar-viewer" id="arViewer">
+                            <div class="ar-camera-feed" id="arCameraFeed">
+                                <div class="camera-placeholder">
+                                    <i class="fas fa-camera fa-3x"></i>
+                                    <p>Camera feed will appear here</p>
+                                    <button class="btn btn-primary" id="enableCameraBtn">
+                                        <i class="fas fa-camera me-2"></i>Enable Camera
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- AR Overlay -->
+                            <div class="ar-overlay" id="arOverlay">
+                                <!-- AR elements will be added here -->
+                            </div>
+                            
+                            <!-- AR Instructions -->
+                            <div class="ar-instructions" id="arInstructions">
+                                <div class="instruction-card">
+                                    <h6><i class="fas fa-info-circle me-2"></i>AR Instructions</h6>
+                                    <ul class="instruction-list">
+                                        <li>Point your camera at a flat surface</li>
+                                        <li>Tap to place the AR object</li>
+                                        <li>Use gestures to resize and rotate</li>
+                                        <li>Move around to explore from different angles</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- AR Objects Library -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-cube me-2"></i>AR Objects</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="ar-objects-grid" id="arObjectsGrid">
+                            <div class="ar-object-item" data-object="hotel-room">
+                                <div class="object-preview">
+                                    <img src="/static/images/ar-hotel-room.jpg" alt="Hotel Room">
+                                </div>
+                                <div class="object-info">
+                                    <h6>Luxury Hotel Room</h6>
+                                    <p>5-star hotel suite</p>
+                                </div>
+                            </div>
+                            <div class="ar-object-item" data-object="eiffel-tower">
+                                <div class="object-preview">
+                                    <img src="/static/images/ar-eiffel-tower.jpg" alt="Eiffel Tower">
+                                </div>
+                                <div class="object-info">
+                                    <h6>Eiffel Tower</h6>
+                                    <p>Paris landmark</p>
+                                </div>
+                            </div>
+                            <div class="ar-object-item" data-object="beach-resort">
+                                <div class="object-preview">
+                                    <img src="/static/images/ar-beach-resort.jpg" alt="Beach Resort">
+                                </div>
+                                <div class="object-info">
+                                    <h6>Beach Resort</h6>
+                                    <p>Tropical paradise</p>
+                                </div>
+                            </div>
+                            <div class="ar-object-item" data-object="mountain-cabin">
+                                <div class="object-preview">
+                                    <img src="/static/images/ar-mountain-cabin.jpg" alt="Mountain Cabin">
+                                </div>
+                                <div class="object-info">
+                                    <h6>Mountain Cabin</h6>
+                                    <p>Cozy retreat</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AR Settings -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>AR Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="setting-item">
+                            <label class="form-label">Object Scale</label>
+                            <input type="range" class="form-range" id="objectScale" min="0.5" max="2" step="0.1" value="1">
+                            <small class="text-muted">Adjust the size of AR objects</small>
+                        </div>
+                        <div class="setting-item">
+                            <label class="form-label">Lighting</label>
+                            <select class="form-select" id="lightingSetting">
+                                <option value="auto">Auto</option>
+                                <option value="bright">Bright</option>
+                                <option value="dim">Dim</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="showGrid" checked>
+                                <label class="form-check-label" for="showGrid">
+                                    Show placement grid
+                                </label>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enableShadows" checked>
+                                <label class="form-check-label" for="enableShadows">
+                                    Enable shadows
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AR Actions -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-magic me-2"></i>AR Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary w-100 mb-2" id="placeObjectBtn">
+                            <i class="fas fa-plus me-2"></i>Place Object
+                        </button>
+                        <button class="btn btn-outline-secondary w-100 mb-2" id="clearSceneBtn">
+                            <i class="fas fa-trash me-2"></i>Clear Scene
+                        </button>
+                        <button class="btn btn-outline-success w-100 mb-2" id="saveSceneBtn">
+                            <i class="fas fa-save me-2"></i>Save Scene
+                        </button>
+                        <button class="btn btn-outline-info w-100" id="loadSceneBtn">
+                            <i class="fas fa-folder-open me-2"></i>Load Scene
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AR Gallery -->
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-images me-2"></i>AR Gallery</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="ar-gallery" id="arGallery">
+                            <div class="gallery-item">
+                                <img src="/static/images/ar-screenshot-1.jpg" alt="AR Screenshot">
+                                <div class="gallery-overlay">
+                                    <button class="btn btn-sm btn-light">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-light">
+                                        <i class="fas fa-share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="gallery-item">
+                                <img src="/static/images/ar-screenshot-2.jpg" alt="AR Screenshot">
+                                <div class="gallery-overlay">
+                                    <button class="btn btn-sm btn-light">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-light">
+                                        <i class="fas fa-share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR Features -->
+    <div class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">AR Features</h2>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-bed fa-2x"></i>
+                        </div>
+                        <h5>Hotel Room Preview</h5>
+                        <p class="text-muted">See exactly how your hotel room will look in your space before booking.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-map-marker-alt fa-2x"></i>
+                        </div>
+                        <h5>Landmark Exploration</h5>
+                        <p class="text-muted">Explore famous landmarks and attractions in your own environment.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-ruler-combined fa-2x"></i>
+                        </div>
+                        <h5>Size Comparison</h5>
+                        <p class="text-muted">Compare the actual size of objects and spaces to scale.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-share-alt fa-2x"></i>
+                        </div>
+                        <h5>Share Experiences</h5>
+                        <p class="text-muted">Capture and share your AR experiences with friends and family.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AR Help Modal -->
+<div class="modal fade" id="arHelpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">How to Use AR</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Getting Started</h6>
+                        <ol>
+                            <li>Allow camera access when prompted</li>
+                            <li>Point your camera at a flat surface</li>
+                            <li>Select an AR object from the library</li>
+                            <li>Tap to place the object in your space</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Gestures</h6>
+                        <ul>
+                            <li><strong>Pinch:</strong> Resize objects</li>
+                            <li><strong>Rotate:</strong> Turn objects</li>
+                            <li><strong>Drag:</strong> Move objects</li>
+                            <li><strong>Double tap:</strong> Reset object</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Tip:</strong> For the best AR experience, ensure good lighting and a textured surface for object placement.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.ar-device {
+    position: relative;
+    width: 200px;
+    height: 150px;
+    margin: 0 auto;
+    background: linear-gradient(45deg, #333, #666);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.ar-screen {
+    width: 160px;
+    height: 120px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.ar-element {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: float 3s ease-in-out infinite;
+}
+
+.ar-element:nth-child(1) {
+    top: 20px;
+    left: 30px;
+    animation-delay: 0s;
+}
+
+.ar-element:nth-child(2) {
+    top: 60px;
+    right: 40px;
+    animation-delay: 1s;
+}
+
+.ar-element:nth-child(3) {
+    bottom: 30px;
+    left: 50%;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.ar-camera {
+    position: absolute;
+    bottom: -10px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    background: #000;
+    border-radius: 50%;
+    border: 2px solid #333;
+}
+
+.ar-viewer {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.ar-camera-feed {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #1a1a1a;
+}
+
+.camera-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+.camera-placeholder i {
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.camera-placeholder p {
+    margin-bottom: 20px;
+    opacity: 0.7;
+}
+
+.ar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.ar-instructions {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    max-width: 300px;
+}
+
+.instruction-card {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.instruction-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0 0;
+}
+
+.instruction-list li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.instruction-list li:before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #667eea;
+}
+
+.ar-objects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.ar-object-item {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.ar-object-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.ar-object-item.selected {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.object-preview {
+    height: 100px;
+    overflow: hidden;
+}
+
+.object-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.object-info {
+    padding: 12px;
+}
+
+.object-info h6 {
+    margin: 0 0 5px 0;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.object-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.setting-item {
+    margin-bottom: 20px;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.ar-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-icon:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .ar-viewer {
+        height: 300px;
+    }
+    
+    .ar-objects-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ar-gallery {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+class AugmentedReality {
+    constructor() {
+        this.isARActive = false;
+        this.selectedObject = null;
+        this.placedObjects = [];
+        this.cameraStream = null;
+        this.arSession = null;
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.checkARSupport();
+    }
+
+    bindEvents() {
+        // Main AR controls
+        document.getElementById('startARBtn').addEventListener('click', () => {
+            this.startAR();
+        });
+
+        document.getElementById('enableCameraBtn').addEventListener('click', () => {
+            this.enableCamera();
+        });
+
+        // AR object selection
+        document.querySelectorAll('.ar-object-item').forEach(item => {
+            item.addEventListener('click', () => {
+                this.selectObject(item.dataset.object);
+            });
+        });
+
+        // AR actions
+        document.getElementById('placeObjectBtn').addEventListener('click', () => {
+            this.placeObject();
+        });
+
+        document.getElementById('clearSceneBtn').addEventListener('click', () => {
+            this.clearScene();
+        });
+
+        document.getElementById('saveSceneBtn').addEventListener('click', () => {
+            this.saveScene();
+        });
+
+        document.getElementById('loadSceneBtn').addEventListener('click', () => {
+            this.loadScene();
+        });
+
+        // Camera controls
+        document.getElementById('captureBtn').addEventListener('click', () => {
+            this.captureImage();
+        });
+
+        document.getElementById('recordBtn').addEventListener('click', () => {
+            this.toggleRecording();
+        });
+
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            this.shareExperience();
+        });
+
+        // Settings
+        document.getElementById('objectScale').addEventListener('input', (e) => {
+            this.setObjectScale(e.target.value);
+        });
+
+        document.getElementById('lightingSetting').addEventListener('change', (e) => {
+            this.setLighting(e.target.value);
+        });
+
+        document.getElementById('showGrid').addEventListener('change', (e) => {
+            this.toggleGrid(e.target.checked);
+        });
+
+        document.getElementById('enableShadows').addEventListener('change', (e) => {
+            this.toggleShadows(e.target.checked);
+        });
+    }
+
+    checkARSupport() {
+        // Check for WebXR support
+        if ('xr' in navigator) {
+            navigator.xr.isSessionSupported('immersive-ar')
+                .then(supported => {
+                    if (supported) {
+                        console.log('AR is supported');
+                        this.enableARFeatures();
+                    } else {
+                        console.log('AR not supported, using fallback');
+                        this.enableFallbackMode();
+                    }
+                });
+        } else {
+            console.log('WebXR not supported, using fallback');
+            this.enableFallbackMode();
+        }
+    }
+
+    enableARFeatures() {
+        document.getElementById('startARBtn').disabled = false;
+        document.getElementById('startARBtn').innerHTML = '<i class="fas fa-camera me-2"></i>Start AR Experience';
+    }
+
+    enableFallbackMode() {
+        document.getElementById('startARBtn').disabled = false;
+        document.getElementById('startARBtn').innerHTML = '<i class="fas fa-camera me-2"></i>Start Camera Preview';
+    }
+
+    async startAR() {
+        if ('xr' in navigator) {
+            try {
+                this.arSession = await navigator.xr.requestSession('immersive-ar');
+                this.setupARSession();
+            } catch (error) {
+                console.error('Failed to start AR session:', error);
+                this.enableCamera();
+            }
+        } else {
+            this.enableCamera();
+        }
+    }
+
+    setupARSession() {
+        this.isARActive = true;
+        this.hideInstructions();
+        this.showAROverlay();
+        
+        // Setup AR session event handlers
+        this.arSession.addEventListener('end', () => {
+            this.isARActive = false;
+            this.showInstructions();
+        });
+    }
+
+    async enableCamera() {
+        try {
+            this.cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: 'environment',
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                }
+            });
+
+            const videoElement = document.createElement('video');
+            videoElement.srcObject = this.cameraStream;
+            videoElement.autoplay = true;
+            videoElement.playsInline = true;
+
+            const cameraFeed = document.getElementById('arCameraFeed');
+            cameraFeed.innerHTML = '';
+            cameraFeed.appendChild(videoElement);
+
+            this.hideInstructions();
+            this.showAROverlay();
+
+        } catch (error) {
+            console.error('Error accessing camera:', error);
+            alert('Unable to access camera. Please check permissions.');
+        }
+    }
+
+    selectObject(objectId) {
+        this.selectedObject = objectId;
+        
+        // Update UI
+        document.querySelectorAll('.ar-object-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        
+        document.querySelector(`[data-object="${objectId}"]`).classList.add('selected');
+        
+        console.log('Selected AR object:', objectId);
+    }
+
+    placeObject() {
+        if (!this.selectedObject) {
+            alert('Please select an AR object first');
+            return;
+        }
+
+        if (!this.isARActive && !this.cameraStream) {
+            alert('Please start AR experience or enable camera first');
+            return;
+        }
+
+        // Create AR object element
+        const arObject = this.createARObject(this.selectedObject);
+        
+        // Add to scene
+        this.addObjectToScene(arObject);
+        
+        console.log('Placed AR object:', this.selectedObject);
+    }
+
+    createARObject(objectId) {
+        const objectData = this.getObjectData(objectId);
+        
+        const arElement = document.createElement('div');
+        arElement.className = 'ar-object';
+        arElement.style.cssText = `
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: url('${objectData.image}') center center;
+            background-size: cover;
+            border-radius: 8px;
+            cursor: move;
+            user-select: none;
+            transform: translate(-50%, -50%);
+        `;
+        
+        // Add drag functionality
+        this.makeDraggable(arElement);
+        
+        return arElement;
+    }
+
+    getObjectData(objectId) {
+        const objects = {
+            'hotel-room': {
+                name: 'Luxury Hotel Room',
+                image: '/static/images/ar-hotel-room.jpg',
+                description: '5-star hotel suite'
+            },
+            'eiffel-tower': {
+                name: 'Eiffel Tower',
+                image: '/static/images/ar-eiffel-tower.jpg',
+                description: 'Paris landmark'
+            },
+            'beach-resort': {
+                name: 'Beach Resort',
+                image: '/static/images/ar-beach-resort.jpg',
+                description: 'Tropical paradise'
+            },
+            'mountain-cabin': {
+                name: 'Mountain Cabin',
+                image: '/static/images/ar-mountain-cabin.jpg',
+                description: 'Cozy retreat'
+            }
+        };
+        
+        return objects[objectId] || objects['hotel-room'];
+    }
+
+    addObjectToScene(arObject) {
+        const overlay = document.getElementById('arOverlay');
+        overlay.appendChild(arObject);
+        
+        // Position randomly in view
+        const x = Math.random() * 80 + 10; // 10% to 90%
+        const y = Math.random() * 80 + 10; // 10% to 90%
+        
+        arObject.style.left = x + '%';
+        arObject.style.top = y + '%';
+        
+        this.placedObjects.push(arObject);
+    }
+
+    makeDraggable(element) {
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        element.addEventListener('mousedown', dragStart);
+        element.addEventListener('touchstart', dragStart);
+
+        function dragStart(e) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+
+            if (e.target === element) {
+                isDragging = true;
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                setTranslate(currentX, currentY, element);
+            }
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+        }
+
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag);
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('touchend', dragEnd);
+    }
+
+    clearScene() {
+        const overlay = document.getElementById('arOverlay');
+        overlay.innerHTML = '';
+        this.placedObjects = [];
+        console.log('Scene cleared');
+    }
+
+    saveScene() {
+        const sceneData = {
+            objects: this.placedObjects.map(obj => ({
+                type: obj.dataset.objectType,
+                position: {
+                    x: obj.style.left,
+                    y: obj.style.top
+                }
+            })),
+            timestamp: new Date().toISOString()
+        };
+        
+        localStorage.setItem('arScene', JSON.stringify(sceneData));
+        alert('Scene saved successfully!');
+    }
+
+    loadScene() {
+        const sceneData = localStorage.getItem('arScene');
+        if (sceneData) {
+            const scene = JSON.parse(sceneData);
+            this.clearScene();
+            
+            scene.objects.forEach(objData => {
+                this.selectObject(objData.type);
+                this.placeObject();
+            });
+            
+            alert('Scene loaded successfully!');
+        } else {
+            alert('No saved scene found');
+        }
+    }
+
+    captureImage() {
+        if (!this.cameraStream) {
+            alert('Please start camera first');
+            return;
+        }
+
+        const canvas = document.createElement('canvas');
+        const video = document.querySelector('#arCameraFeed video');
+        const context = canvas.getContext('2d');
+        
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        context.drawImage(video, 0, 0);
+        
+        // Add AR overlay to capture
+        const overlay = document.getElementById('arOverlay');
+        const overlayCanvas = this.html2canvas(overlay);
+        context.drawImage(overlayCanvas, 0, 0);
+        
+        // Download image
+        const link = document.createElement('a');
+        link.download = 'ar-capture.png';
+        link.href = canvas.toDataURL();
+        link.click();
+        
+        console.log('AR image captured');
+    }
+
+    toggleRecording() {
+        const recordBtn = document.getElementById('recordBtn');
+        
+        if (recordBtn.classList.contains('recording')) {
+            this.stopRecording();
+            recordBtn.classList.remove('recording');
+            recordBtn.innerHTML = '<i class="fas fa-video"></i>';
+        } else {
+            this.startRecording();
+            recordBtn.classList.add('recording');
+            recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
+        }
+    }
+
+    startRecording() {
+        console.log('Started recording AR experience');
+        // Implement video recording logic
+    }
+
+    stopRecording() {
+        console.log('Stopped recording AR experience');
+        // Implement video recording stop logic
+    }
+
+    shareExperience() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Check out my AR experience!',
+                text: 'I created this amazing AR scene with World Tour',
+                url: window.location.href
+            });
+        } else {
+            // Fallback to copying to clipboard
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Link copied to clipboard!');
+            });
+        }
+    }
+
+    setObjectScale(scale) {
+        this.objectScale = scale;
+        console.log('Object scale set to:', scale);
+    }
+
+    setLighting(lighting) {
+        this.lighting = lighting;
+        console.log('Lighting set to:', lighting);
+    }
+
+    toggleGrid(show) {
+        this.showGrid = show;
+        console.log('Grid visibility:', show);
+    }
+
+    toggleShadows(enable) {
+        this.enableShadows = enable;
+        console.log('Shadows enabled:', enable);
+    }
+
+    hideInstructions() {
+        document.getElementById('arInstructions').style.display = 'none';
+    }
+
+    showInstructions() {
+        document.getElementById('arInstructions').style.display = 'block';
+    }
+
+    showAROverlay() {
+        document.getElementById('arOverlay').style.display = 'block';
+    }
+
+    html2canvas(element) {
+        // Simple HTML to canvas conversion
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = element.offsetWidth;
+        canvas.height = element.offsetHeight;
+        
+        // This is a simplified version - in practice, you'd use a library like html2canvas
+        return canvas;
+    }
+}
+
+// Initialize AR when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.arExperience = new AugmentedReality();
+});
+</script>
+{% endblock %} 
