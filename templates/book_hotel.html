@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Book Hotel - {{ hotel.name }}{% endblock %}
+{% block content %}
+<div class="container book-hotel-page">
+    <h1>Book Hotel: {{ hotel.name }}</h1>
+    <form method="post" class="booking-form">
+        <div class="form-group">
+            <label for="room_type_id">Room Type</label>
+            <select name="room_type_id" id="room_type_id" class="form-control" required>
+                {% for room in room_types %}
+                <option value="{{ room.id }}">{{ room.name }} - ${{ room.price_per_night }}/night ({{ room.available_rooms }} available)</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="start_date">Start Date</label>
+            <input type="date" name="start_date" id="start_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="end_date">End Date</label>
+            <input type="date" name="end_date" id="end_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="guests">Guests</label>
+            <input type="number" name="guests" id="guests" class="form-control" min="1" value="1" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Book Now</button>
+        <a href="{{ url_for('hotel_detail', hotel_id=hotel.id) }}" class="btn btn-outline-secondary ml-2">Cancel</a>
+    </form>
+</div>
+{% endblock %} 

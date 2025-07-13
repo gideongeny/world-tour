@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}{{ guide.title }} - World Tour{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('travel_guides') }}">Travel Guides</a></li>
+            <li class="breadcrumb-item active">{{ guide.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Guide Header -->
+            <div class="mb-4">
+                <h1 class="mb-3">{{ guide.title }}</h1>
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary me-2">{{ guide.language.upper() }}</span>
+                    <span class="badge bg-secondary me-2">{{ guide.destination.name }}, {{ guide.destination.country }}</span>
+                    <small class="text-muted">
+                        <i class="fas fa-eye"></i> {{ guide.view_count }} views
+                    </small>
+                </div>
+                <div class="d-flex align-items-center text-muted">
+                    <i class="fas fa-user me-2"></i>
+                    <span>By {{ guide.author.first_name }} {{ guide.author.last_name }}</span>
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-calendar me-2"></i>
+                    <span>{{ guide.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+            </div>
+
+            <!-- Destination Image -->
+            {% if guide.destination.image_url %}
+            <div class="mb-4">
+                <img src="{{ guide.destination.image_url }}" class="img-fluid rounded" alt="{{ guide.destination.name }}">
+            </div>
+            {% endif %}
+
+            <!-- Guide Content -->
+            <div class="guide-content">
+                {{ guide.content | safe }}
+            </div>
+
+            <!-- Related Information -->
+            <div class="mt-5">
+                <h3>About {{ guide.destination.name }}</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><strong>Country:</strong> {{ guide.destination.country }}</li>
+                            <li><strong>Climate:</strong> {{ guide.destination.climate }}</li>
+                            <li><strong>Best Time to Visit:</strong> {{ guide.destination.best_time_to_visit }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><strong>Category:</strong> {{ guide.destination.category.title() }}</li>
+                            <li><strong>Duration:</strong> {{ guide.destination.duration }} days</li>
+                            <li><strong>Price:</strong> ${{ "%.2f"|format(guide.destination.price) }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Sidebar -->
+            <div class="sticky-top" style="top: 2rem;">
+                <!-- Book This Destination -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Book This Destination</h5>
+                        <p class="card-text">Ready to visit {{ guide.destination.name }}?</p>
+                        <a href="{{ url_for('book_destination', destination_id=guide.destination.id) }}" class="btn btn-primary w-100">
+                            Book Now
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Destination Quick Info -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Quick Info</h5>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="border-end">
+                                    <h4 class="text-primary">{{ guide.destination.duration }}</h4>
+                                    <small class="text-muted">Days</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-success">${{ "%.0f"|format(guide.destination.price) }}</h4>
+                                <small class="text-muted">Starting Price</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Guides -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Related Guides</h5>
+                        {% set related_guides = guide.destination.travel_guides[:3] %}
+                        {% for related_guide in related_guides %}
+                        {% if related_guide.id != guide.id %}
+                        <div class="mb-3">
+                            <h6><a href="{{ url_for('travel_guide_detail', guide_id=related_guide.id) }}" class="text-decoration-none">{{ related_guide.title }}</a></h6>
+                            <small class="text-muted">{{ related_guide.created_at.strftime('%B %Y') }}</small>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Share this guide</h5>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fab fa-facebook"></i> Facebook
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ guide.title }}" target="_blank" class="btn btn-outline-info">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url }}" target="_blank" class="btn btn-outline-secondary">
+                            <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.guide-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.guide-content h2 {
+    color: #2c3e50;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.guide-content h3 {
+    color: #34495e;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.guide-content ul {
+    margin-bottom: 1rem;
+}
+
+.guide-content li {
+    margin-bottom: 0.5rem;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - World Tour{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Search Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Search Results</h1>
+            <p class="text-gray-600">Found {{ results|length }} result{% if results|length != 1 %}s{% endif %} for "{{ query }}"</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Filters Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Filters</h3>
+                    
+                    <form method="GET" class="space-y-6">
+                        <!-- Search Query -->
+                        <div>
+                            <label for="q" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                            <input type="text" id="q" name="q" value="{{ query }}" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Search destinations...">
+                        </div>
+
+                        <!-- Price Range -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="radio" id="price_all" name="price_range" value="all" 
+                                           {% if price_range == 'all' or not price_range %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <label for="price_all" class="ml-2 text-sm text-gray-700">All Prices</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="price_low" name="price_range" value="low" 
+                                           {% if price_range == 'low' %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <label for="price_low" class="ml-2 text-sm text-gray-700">Under $100/day</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="price_medium" name="price_range" value="medium" 
+                                           {% if price_range == 'medium' %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <label for="price_medium" class="ml-2 text-sm text-gray-700">$100 - $300/day</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="price_high" name="price_range" value="high" 
+                                           {% if price_range == 'high' %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <label for="price_high" class="ml-2 text-sm text-gray-700">Over $300/day</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rating Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Rating</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="radio" id="rating_all" name="rating" value="all" 
+                                           {% if rating == 'all' or not rating %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <label for="rating_all" class="ml-2 text-sm text-gray-700">Any Rating</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="rating_4" name="rating" value="4" 
+                                           {% if rating == '4' %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <label for="rating_4" class="ml-2 text-sm text-gray-700">4+ Stars</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="rating_4_5" name="rating" value="4.5" 
+                                           {% if rating == '4.5' %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <label for="rating_4_5" class="ml-2 text-sm text-gray-700">4.5+ Stars</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Duration Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="duration_short" name="duration" value="short" 
+                                           {% if 'short' in duration %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="duration_short" class="ml-2 text-sm text-gray-700">1-3 days</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="duration_medium" name="duration" value="medium" 
+                                           {% if 'medium' in duration %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="duration_medium" class="ml-2 text-sm text-gray-700">4-7 days</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="duration_long" name="duration" value="long" 
+                                           {% if 'long' in duration %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="duration_long" class="ml-2 text-sm text-gray-700">8+ days</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="category_beach" name="category" value="beach" 
+                                           {% if 'beach' in category %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="category_beach" class="ml-2 text-sm text-gray-700">Beach</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="category_mountain" name="category" value="mountain" 
+                                           {% if 'mountain' in category %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="category_mountain" class="ml-2 text-sm text-gray-700">Mountain</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="category_city" name="category" value="city" 
+                                           {% if 'city' in category %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="category_city" class="ml-2 text-sm text-gray-700">City</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="category_cultural" name="category" value="cultural" 
+                                           {% if 'cultural' in category %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="category_cultural" class="ml-2 text-sm text-gray-700">Cultural</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="category_adventure" name="category" value="adventure" 
+                                           {% if 'adventure' in category %}checked{% endif %}
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="category_adventure" class="ml-2 text-sm text-gray-700">Adventure</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Apply Filters Button -->
+                        <button type="submit" 
+                                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200">
+                            Apply Filters
+                        </button>
+
+                        <!-- Clear Filters -->
+                        <a href="{{ url_for('search') }}" 
+                           class="block w-full text-center text-gray-600 hover:text-gray-800 py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-200">
+                            Clear All
+                        </a>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div class="lg:col-span-3">
+                <!-- Sort Options -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <label for="sort" class="text-sm font-medium text-gray-700">Sort by:</label>
+                            <select id="sort" name="sort" onchange="this.form.submit()" 
+                                    class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>Relevance</option>
+                                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                                <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                                <option value="popularity" {% if sort == 'popularity' %}selected{% endif %}>Most Popular</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button id="grid-view" class="p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                </svg>
+                            </button>
+                            <button id="list-view" class="p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Grid -->
+                {% if results %}
+                <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for destination in results %}
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition duration-200">
+                        <div class="relative">
+                            <img src="{{ destination.image_url }}" alt="{{ destination.name }}" 
+                                 class="w-full h-48 object-cover">
+                            <div class="absolute top-4 right-4">
+                                <button class="wishlist-btn p-2 bg-white bg-opacity-90 rounded-full hover:bg-opacity-100 transition duration-200"
+                                        data-destination-id="{{ destination.id }}">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="absolute bottom-4 left-4">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ destination.category }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ destination.name }}</h3>
+                            <p class="text-sm text-gray-600 mb-3">{{ destination.country }}</p>
+                            
+                            <div class="flex items-center mb-3">
+                                <div class="flex items-center">
+                                    {% for i in range(5) %}
+                                    <svg class="w-4 h-4 {% if i < destination.rating|int %}text-yellow-400{% else %}text-gray-300{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                    </svg>
+                                    {% endfor %}
+                                </div>
+                                <span class="ml-2 text-sm text-gray-600">{{ "%.1f"|format(destination.rating) }} ({{ destination.reviews_count }})</span>
+                            </div>
+                            
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-sm text-gray-600">
+                                    <span class="font-medium">{{ destination.duration }} days</span>
+                                </div>
+                                <div class="text-lg font-bold text-gray-900">
+                                    {{ format_price(destination.price) }}
+                                    <span class="text-sm font-normal text-gray-600">/day</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" 
+                                   class="flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 text-sm font-medium">
+                                    View Details
+                                </a>
+                                <a href="{{ url_for('book_destination', destination_id=destination.id) }}" 
+                                   class="flex-1 bg-green-600 text-white text-center py-2 px-4 rounded-md hover:bg-green-700 transition duration-200 text-sm font-medium">
+                                    Book Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if pagination.pages > 1 %}
+                <div class="mt-8 flex items-center justify-center">
+                    <nav class="flex items-center space-x-2">
+                        {% if pagination.has_prev %}
+                        <a href="{{ url_for('search', page=pagination.prev_num, **request.args) }}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Previous
+                        </a>
+                        {% endif %}
+                        
+                        {% for page_num in pagination.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != pagination.page %}
+                                <a href="{{ url_for('search', page=page_num, **request.args) }}" 
+                                   class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    {{ page_num }}
+                                </a>
+                                {% else %}
+                                <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
+                                    {{ page_num }}
+                                </span>
+                                {% endif %}
+                            {% else %}
+                            <span class="px-3 py-2 text-sm font-medium text-gray-500">...</span>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if pagination.has_next %}
+                        <a href="{{ url_for('search', page=pagination.next_num, **request.args) }}" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            Next
+                        </a>
+                        {% endif %}
+                    </nav>
+                </div>
+                {% endif %}
+
+                {% else %}
+                <!-- No Results -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No destinations found</h3>
+                    <p class="mt-1 text-sm text-gray-500">Try adjusting your search criteria or browse our popular destinations.</p>
+                    <div class="mt-6">
+                        <a href="{{ url_for('travel') }}" 
+                           class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            Browse All Destinations
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // View toggle functionality
+    const gridView = document.getElementById('grid-view');
+    const listView = document.getElementById('list-view');
+    const resultsGrid = document.getElementById('results-grid');
+
+    gridView.addEventListener('click', function() {
+        resultsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+        gridView.classList.remove('text-gray-400');
+        gridView.classList.add('text-blue-600');
+        listView.classList.remove('text-blue-600');
+        listView.classList.add('text-gray-400');
+    });
+
+    listView.addEventListener('click', function() {
+        resultsGrid.className = 'grid grid-cols-1 gap-6';
+        listView.classList.remove('text-gray-400');
+        listView.classList.add('text-blue-600');
+        gridView.classList.remove('text-blue-600');
+        gridView.classList.add('text-gray-400');
+    });
+
+    // Wishlist functionality
+    const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+    wishlistButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const destinationId = this.getAttribute('data-destination-id');
+            // Add wishlist functionality here
+            this.classList.toggle('text-red-500');
+        });
+    });
+
+    // Auto-submit form on sort change
+    const sortSelect = document.getElementById('sort');
+    sortSelect.addEventListener('change', function() {
+        this.form.submit();
+    });
+});
+</script>
+{% endblock %} 

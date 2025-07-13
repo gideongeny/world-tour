@@ -1,0 +1,705 @@
+{% extends "base.html" %}
+
+{% block title %}World Tour - Discover Amazing Destinations{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero">
+    <div class="hero-content">
+        <h1>{{ t('discover_amazing') }}</h1>
+        <p>{{ t('explore_world') }}</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('travel') }}" class="btn btn-primary btn-large">{{ t('destinations') }}</a>
+            <a href="{{ url_for('offers') }}" class="btn btn-outline btn-large">{{ t('special_offers') }}</a>
+        </div>
+    </div>
+    <div class="hero-overlay"></div>
+</div>
+
+<!-- Search Section -->
+<div class="search-section">
+    <div class="container">
+        <form method="GET" action="{{ url_for('travel') }}" class="search-form">
+            <input type="text" name="search" placeholder="Where do you want to go?" class="search-input">
+            <select name="category" class="search-select">
+                <option value="">All Categories</option>
+                <option value="luxury">Luxury</option>
+                <option value="budget">Budget</option>
+                <option value="adventure">Adventure</option>
+            </select>
+            <input type="number" name="min_price" placeholder="Min Price" class="search-input">
+            <input type="number" name="max_price" placeholder="Max Price" class="search-input">
+            <button type="submit" class="btn btn-primary">{{ t('search') }}</button>
+        </form>
+    </div>
+</div>
+
+<!-- Featured Destinations -->
+<div class="featured-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>{{ t('featured_destinations') }}</h2>
+            <p>Handpicked destinations for unforgettable experiences</p>
+        </div>
+        
+        <div class="destinations-grid">
+            {% for destination in featured_destinations %}
+            <div class="destination-card">
+                <div class="destination-image">
+                    <img src="{{ destination.image_url }}" alt="{{ destination.name }}">
+                    <div class="destination-overlay">
+                        <div class="destination-rating">
+                            <i class="fas fa-star"></i>
+                            <span>{{ "%.1f"|format(destination.rating) }}</span>
+                        </div>
+                        <div class="category-badge">{{ destination.category|title }}</div>
+                    </div>
+                </div>
+                <div class="destination-content">
+                    <h3>{{ destination.name }}, {{ destination.country }}</h3>
+                    <div class="destination-meta">
+                        <span class="rating">
+                            <i class="fas fa-star"></i>
+                            {{ "%.1f"|format(destination.rating) }} ({{ destination.reviews_count }} reviews)
+                        </span>
+                        <span class="duration"><i class="fas fa-clock"></i> {{ destination.duration }} days</span>
+                    </div>
+                    <p class="destination-description">{{ destination.description[:100] }}...</p>
+                    <div class="destination-actions">
+                        <span class="price">{{ format_price(destination.price) }}/{{ t('per_person') }}</span>
+                        <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="btn btn-primary">{{ t('view_details') }}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="view-all-section">
+            <a href="{{ url_for('travel') }}" class="btn btn-outline btn-large">View All Destinations</a>
+        </div>
+    </div>
+</div>
+
+<!-- Latest Destinations -->
+{% if latest_destinations %}
+<div class="latest-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Latest Additions</h2>
+            <p>Fresh destinations added to our collection</p>
+        </div>
+        
+        <div class="destinations-grid">
+            {% for destination in latest_destinations %}
+            <div class="destination-card">
+                <div class="destination-image">
+                    <img src="{{ destination.image_url }}" alt="{{ destination.name }}">
+                    <div class="destination-overlay">
+                        <div class="new-badge">NEW</div>
+                    </div>
+                </div>
+                <div class="destination-content">
+                    <h3>{{ destination.name }}, {{ destination.country }}</h3>
+                    <div class="destination-meta">
+                        <span class="rating">
+                            <i class="fas fa-star"></i>
+                            {{ "%.1f"|format(destination.rating) }} ({{ destination.reviews_count }} reviews)
+                        </span>
+                        <span class="duration"><i class="fas fa-clock"></i> {{ destination.duration }} days</span>
+                    </div>
+                    <p class="destination-description">{{ destination.description[:100] }}...</p>
+                    <div class="destination-actions">
+                        <span class="price">{{ format_price(destination.price) }}/{{ t('per_person') }}</span>
+                        <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="btn btn-primary">{{ t('view_details') }}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Why Choose Us -->
+<div class="why-choose-us">
+    <div class="container">
+        <div class="section-header">
+            <h2>Why Choose World Tour?</h2>
+            <p>We make your travel dreams come true with exceptional service</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3>Global Destinations</h3>
+                <p>Explore handpicked destinations from around the world, carefully selected for their beauty and cultural significance.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Safe & Secure</h3>
+                <p>Your safety is our priority. All our trips include comprehensive travel insurance and 24/7 support.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <h3>Best Prices</h3>
+                <p>Get the best value for your money with our competitive pricing and exclusive deals.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>24/7 Support</h3>
+                <p>Our travel experts are available round the clock to assist you with any questions or concerns.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Personalized Experience</h3>
+                <p>Every trip is tailored to your preferences, ensuring a unique and memorable experience.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h3>Expert Guides</h3>
+                <p>Travel with experienced local guides who know the best spots and hidden gems.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Newsletter Section -->
+<div class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-content">
+            <h2>{{ t('newsletter_signup') }}</h2>
+            <p>{{ t('get_best_deals') }}</p>
+            <form method="POST" action="/newsletter/subscribe" class="newsletter-form">
+                <input type="email" name="email" placeholder="{{ t('email_placeholder') }}" required>
+                <button type="submit" class="btn btn-primary">{{ t('subscribe') }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Section -->
+<div class="contact-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Get in Touch</h2>
+            <p>Ready to start your next adventure? Contact us directly!</p>
+        </div>
+        
+        <div class="contact-highlight">
+            <div class="contact-highlight-card">
+                <div class="contact-highlight-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="contact-highlight-content">
+                    <h3>Gideon Ngeno</h3>
+                    <p><strong>Founder & Travel Expert</strong></p>
+                    <div class="contact-highlight-details">
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:gideongeng@gmail.com">gideongeng@gmail.com</a></p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+254720317626">+254 720 317 626</a></p>
+                    </div>
+                    <p class="contact-highlight-note">Personal travel planning and support available!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-actions">
+            <a href="{{ url_for('contact') }}" class="btn btn-primary btn-large">Contact Us</a>
+            <a href="mailto:gideongeng@gmail.com" class="btn btn-outline btn-large">Send Email</a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Enhanced Hero Section */
+.hero {
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/static/modern.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    text-align: center;
+    padding: 10rem 0;
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-content {
+    max-width: 800px;
+    z-index: 2;
+    position: relative;
+}
+
+.hero-content h1 {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-content p {
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+}
+
+/* Enhanced Search Section */
+.search-section {
+    background: white;
+    padding: 3rem 0;
+    margin-top: -50px;
+    border-radius: 20px 20px 0 0;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+}
+
+.search-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.search-input, .search-select {
+    padding: 1.2rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.search-input:focus, .search-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-form button {
+    padding: 1.2rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Enhanced Sections */
+.featured-section, .latest-section {
+    padding: 5rem 0;
+    background: white;
+}
+
+.latest-section {
+    background: #f8f9fa;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-header h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #333;
+    font-weight: 700;
+}
+
+.section-header p {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Enhanced Destination Cards */
+.destination-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.destination-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+.destination-image {
+    position: relative;
+    height: 280px;
+    overflow: hidden;
+}
+
+.destination-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.destination-card:hover .destination-image img {
+    transform: scale(1.1);
+}
+
+.destination-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 1.5rem;
+    color: white;
+}
+
+.destination-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.category-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+}
+
+.new-badge {
+    background: #ff6b6b;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.destination-content {
+    padding: 2rem;
+}
+
+.destination-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.destination-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.destination-description {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.destination-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price {
+    font-weight: bold;
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+/* Enhanced Why Choose Us */
+.why-choose-us {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.why-choose-us .section-header h2 {
+    color: white;
+}
+
+.why-choose-us .section-header p {
+    color: rgba(255,255,255,0.9);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.feature-card {
+    background: rgba(255,255,255,0.1);
+    padding: 2.5rem;
+    border-radius: 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: #ffd700;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.feature-card p {
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+/* Enhanced Newsletter */
+.newsletter-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.newsletter-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.newsletter-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.newsletter-form {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+    gap: 1rem;
+}
+
+.newsletter-form input {
+    flex: 1;
+    padding: 1.2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+}
+
+.newsletter-form button {
+    padding: 1.2rem 2rem;
+    background: #ffd700;
+    color: #333;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.newsletter-form button:hover {
+    background: #ffed4e;
+    transform: translateY(-2px);
+}
+
+.view-all-section {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+/* Contact Section */
+.contact-section {
+    padding: 5rem 0;
+    background: #f8f9fa;
+}
+
+.contact-section .section-header h2 {
+    color: #333;
+}
+
+.contact-section .section-header p {
+    color: #666;
+}
+
+.contact-highlight {
+    margin: 3rem 0;
+}
+
+.contact-highlight-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-highlight-icon {
+    font-size: 4rem;
+    color: #ffd700;
+    margin-bottom: 2rem;
+}
+
+.contact-highlight-content h3 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.contact-highlight-content p {
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.contact-highlight-details {
+    margin: 2rem 0;
+}
+
+.contact-highlight-details p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.contact-highlight-details a {
+    color: #ffd700;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.contact-highlight-details a:hover {
+    color: white;
+}
+
+.contact-highlight-note {
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.contact-actions {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-content p {
+        font-size: 1.1rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .search-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+    }
+    
+    .contact-highlight-card {
+        padding: 2rem;
+    }
+    
+    .contact-highlight-details p {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .contact-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+{% endblock %}

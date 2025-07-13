@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Book Package - {{ package.name }}{% endblock %}
+{% block content %}
+<div class="container book-package-page">
+    <h1>Book Package: {{ package.name }}</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="package-summary">
+                <h3>Package Details</h3>
+                <p><strong>Name:</strong> {{ package.name }}</p>
+                <p><strong>Description:</strong> {{ package.description }}</p>
+                <p><strong>Price per person:</strong> ${{ package.price }}</p>
+                {% if package.activities %}
+                <p><strong>Activities:</strong> {{ package.activities }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <form method="post" class="booking-form">
+                <div class="form-group">
+                    <label for="guests">Number of Guests</label>
+                    <select name="guests" id="guests" class="form-control" required>
+                        <option value="1">1 guest</option>
+                        <option value="2">2 guests</option>
+                        <option value="3">3 guests</option>
+                        <option value="4">4 guests</option>
+                        <option value="5">5 guests</option>
+                        <option value="6">6 guests</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="start_date">Start Date</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control" required>
+                </div>
+                <div class="price-summary">
+                    <h4>Price Summary</h4>
+                    <p>Price per person: ${{ package.price }}</p>
+                    <p>Total: <span id="total-price">${{ package.price }}</span></p>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">Confirm Package Booking</button>
+                <a href="{{ url_for('package_detail', package_id=package.id) }}" class="btn btn-outline-secondary ml-2">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('guests').addEventListener('change', function() {
+    const guests = parseInt(this.value);
+    const pricePerGuest = {{ package.price }};
+    const total = guests * pricePerGuest;
+    document.getElementById('total-price').textContent = '$' + total;
+});
+</script>
+{% endblock %} 

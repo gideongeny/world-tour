@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Special Offers - World Tour{% endblock %}
+
+{% block content %}
+<div class="offers-page">
+    <div class="offers-header">
+        <h1>Special Offers & Deals</h1>
+        <p>Discover amazing discounts on your next adventure</p>
+    </div>
+
+    <div class="offers-grid">
+        {% for offer in offers %}
+        <div class="offer-card">
+            <div class="offer-image">
+                <img src="{{ offer.image_url }}" alt="{{ offer.name }}" />
+                <div class="offer-badge">
+                    <span class="discount">SAVE 20%</span>
+                </div>
+            </div>
+            <div class="offer-content">
+                <h3>{{ offer.name }}, {{ offer.country }}</h3>
+                <p class="offer-description">{{ offer.description[:100] }}...</p>
+                <div class="offer-meta">
+                    <div class="price-info">
+                        <span class="original-price">${{ "%.0f"|format(offer.price) }}</span>
+                        <span class="discounted-price">${{ "%.0f"|format(offer.price * 0.8) }}</span>
+                        <span class="per-day">per day</span>
+                    </div>
+                    <div class="offer-details">
+                        <span class="duration"><i class="fas fa-clock"></i> {{ offer.duration }} days</span>
+                        <span class="rating">
+                            <i class="fas fa-star"></i>
+                            {{ "%.1f"|format(offer.rating) }}
+                        </span>
+                    </div>
+                </div>
+                <div class="offer-actions">
+                    <a href="/destination/{{ offer.id }}" class="btn btn-outline">View Details</a>
+                    {% if current_user.is_authenticated %}
+                        <a href="/book/{{ offer.id }}" class="btn btn-primary">Book Now</a>
+                    {% else %}
+                        <a href="/login" class="btn btn-primary">Login to Book</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="special-promotions">
+        <h2>Limited Time Promotions</h2>
+        <div class="promotions-grid">
+            <div class="promotion-card">
+                <div class="promotion-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h3>First Time Traveler</h3>
+                <p>Get 15% off your first booking when you sign up!</p>
+                <a href="/register" class="btn btn-outline">Sign Up Now</a>
+            </div>
+            
+            <div class="promotion-card">
+                <div class="promotion-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Group Discount</h3>
+                <p>Book for 4+ people and save up to 25% on your trip!</p>
+                <a href="/travel" class="btn btn-outline">Explore Destinations</a>
+            </div>
+            
+            <div class="promotion-card">
+                <div class="promotion-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3>Early Bird Special</h3>
+                <p>Book 3 months in advance and get 10% off any destination!</p>
+                <a href="/travel" class="btn btn-outline">Book Early</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Travel Insurance - World Tour{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Travel Insurance</h1>
+            <p class="lead">Protect your journey with comprehensive travel insurance coverage tailored to your needs.</p>
+        </div>
+    </div>
+
+    <!-- Insurance Plans -->
+    <div class="row">
+        {% for plan in insurance_plans %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm {% if plan.coverage_type == 'premium' %}border-primary{% endif %}">
+                {% if plan.coverage_type == 'premium' %}
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="mb-0">Most Popular</h5>
+                </div>
+                {% endif %}
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ plan.name }}</h3>
+                    <div class="mb-3">
+                        <span class="display-6 text-primary">${{ "%.2f"|format(plan.price_per_day) }}</span>
+                        <small class="text-muted">/day</small>
+                    </div>
+                    <p class="card-text">{{ plan.description }}</p>
+                    
+                    <div class="text-start mb-4">
+                        <h6>Coverage Details:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>Max Coverage: ${{ "{:,.0f}".format(plan.max_coverage) }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Deductible: ${{ "{:,.0f}".format(plan.deductible) }}</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Medical Emergency Coverage</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Trip Cancellation</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Baggage Protection</li>
+                            {% if plan.coverage_type == 'comprehensive' or plan.coverage_type == 'premium' %}
+                            <li><i class="fas fa-check text-success me-2"></i>Adventure Activities</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Flight Delays</li>
+                            {% endif %}
+                            {% if plan.coverage_type == 'premium' %}
+                            <li><i class="fas fa-check text-success me-2"></i>Concierge Services</li>
+                            <li><i class="fas fa-check text-success me-2"></i>No Deductible</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('insurance_plan_detail', plan_id=plan.id) }}" class="btn btn-outline-primary w-100 mb-2">Learn More</a>
+                    <a href="{{ url_for('book_insurance', plan_id=plan.id) }}" class="btn btn-primary w-100">Get Quote</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Why Choose Our Insurance -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="mb-4">Why Choose Our Travel Insurance?</h2>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="text-center">
+                        <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                        <h5>Comprehensive Coverage</h5>
+                        <p class="text-muted">Protection for medical emergencies, trip cancellation, and more.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="text-center">
+                        <i class="fas fa-clock fa-3x text-success mb-3"></i>
+                        <h5>24/7 Support</h5>
+                        <p class="text-muted">Round-the-clock assistance wherever you are in the world.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="text-center">
+                        <i class="fas fa-dollar-sign fa-3x text-warning mb-3"></i>
+                        <h5>Competitive Rates</h5>
+                        <p class="text-muted">Affordable premiums with excellent coverage options.</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="text-center">
+                        <i class="fas fa-mobile-alt fa-3x text-info mb-3"></i>
+                        <h5>Easy Claims</h5>
+                        <p class="text-muted">Simple and fast claims process through our mobile app.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insurance Calculator -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">Insurance Calculator</h3>
+                </div>
+                <div class="card-body">
+                    <form id="insuranceCalculator">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tripDuration" class="form-label">Trip Duration (days)</label>
+                                    <input type="number" class="form-control" id="tripDuration" min="1" max="365" value="7">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="coverageType" class="form-label">Coverage Type</label>
+                                    <select class="form-select" id="coverageType">
+                                        <option value="basic">Basic Coverage</option>
+                                        <option value="comprehensive">Comprehensive Coverage</option>
+                                        <option value="premium">Premium Coverage</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="destination" class="form-label">Destination</label>
+                                    <select class="form-select" id="destination">
+                                        <option value="domestic">Domestic</option>
+                                        <option value="international">International</option>
+                                        <option value="europe">Europe</option>
+                                        <option value="asia">Asia</option>
+                                        <option value="americas">Americas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="travelers" class="form-label">Number of Travelers</label>
+                                    <input type="number" class="form-control" id="travelers" min="1" max="10" value="1">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="calculateInsurance()">Calculate Premium</button>
+                    </form>
+                    
+                    <div id="calculationResult" class="mt-4" style="display: none;">
+                        <div class="alert alert-info">
+                            <h5>Estimated Premium: <span id="estimatedPremium" class="text-primary">$0</span></h5>
+                            <p class="mb-0">This is an estimate. Final premium may vary based on specific circumstances.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="mb-4">Frequently Asked Questions</h2>
+            <div class="accordion" id="insuranceFAQ">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            What does travel insurance cover?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#insuranceFAQ">
+                        <div class="accordion-body">
+                            Travel insurance typically covers medical emergencies, trip cancellation, lost or delayed baggage, flight delays, and emergency evacuation. Coverage varies by plan type.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            When should I buy travel insurance?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#insuranceFAQ">
+                        <div class="accordion-body">
+                            It's best to purchase travel insurance as soon as you book your trip to ensure coverage for trip cancellation benefits.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            How do I file a claim?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#insuranceFAQ">
+                        <div class="accordion-body">
+                            You can file a claim through our mobile app, website, or by calling our 24/7 support line. Keep all receipts and documentation for your claim.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculateInsurance() {
+    const duration = parseInt(document.getElementById('tripDuration').value);
+    const coverageType = document.getElementById('coverageType').value;
+    const travelers = parseInt(document.getElementById('travelers').value);
+    
+    // Base rates per day
+    const rates = {
+        'basic': 5.0,
+        'comprehensive': 12.0,
+        'premium': 25.0
+    };
+    
+    const baseRate = rates[coverageType];
+    const totalPremium = baseRate * duration * travelers;
+    
+    document.getElementById('estimatedPremium').textContent = '$' + totalPremium.toFixed(2);
+    document.getElementById('calculationResult').style.display = 'block';
+}
+</script>
+{% endblock %} 

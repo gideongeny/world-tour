@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Contacts - World Tour{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="container">
+        <div class="admin-header">
+            <h1>Contact Management</h1>
+            <a href="{{ url_for('admin') }}" class="btn btn-outline">Back to Dashboard</a>
+        </div>
+
+        <div class="admin-content">
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Messages</h3>
+                    <span class="stat-number">{{ contacts|length }}</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Unread</h3>
+                    <span class="stat-number">{{ contacts|selectattr('status', 'equalto', 'unread')|list|length }}</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Read</h3>
+                    <span class="stat-number">{{ contacts|selectattr('status', 'equalto', 'read')|list|length }}</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Replied</h3>
+                    <span class="stat-number">{{ contacts|selectattr('status', 'equalto', 'replied')|list|length }}</span>
+                </div>
+            </div>
+
+            <div class="contacts-table">
+                <h2>All Contact Messages</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contact in contacts %}
+                            <tr>
+                                <td>{{ contact.id }}</td>
+                                <td>{{ contact.name }}</td>
+                                <td>{{ contact.email }}</td>
+                                <td>{{ contact.message[:50] }}...</td>
+                                <td>
+                                    <span class="badge status-{{ contact.status }}">{{ contact.status|title }}</span>
+                                </td>
+                                <td>{{ contact.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline" onclick="viewMessage({{ contact.id }})">View</button>
+                                    <button class="btn btn-sm btn-primary" onclick="markAsRead({{ contact.id }})">Mark Read</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div id="messageModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Contact Message</h2>
+        <div id="messageContent">
+            <!-- Message content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-page {
+    padding: 2rem 0;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card h3 {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.contacts-table {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.contacts-table h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge.status-unread {
+    background: #dc3545;
+    color: white;
+}
+
+.badge.status-read {
+    background: #28a745;
+    color: white;
+}
+
+.badge.status-replied {
+    background: #007bff;
+    color: white;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+#messageContent {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+    line-height: 1.6;
+}
+</style>
+
+<script>
+// Modal functionality
+const modal = document.getElementById('messageModal');
+const span = document.getElementsByClassName('close')[0];
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+function viewMessage(id) {
+    // This would typically fetch the message from the server
+    // For now, we'll show a placeholder
+    document.getElementById('messageContent').innerHTML = `
+        <p><strong>From:</strong> Contact #${id}</p>
+        <p><strong>Email:</strong> user@example.com</p>
+        <p><strong>Message:</strong></p>
+        <p>This is a sample message content. In a real application, this would be fetched from the server.</p>
+    `;
+    modal.style.display = "block";
+}
+
+function markAsRead(id) {
+    // This would typically send a request to mark the message as read
+    alert(`Message ${id} marked as read`);
+    location.reload();
+}
+</script>
+{% endblock %} 

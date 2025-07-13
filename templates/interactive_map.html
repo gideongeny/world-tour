@@ -1,0 +1,447 @@
+{% extends "base.html" %}
+
+{% block title %}{{ destination.name }} - Interactive Map - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('travel') }}">Destinations</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('destination_detail', destination_id=destination.id) }}">{{ destination.name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Interactive Map</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">
+                <i class="fas fa-map-marked-alt text-primary"></i>
+                {{ destination.name }} Interactive Map
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Map Container -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div id="map" style="height: 600px; width: 100%;">
+                        <!-- Map will be loaded here -->
+                        <div class="d-flex justify-content-center align-items-center h-100 bg-light">
+                            <div class="text-center">
+                                <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Loading Interactive Map...</h5>
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar with Points of Interest -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-map-pin"></i>
+                        Points of Interest
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="searchPOI" placeholder="Search places...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="poiFilter" id="allPOI" checked>
+                            <label class="btn btn-outline-primary" for="allPOI">All</label>
+                            
+                            <input type="radio" class="btn-check" name="poiFilter" id="attractionsPOI">
+                            <label class="btn btn-outline-primary" for="attractionsPOI">Attractions</label>
+                            
+                            <input type="radio" class="btn-check" name="poiFilter" id="restaurantsPOI">
+                            <label class="btn btn-outline-primary" for="restaurantsPOI">Restaurants</label>
+                            
+                            <input type="radio" class="btn-check" name="poiFilter" id="hotelsPOI">
+                            <label class="btn btn-outline-primary" for="hotelsPOI">Hotels</label>
+                        </div>
+                    </div>
+
+                    <div id="poiList" class="list-group list-group-flush">
+                        <!-- Points of interest will be loaded here -->
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <span class="ms-2">Loading points of interest...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Controls -->
+            <div class="card shadow-sm mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-cogs"></i>
+                        Map Controls
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Zoom Level</label>
+                        <input type="range" class="form-range" id="zoomControl" min="10" max="18" value="13">
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">Far</small>
+                            <small class="text-muted">Close</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Map Style</label>
+                        <select class="form-select" id="mapStyle">
+                            <option value="streets">Streets</option>
+                            <option value="satellite">Satellite</option>
+                            <option value="hybrid">Hybrid</option>
+                            <option value="terrain">Terrain</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" id="centerMap">
+                            <i class="fas fa-crosshairs"></i>
+                            Center on Destination
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm" id="getDirections">
+                            <i class="fas fa-route"></i>
+                            Get Directions
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather Widget -->
+            <div class="card shadow-sm mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-cloud-sun"></i>
+                        Current Weather
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="weatherWidget" class="text-center">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="ms-2">Loading weather...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Destination Information -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle"></i>
+                        About {{ destination.name }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p class="card-text">{{ destination.description }}</p>
+                            
+                            <div class="row mt-3">
+                                <div class="col-sm-6">
+                                    <h6><i class="fas fa-map-marker-alt text-primary"></i> Location</h6>
+                                    <p class="text-muted">{{ destination.name }}, {{ destination.country }}</p>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h6><i class="fas fa-thermometer-half text-warning"></i> Climate</h6>
+                                    <p class="text-muted">{{ destination.climate or 'Temperate' }}</p>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h6><i class="fas fa-calendar-alt text-success"></i> Best Time to Visit</h6>
+                                    <p class="text-muted">{{ destination.best_time_to_visit or 'Year-round' }}</p>
+                                </div>
+                                <div class="col-sm-6">
+                                    <h6><i class="fas fa-star text-warning"></i> Rating</h6>
+                                    <p class="text-muted">
+                                        {% for i in range(5) %}
+                                            {% if i < destination.rating|int %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        ({{ destination.rating }}/5)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <img src="{{ destination.image_url }}" 
+                                     alt="{{ destination.name }}" 
+                                     class="img-fluid rounded mb-3"
+                                     style="max-height: 200px;">
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" 
+                                       class="btn btn-primary">
+                                        <i class="fas fa-info-circle"></i>
+                                        View Details
+                                    </a>
+                                    <a href="{{ url_for('book_destination', destination_id=destination.id) }}" 
+                                       class="btn btn-success">
+                                        <i class="fas fa-calendar-check"></i>
+                                        Book Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Point of Interest Modal -->
+<div class="modal fade" id="poiModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="poiModalTitle">
+                    <i class="fas fa-map-pin"></i>
+                    Point of Interest
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="poiModalBody">
+                <!-- Content will be loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="getDirectionsBtn">
+                    <i class="fas fa-route"></i>
+                    Get Directions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize map (this would be replaced with actual map API integration)
+    initializeMap();
+    
+    // Load points of interest
+    loadPointsOfInterest();
+    
+    // Load weather data
+    loadWeatherData();
+    
+    // Event listeners
+    document.getElementById('searchPOI').addEventListener('input', filterPOI);
+    document.getElementById('zoomControl').addEventListener('input', updateZoom);
+    document.getElementById('mapStyle').addEventListener('change', changeMapStyle);
+    document.getElementById('centerMap').addEventListener('click', centerOnDestination);
+    document.getElementById('getDirections').addEventListener('click', openDirections);
+});
+
+function initializeMap() {
+    // This would integrate with a real map API like Google Maps, Mapbox, or Leaflet
+    console.log('Initializing map for destination:', '{{ destination.name }}');
+    
+    // Simulate map loading
+    setTimeout(() => {
+        const mapContainer = document.getElementById('map');
+        mapContainer.innerHTML = `
+            <div class="d-flex justify-content-center align-items-center h-100 bg-light">
+                <div class="text-center">
+                    <i class="fas fa-map fa-3x text-primary mb-3"></i>
+                    <h5 class="text-primary">Interactive Map</h5>
+                    <p class="text-muted">Map would be displayed here with real API integration</p>
+                    <small class="text-muted">Coordinates: {{ destination.latitude }}, {{ destination.longitude }}</small>
+                </div>
+            </div>
+        `;
+    }, 2000);
+}
+
+function loadPointsOfInterest() {
+    // Simulate loading POI data
+    setTimeout(() => {
+        const poiList = document.getElementById('poiList');
+        poiList.innerHTML = `
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1"><i class="fas fa-landmark text-primary"></i> City Center</h6>
+                        <small class="text-muted">Main attraction area</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="showPOIDetails('city-center')">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1"><i class="fas fa-utensils text-success"></i> Local Restaurant</h6>
+                        <small class="text-muted">Traditional cuisine</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="showPOIDetails('restaurant')">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1"><i class="fas fa-hotel text-warning"></i> Luxury Hotel</h6>
+                        <small class="text-muted">5-star accommodation</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="showPOIDetails('hotel')">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }, 1500);
+}
+
+function loadWeatherData() {
+    // Simulate weather data loading
+    setTimeout(() => {
+        const weatherWidget = document.getElementById('weatherWidget');
+        weatherWidget.innerHTML = `
+            <div class="row">
+                <div class="col-6">
+                    <i class="fas fa-sun fa-2x text-warning mb-2"></i>
+                    <h4>24°C</h4>
+                    <small class="text-muted">Sunny</small>
+                </div>
+                <div class="col-6">
+                    <div class="text-start">
+                        <small class="text-muted">Humidity: 65%</small><br>
+                        <small class="text-muted">Wind: 12 km/h</small><br>
+                        <small class="text-muted">UV Index: 5</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    }, 1000);
+}
+
+function filterPOI() {
+    const searchTerm = document.getElementById('searchPOI').value.toLowerCase();
+    const poiItems = document.querySelectorAll('#poiList .list-group-item');
+    
+    poiItems.forEach(item => {
+        const title = item.querySelector('h6').textContent.toLowerCase();
+        const description = item.querySelector('small').textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || description.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+function updateZoom() {
+    const zoomLevel = document.getElementById('zoomControl').value;
+    console.log('Zoom level changed to:', zoomLevel);
+    // Update map zoom level
+}
+
+function changeMapStyle() {
+    const style = document.getElementById('mapStyle').value;
+    console.log('Map style changed to:', style);
+    // Update map style
+}
+
+function centerOnDestination() {
+    console.log('Centering map on destination');
+    // Center map on destination coordinates
+}
+
+function openDirections() {
+    console.log('Opening directions');
+    // Open directions interface
+}
+
+function showPOIDetails(poiId) {
+    const modal = new bootstrap.Modal(document.getElementById('poiModal'));
+    const modalTitle = document.getElementById('poiModalTitle');
+    const modalBody = document.getElementById('poiModalBody');
+    
+    // Set modal content based on POI ID
+    switch(poiId) {
+        case 'city-center':
+            modalTitle.innerHTML = '<i class="fas fa-landmark text-primary"></i> City Center';
+            modalBody.innerHTML = `
+                <p>Experience the heart of {{ destination.name }} with its historic architecture, 
+                bustling markets, and cultural attractions.</p>
+                <ul>
+                    <li>Historic monuments</li>
+                    <li>Shopping districts</li>
+                    <li>Cultural museums</li>
+                    <li>Local markets</li>
+                </ul>
+            `;
+            break;
+        case 'restaurant':
+            modalTitle.innerHTML = '<i class="fas fa-utensils text-success"></i> Local Restaurant';
+            modalBody.innerHTML = `
+                <p>Authentic local cuisine featuring traditional dishes and regional specialties.</p>
+                <ul>
+                    <li>Traditional recipes</li>
+                    <li>Local ingredients</li>
+                    <li>Cultural dining experience</li>
+                    <li>Wine pairings</li>
+                </ul>
+            `;
+            break;
+        case 'hotel':
+            modalTitle.innerHTML = '<i class="fas fa-hotel text-warning"></i> Luxury Hotel';
+            modalBody.innerHTML = `
+                <p>Premium accommodation with world-class amenities and exceptional service.</p>
+                <ul>
+                    <li>5-star facilities</li>
+                    <li>Spa and wellness center</li>
+                    <li>Fine dining restaurants</li>
+                    <li>Concierge services</li>
+                </ul>
+            `;
+            break;
+    }
+    
+    modal.show();
+}
+</script>
+{% endblock %} 

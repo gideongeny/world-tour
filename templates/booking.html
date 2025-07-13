@@ -1,0 +1,47 @@
+{% if not payment_success %}
+    <form id="booking-form" method="POST">
+        <!-- existing booking fields -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Confirm Booking</button>
+        </div>
+    </form>
+    <div id="stripe-section" style="margin-top:2rem; display:none; text-align:center;">
+        <button id="pay-with-stripe" class="btn btn-success btn-large">Pay with Card</button>
+    </div>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+    document.getElementById('booking-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        // Submit booking form via AJAX to get total price
+        const formData = new FormData(this);
+        const response = await fetch(window.location.pathname, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        if (data.success && data.amount) {
+            document.getElementById('stripe-section').style.display = 'block';
+            window.bookingAmount = data.amount;
+        } else if (data.redirect) {
+            window.location.href = data.redirect;
+        } else {
+            alert(data.message || 'Booking failed.');
+        }
+    });
+    document.getElementById('pay-with-stripe').addEventListener('click', async function() {
+        const amount = window.bookingAmount;
+        if (!amount) return alert('No amount found.');
+        const response = await fetch('/create-checkout-session', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({amount})
+        });
+        const data = await response.json();
+        if (data.sessionUrl) {
+            window.location.href = data.sessionUrl;
+        } else {
+            alert('Could not start payment.');
+        }
+    });
+    </script>
+{% endif %} 

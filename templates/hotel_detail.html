@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ hotel.name }} - Details{% endblock %}
+{% block content %}
+<div class="container hotel-detail-page">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{{ hotel.image_url or '/static/hotel_default.jpg' }}" class="img-fluid rounded mb-3" alt="{{ hotel.name }}">
+        </div>
+        <div class="col-md-6">
+            <h1>{{ hotel.name }}</h1>
+            <p><strong>Location:</strong> {{ hotel.location }}</p>
+            <p><strong>Rating:</strong> {{ hotel.rating or 'N/A' }}</p>
+            <p>{{ hotel.description }}</p>
+        </div>
+    </div>
+    <hr>
+    <h3>Available Room Types</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price/Night</th>
+                <th>Available</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for room in room_types %}
+            <tr>
+                <td>{{ room.name }}</td>
+                <td>{{ room.description }}</td>
+                <td>${{ room.price_per_night }}</td>
+                <td>{{ room.available_rooms }}</td>
+                <td>
+                    {% if room.available_rooms > 0 %}
+                    <a href="{{ url_for('book_hotel', hotel_id=hotel.id) }}?room_type_id={{ room.id }}" class="btn btn-success btn-sm">Book</a>
+                    {% else %}
+                    <span class="text-danger">Sold Out</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %} 

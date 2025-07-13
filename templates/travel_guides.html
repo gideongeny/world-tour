@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Travel Guides - World Tour{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Travel Guides</h1>
+            <p class="lead">Discover comprehensive travel guides written by our expert travel writers and local experts.</p>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="GET" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search guides..." value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" onchange="window.location.href=this.value">
+                <option value="{{ url_for('travel_guides') }}">All Languages</option>
+                <option value="{{ url_for('travel_guides', language='en') }}" {% if request.args.get('language') == 'en' %}selected{% endif %}>English</option>
+                <option value="{{ url_for('travel_guides', language='es') }}" {% if request.args.get('language') == 'es' %}selected{% endif %}>Spanish</option>
+                <option value="{{ url_for('travel_guides', language='fr') }}" {% if request.args.get('language') == 'fr' %}selected{% endif %}>French</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Guides Grid -->
+    <div class="row">
+        {% for guide in guides %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if guide.destination.image_url %}
+                <img src="{{ guide.destination.image_url }}" class="card-img-top" alt="{{ guide.destination.name }}" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ guide.title }}</h5>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-map-marker-alt"></i> {{ guide.destination.name }}, {{ guide.destination.country }}
+                    </p>
+                    <p class="card-text">{{ guide.content[:150] }}...</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-eye"></i> {{ guide.view_count }} views
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i> {{ guide.created_at.strftime('%B %Y') }}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('travel_guide_detail', guide_id=guide.id) }}" class="btn btn-outline-primary btn-sm w-100">
+                        Read Guide
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                <h3>No guides found</h3>
+                <p class="text-muted">Try adjusting your search criteria or check back later for new guides.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Featured Guide -->
+    {% if guides %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="mb-4">Featured Guide</h2>
+            {% set featured_guide = guides[0] %}
+            <div class="card shadow">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if featured_guide.destination.image_url %}
+                        <img src="{{ featured_guide.destination.image_url }}" class="img-fluid rounded-start h-100" alt="{{ featured_guide.destination.name }}" style="object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ featured_guide.title }}</h3>
+                            <p class="card-text">{{ featured_guide.content[:300] }}...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-primary">{{ featured_guide.language.upper() }}</span>
+                                    <span class="badge bg-secondary">{{ featured_guide.destination.name }}</span>
+                                </div>
+                                <a href="{{ url_for('travel_guide_detail', guide_id=featured_guide.id) }}" class="btn btn-primary">
+                                    Read Full Guide
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

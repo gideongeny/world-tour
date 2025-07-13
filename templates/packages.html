@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Package Deals{% endblock %}
+{% block content %}
+<div class="container packages-page">
+    <h1>Package Deals</h1>
+    
+    <!-- Search Form -->
+    <div class="search-panel mb-4">
+        <form method="get" class="row">
+            <div class="col-md-8">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search packages..." class="form-control">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">Search Packages</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Package Results -->
+    <div class="package-results">
+        {% if packages %}
+        <div class="row">
+            {% for package in packages %}
+            <div class="col-md-6 mb-4">
+                <div class="card package-card">
+                    <img src="{{ package.image_url or '/static/package_default.jpg' }}" class="card-img-top" alt="{{ package.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ package.name }}</h5>
+                        <p class="card-text">{{ package.description[:150] }}...</p>
+                        <div class="package-details">
+                            <p><strong>Price:</strong> ${{ package.price }}</p>
+                            {% if package.activities %}
+                            <p><strong>Activities:</strong> {{ package.activities[:100] }}...</p>
+                            {% endif %}
+                        </div>
+                        <a href="{{ url_for('package_detail', package_id=package.id) }}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">No packages found matching your criteria.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

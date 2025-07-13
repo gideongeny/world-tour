@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ package.name }} - Package Details{% endblock %}
+{% block content %}
+<div class="container package-detail-page">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ package.name }}</h1>
+            <img src="{{ package.image_url or '/static/package_default.jpg' }}" class="img-fluid rounded mb-3" alt="{{ package.name }}">
+            
+            <div class="package-info">
+                <h3>Package Description</h3>
+                <p>{{ package.description }}</p>
+                
+                <h3>What's Included</h3>
+                <div class="row">
+                    {% if flight %}
+                    <div class="col-md-6">
+                        <div class="included-item">
+                            <h4><i class="fas fa-plane"></i> Flight</h4>
+                            <p><strong>{{ flight.airline }}</strong> - {{ flight.flight_number }}</p>
+                            <p>{{ flight.origin }} → {{ flight.destination }}</p>
+                            <p>Departure: {{ flight.departure_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if hotel %}
+                    <div class="col-md-6">
+                        <div class="included-item">
+                            <h4><i class="fas fa-hotel"></i> Hotel</h4>
+                            <p><strong>{{ hotel.name }}</strong></p>
+                            <p>{{ hotel.location }}</p>
+                            <p>Rating: {{ hotel.rating }}/5</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if package.activities %}
+                <div class="activities-section">
+                    <h3>Activities & Experiences</h3>
+                    <p>{{ package.activities }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="booking-panel">
+                <h3>Book This Package</h3>
+                <div class="price-display">
+                    <h2>${{ package.price }}</h2>
+                    <p>per person</p>
+                </div>
+                <a href="{{ url_for('book_package', package_id=package.id) }}" class="btn btn-success btn-lg btn-block">Book Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

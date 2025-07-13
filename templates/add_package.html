@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Add Package Deal{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-header">
+        <h1>Add New Package Deal</h1>
+        <a href="{{ url_for('admin_packages') }}" class="btn btn-outline">Back to Packages</a>
+    </div>
+
+    <div class="admin-content">
+        <div class="form-container">
+            <form method="POST" class="admin-form">
+                <div class="form-group">
+                    <label for="name">Package Name</label>
+                    <input type="text" id="name" name="name" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="4" required class="form-control"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price ($)</label>
+                        <input type="number" id="price" name="price" step="0.01" required class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image_url">Image URL</label>
+                        <input type="url" id="image_url" name="image_url" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="flight_id">Flight (Optional)</label>
+                        <select id="flight_id" name="flight_id" class="form-control">
+                            <option value="">Select Flight</option>
+                            {% for flight in flights %}
+                            <option value="{{ flight.id }}">{{ flight.airline }} - {{ flight.flight_number }} ({{ flight.origin }} to {{ flight.destination }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hotel_id">Hotel (Optional)</label>
+                        <select id="hotel_id" name="hotel_id" class="form-control">
+                            <option value="">Select Hotel</option>
+                            {% for hotel in hotels %}
+                            <option value="{{ hotel.id }}">{{ hotel.name }} - {{ hotel.location }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="activities">Activities</label>
+                    <textarea id="activities" name="activities" rows="3" placeholder="Enter activities separated by commas" class="form-control"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Package</button>
+                    <a href="{{ url_for('admin_packages') }}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

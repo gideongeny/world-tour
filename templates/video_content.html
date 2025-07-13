@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Video Content - World Tour{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Video Content</h1>
+            <p class="lead">Watch immersive videos and virtual tours of amazing destinations around the world.</p>
+        </div>
+    </div>
+
+    <!-- Featured Video -->
+    {% if featured_videos %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="mb-4">Featured Videos</h2>
+            <div class="row">
+                {% for video in featured_videos[:3] %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow">
+                        <div class="position-relative">
+                            {% if video.thumbnail_url %}
+                            <img src="{{ video.thumbnail_url }}" class="card-img-top" alt="{{ video.title }}" style="height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <button class="btn btn-light btn-lg rounded-circle" onclick="playVideo('{{ video.id }}')">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ video.title }}</h5>
+                            <p class="card-text">{{ video.description[:100] }}...</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock"></i> {{ video.duration // 60 }}:{{ "%02d"|format(video.duration % 60) }}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-eye"></i> {{ video.view_count }} views
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="{{ url_for('video_detail', video_id=video.id) }}" class="btn btn-primary btn-sm w-100">Watch Now</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="GET" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search videos..." value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+        <div class="col-md-3">
+            <select name="video_type" class="form-select" onchange="this.form.submit()">
+                <option value="">All Types</option>
+                <option value="virtual_tour" {% if request.args.get('video_type') == 'virtual_tour' %}selected{% endif %}>Virtual Tours</option>
+                <option value="destination_overview" {% if request.args.get('video_type') == 'destination_overview' %}selected{% endif %}>Destination Overview</option>
+                <option value="travel_tips" {% if request.args.get('video_type') == 'travel_tips' %}selected{% endif %}>Travel Tips</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="destination" class="form-select" onchange="this.form.submit()">
+                <option value="">All Destinations</option>
+                {% for dest in destinations %}
+                <option value="{{ dest.id }}" {% if request.args.get('destination')|int == dest.id %}selected{% endif %}>{{ dest.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Videos Grid -->
+    <div class="row">
+        {% for video in videos %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="position-relative">
+                    {% if video.thumbnail_url %}
+                    <img src="{{ video.thumbnail_url }}" class="card-img-top" alt="{{ video.title }}" style="height: 180px; object-fit: cover;">
+                    {% endif %}
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <button class="btn btn-light btn-sm rounded-circle" onclick="playVideo('{{ video.id }}')">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    <div class="position-absolute bottom-0 end-0 m-2">
+                        <span class="badge bg-dark">{{ video.duration // 60 }}:{{ "%02d"|format(video.duration % 60) }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-info">{{ video.video_type.replace('_', ' ').title() }}</span>
+                        {% if video.is_featured %}
+                        <span class="badge bg-warning">Featured</span>
+                        {% endif %}
+                    </div>
+                    <h5 class="card-title">{{ video.title }}</h5>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-map-marker-alt"></i> {{ video.destination.name }}
+                    </p>
+                    <p class="card-text">{{ video.description[:100] }}...</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-eye"></i> {{ video.view_count }} views
+                        </small>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i> {{ video.created_at.strftime('%B %Y') }}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('video_detail', video_id=video.id) }}" class="btn btn-outline-primary btn-sm w-100">Watch Video</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-video fa-3x text-muted mb-3"></i>
+                <h3>No videos found</h3>
+                <p class="text-muted">Try adjusting your search criteria or check back later for new videos.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Video Categories -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="mb-4">Video Categories</h2>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-vr-cardboard fa-3x text-primary mb-3"></i>
+                            <h5>Virtual Tours</h5>
+                            <p class="text-muted">Experience destinations from the comfort of your home</p>
+                            <a href="{{ url_for('video_content', video_type='virtual_tour') }}" class="btn btn-outline-primary">Browse Tours</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-globe fa-3x text-success mb-3"></i>
+                            <h5>Destination Overviews</h5>
+                            <p class="text-muted">Get to know destinations before you visit</p>
+                            <a href="{{ url_for('video_content', video_type='destination_overview') }}" class="btn btn-outline-success">Browse Overviews</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-lightbulb fa-3x text-warning mb-3"></i>
+                            <h5>Travel Tips</h5>
+                            <p class="text-muted">Learn from travel experts and locals</p>
+                            <a href="{{ url_for('video_content', video_type='travel_tips') }}" class="btn btn-outline-warning">Browse Tips</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoModalTitle">Video Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ratio ratio-16x9">
+                    <iframe id="videoFrame" src="" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function playVideo(videoId) {
+    // In a real implementation, you would fetch the video URL from the server
+    // For now, we'll show a placeholder
+    document.getElementById('videoModalTitle').textContent = 'Video Player';
+    document.getElementById('videoFrame').src = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+    new bootstrap.Modal(document.getElementById('videoModal')).show();
+}
+
+// Auto-submit form when filters change
+document.querySelectorAll('select[name="video_type"], select[name="destination"]').forEach(select => {
+    select.addEventListener('change', function() {
+        this.form.submit();
+    });
+});
+</script>
+{% endblock %} 

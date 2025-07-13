@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Bookings - World Tour{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="container">
+        <div class="admin-header">
+            <h1>Booking Management</h1>
+            <a href="{{ url_for('admin') }}" class="btn btn-outline">Back to Dashboard</a>
+        </div>
+
+        <div class="admin-content">
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Bookings</h3>
+                    <span class="stat-number">{{ bookings|length }}</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Confirmed</h3>
+                    <span class="stat-number">{{ bookings|selectattr('status', 'equalto', 'confirmed')|list|length }}</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending</h3>
+                    <span class="stat-number">{{ bookings|selectattr('status', 'equalto', 'pending')|list|length }}</span>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Revenue</h3>
+                    <span class="stat-number">${{ "%.0f"|format(bookings|selectattr('payment_status', 'equalto', 'paid')|sum(attribute='total_price')) }}</span>
+                </div>
+            </div>
+
+            <div class="bookings-table">
+                <h2>All Bookings</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Destination</th>
+                                <th>Dates</th>
+                                <th>Guests</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td>{{ booking.id }}</td>
+                                <td>{{ booking.user.username }}</td>
+                                <td>{{ booking.destination.name }}</td>
+                                <td>{{ booking.start_date.strftime('%Y-%m-%d') }} to {{ booking.end_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ booking.guests }}</td>
+                                <td>${{ "%.0f"|format(booking.total_price) }}</td>
+                                <td>
+                                    <span class="badge status-{{ booking.status }}">{{ booking.status|title }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge payment-{{ booking.payment_status }}">{{ booking.payment_status|title }}</span>
+                                </td>
+                                <td>{{ booking.created_at.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-page {
+    padding: 2rem 0;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card h3 {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.bookings-table {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.bookings-table h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge.status-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.badge.payment-paid {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge.payment-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+</style>
+{% endblock %} 

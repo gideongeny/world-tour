@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Add Flight{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-header">
+        <h1>Add New Flight</h1>
+        <a href="{{ url_for('admin_flights') }}" class="btn btn-outline">Back to Flights</a>
+    </div>
+
+    <div class="admin-content">
+        <div class="form-container">
+            <form method="POST" class="admin-form">
+                <div class="form-group">
+                    <label for="flight_number">Flight Number</label>
+                    <input type="text" id="flight_number" name="flight_number" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="airline">Airline</label>
+                    <input type="text" id="airline" name="airline" required class="form-control">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="origin">Origin</label>
+                        <input type="text" id="origin" name="origin" required class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="destination">Destination</label>
+                        <input type="text" id="destination" name="destination" required class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="departure_time">Departure Time</label>
+                        <input type="datetime-local" id="departure_time" name="departure_time" required class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="arrival_time">Arrival Time</label>
+                        <input type="datetime-local" id="arrival_time" name="arrival_time" required class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price ($)</label>
+                        <input type="number" id="price" name="price" step="0.01" required class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="seats_available">Seats Available</label>
+                        <input type="number" id="seats_available" name="seats_available" required class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Flight</button>
+                    <a href="{{ url_for('admin_flights') }}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

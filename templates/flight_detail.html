@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ flight.flight_number }} - Flight Details{% endblock %}
+{% block content %}
+<div class="container flight-detail-page">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Flight {{ flight.flight_number }}</h1>
+            <div class="flight-info">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>From: {{ flight.origin }}</h3>
+                        <p><strong>Departure:</strong> {{ flight.departure_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>To: {{ flight.destination }}</h3>
+                        <p><strong>Arrival:</strong> {{ flight.arrival_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Airline:</strong> {{ flight.airline }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Price:</strong> ${{ flight.price }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Available Seats:</strong> {{ flight.seats_available }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="booking-panel">
+                <h3>Book This Flight</h3>
+                {% if flight.seats_available > 0 %}
+                <a href="{{ url_for('book_flight', flight_id=flight.id) }}" class="btn btn-success btn-lg btn-block">Book Now</a>
+                {% else %}
+                <div class="alert alert-danger">This flight is sold out.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
