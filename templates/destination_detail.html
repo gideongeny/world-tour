@@ -1,6 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}{{ destination.name }}, {{ destination.country }} - World Tour{% endblock %}
+{% block title %}{{ destination.name }}, {{ destination.country }} - Travel Package | World Tour{% endblock %}
+
+{% block meta_description %}Discover {{ destination.name }}, {{ destination.country }} with World Tour. {{ destination.description[:150] }}... Book your {{ destination.duration }}-day trip from ${{ "%.0f"|format(destination.price) }}.{% endblock %}
+
+{% block meta_keywords %}{{ destination.name }}, {{ destination.country }}, travel, vacation, {{ destination.category }} travel, {{ destination.duration }} days, travel package{% endblock %}
+
+{% block og_title %}{{ destination.name }}, {{ destination.country }} - Travel Package{% endblock %}
+
+{% block og_description %}Discover {{ destination.name }}, {{ destination.country }} with World Tour. {{ destination.description[:150] }}...{% endblock %}
+
+{% block twitter_title %}{{ destination.name }}, {{ destination.country }} - Travel Package{% endblock %}
+
+{% block twitter_description %}Discover {{ destination.name }}, {{ destination.country }} with World Tour. {{ destination.description[:150] }}...{% endblock %}
+
+{% block extra_head %}
+<!-- Destination-specific structured data -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "TouristDestination",
+    "name": "{{ destination.name }}, {{ destination.country }}",
+    "description": "{{ destination.description }}",
+    "image": "{{ url_for('static', filename=destination.image_url.split('/')[-1], _external=True) }}",
+    "url": "{{ request.url }}",
+    "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "{{ destination.country }}"
+    },
+    "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": {{ destination.latitude or 0 }},
+        "longitude": {{ destination.longitude or 0 }}
+    },
+    "offers": {
+        "@type": "Offer",
+        "price": "{{ destination.price }}",
+        "priceCurrency": "USD",
+        "availability": "{% if destination.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+        "validFrom": "{{ destination.created_at.strftime('%Y-%m-%d') }}",
+        "seller": {
+            "@type": "TravelAgency",
+            "name": "World Tour",
+            "url": "{{ request.url_root }}"
+        }
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ "%.1f"|format(destination.rating) }}",
+        "reviewCount": "{{ destination.reviews_count }}"
+    }
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="destination-detail">

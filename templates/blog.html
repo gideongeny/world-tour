@@ -1,612 +1,236 @@
 {% extends "base.html" %}
 
-{% block title %}Travel Blog - World Tour{% endblock %}
-{% block description %}Discover travel tips, destination guides, and inspiring stories from around the world. Get expert advice for your next adventure.{% endblock %}
-{% block keywords %}travel blog, travel tips, destination guides, travel stories, adventure travel, luxury travel{% endblock %}
+{% block title %}Travel Blog - Travel Tips, Guides & Stories | World Tour{% endblock %}
+
+{% block meta_description %}Discover amazing travel stories, tips, and guides on the World Tour blog. Get insider knowledge about destinations, travel hacks, and inspiration for your next adventure.{% endblock %}
+
+{% block meta_keywords %}travel blog, travel tips, travel guides, travel stories, destination guides, travel inspiration, travel advice{% endblock %}
+
+{% block og_title %}Travel Blog - Travel Tips, Guides & Stories{% endblock %}
+
+{% block og_description %}Discover amazing travel stories, tips, and guides. Get insider knowledge about destinations and travel inspiration.{% endblock %}
+
+{% block twitter_title %}Travel Blog - Travel Tips, Guides & Stories{% endblock %}
+
+{% block twitter_description %}Discover amazing travel stories, tips, and guides. Get insider knowledge about destinations and travel inspiration.{% endblock %}
+
+{% block extra_head %}
+<!-- Blog structured data -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "World Tour Travel Blog",
+    "description": "Travel tips, guides, and stories from around the world",
+    "url": "{{ request.url }}",
+    "publisher": {
+        "@type": "TravelAgency",
+        "name": "World Tour",
+        "url": "{{ request.url_root }}"
+    },
+    "blogPost": [
+        {% for post in posts %}
+        {
+            "@type": "BlogPosting",
+            "headline": "{{ post.title }}",
+            "description": "{{ post.excerpt or post.content[:200] }}",
+            "author": {
+                "@type": "Person",
+                "name": "{{ post.author.first_name }} {{ post.author.last_name }}"
+            },
+            "datePublished": "{{ post.created_at.strftime('%Y-%m-%d') }}",
+            "dateModified": "{{ post.updated_at.strftime('%Y-%m-%d') }}",
+            "url": "{{ url_for('blog_post', slug=post.slug, _external=True) }}",
+            "image": "{% if post.featured_image %}{{ url_for('static', filename=post.featured_image, _external=True) }}{% endif %}",
+            "publisher": {
+                "@type": "TravelAgency",
+                "name": "World Tour"
+            }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="blog-page">
-    <!-- Blog Hero -->
-    <div class="blog-hero">
+    <!-- Blog Header -->
+    <div class="blog-header">
         <div class="container">
             <h1>Travel Blog</h1>
-            <p>Discover inspiring stories, travel tips, and destination guides from around the world</p>
+            <p>Discover amazing travel stories, tips, and guides from around the world</p>
             
             <!-- Blog Search -->
             <form method="GET" action="{{ url_for('blog') }}" class="blog-search">
-                <input type="text" name="search" placeholder="Search articles..." value="{{ request.args.get('search', '') }}">
-                <select name="category">
-                    <option value="">All Categories</option>
-                    <option value="destinations" {% if request.args.get('category') == 'destinations' %}selected{% endif %}>Destinations</option>
-                    <option value="tips" {% if request.args.get('category') == 'tips' %}selected{% endif %}>Travel Tips</option>
-                    <option value="culture" {% if request.args.get('category') == 'culture' %}selected{% endif %}>Culture</option>
-                    <option value="adventure" {% if request.args.get('category') == 'adventure' %}selected{% endif %}>Adventure</option>
-                    <option value="food" {% if request.args.get('category') == 'food' %}selected{% endif %}>Food & Dining</option>
-                </select>
-                <button type="submit" class="btn btn-primary">Search</button>
+                <input type="text" name="search" placeholder="Search articles..." value="{{ request.args.get('search', '') }}" aria-label="Search blog articles">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Featured Article -->
-    {% if featured_article %}
-    <div class="featured-article">
-        <div class="container">
-            <div class="featured-content">
-                <div class="featured-image">
-                    <img src="{{ featured_article.image_url }}" alt="{{ featured_article.title }}">
+    <div class="container">
+        <div class="blog-content">
+            <!-- Featured Post -->
+            {% if featured_post %}
+            <div class="featured-post">
+                <div class="featured-post-image">
+                    <img src="{{ featured_post.featured_image or '/static/modern.jpg' }}" alt="{{ featured_post.title }}" loading="lazy">
                     <div class="featured-badge">Featured</div>
                 </div>
-                <div class="featured-text">
-                    <div class="article-meta">
-                        <span class="category">{{ featured_article.category|title }}</span>
-                        <span class="date">{{ featured_article.created_at.strftime('%B %d, %Y') }}</span>
+                <div class="featured-post-content">
+                    <div class="post-meta">
+                        <span class="post-category">{{ featured_post.category.name if featured_post.category else 'Travel' }}</span>
+                        <span class="post-date">{{ featured_post.created_at.strftime('%B %d, %Y') }}</span>
                     </div>
-                    <h2>{{ featured_article.title }}</h2>
-                    <p>{{ featured_article.excerpt }}</p>
-                    <a href="{{ url_for('blog_post', post_id=featured_article.id) }}" class="btn btn-primary">Read More</a>
+                    <h2><a href="{{ url_for('blog_post', slug=featured_post.slug) }}">{{ featured_post.title }}</a></h2>
+                    <p class="post-excerpt">{{ featured_post.excerpt or featured_post.content[:200] }}...</p>
+                    <div class="post-footer">
+                        <div class="post-author">
+                            <i class="fas fa-user" aria-hidden="true"></i>
+                            <span>{{ featured_post.author.first_name }} {{ featured_post.author.last_name }}</span>
+                        </div>
+                        <a href="{{ url_for('blog_post', slug=featured_post.slug) }}" class="btn btn-primary">Read More</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    {% endif %}
+            {% endif %}
 
-    <!-- Blog Content -->
-    <div class="blog-content">
-        <div class="container">
-            <div class="blog-layout">
-                <!-- Main Articles -->
-                <div class="blog-main">
-                    <div class="articles-grid">
-                        {% for article in articles %}
-                        <article class="article-card">
-                            <div class="article-image">
-                                <img src="{{ article.image_url }}" alt="{{ article.title }}">
-                                <div class="article-category">{{ article.category|title }}</div>
-                            </div>
-                            <div class="article-content">
-                                <div class="article-meta">
-                                    <span class="date">{{ article.created_at.strftime('%B %d, %Y') }}</span>
-                                    <span class="read-time">{{ article.read_time }} min read</span>
-                                </div>
-                                <h3><a href="{{ url_for('blog_post', post_id=article.id) }}">{{ article.title }}</a></h3>
-                                <p>{{ article.excerpt }}</p>
-                                <div class="article-footer">
-                                    <div class="author">
-                                        <img src="{{ article.author_avatar }}" alt="{{ article.author_name }}">
-                                        <span>{{ article.author_name }}</span>
-                                    </div>
-                                    <a href="{{ url_for('blog_post', post_id=article.id) }}" class="read-more">Read More →</a>
-                                </div>
-                            </div>
-                        </article>
-                        {% endfor %}
-                    </div>
-
-                    <!-- Pagination -->
-                    {% if pagination.pages > 1 %}
-                    <div class="pagination">
-                        {% if pagination.has_prev %}
-                        <a href="{{ url_for('blog', page=pagination.prev_num) }}" class="page-link">← Previous</a>
+            <!-- Blog Posts Grid -->
+            <div class="blog-grid">
+                {% for post in posts %}
+                <article class="blog-card">
+                    <div class="blog-card-image">
+                        <img src="{{ post.featured_image or '/static/modern.jpg' }}" alt="{{ post.title }}" loading="lazy">
+                        {% if post.is_featured %}
+                        <div class="featured-badge">Featured</div>
                         {% endif %}
-                        
-                        {% for page_num in pagination.iter_pages() %}
-                            {% if page_num %}
-                                {% if page_num != pagination.page %}
-                                <a href="{{ url_for('blog', page=page_num) }}" class="page-link">{{ page_num }}</a>
-                                {% else %}
-                                <span class="page-link active">{{ page_num }}</span>
-                                {% endif %}
+                    </div>
+                    <div class="blog-card-content">
+                        <div class="post-meta">
+                            <span class="post-category">{{ post.category.name if post.category else 'Travel' }}</span>
+                            <span class="post-date">{{ post.created_at.strftime('%B %d, %Y') }}</span>
+                        </div>
+                        <h3><a href="{{ url_for('blog_post', slug=post.slug) }}">{{ post.title }}</a></h3>
+                        <p class="post-excerpt">{{ post.excerpt or post.content[:150] }}...</p>
+                        <div class="post-footer">
+                            <div class="post-author">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                                <span>{{ post.author.first_name }} {{ post.author.last_name }}</span>
+                            </div>
+                            <div class="post-stats">
+                                <span class="post-views">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                    {{ post.view_count }}
+                                </span>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('blog_post', slug=post.slug) }}" class="btn btn-outline btn-sm">Read More</a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <div class="pagination">
+                {% if pagination.has_prev %}
+                <a href="{{ url_for('blog', page=pagination.prev_num) }}" class="btn btn-outline">
+                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                    Previous
+                </a>
+                {% endif %}
+                
+                <div class="page-numbers">
+                    {% for page_num in pagination.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != pagination.page %}
+                            <a href="{{ url_for('blog', page=page_num) }}" class="page-number">{{ page_num }}</a>
                             {% else %}
-                            <span class="page-link dots">...</span>
+                            <span class="page-number active">{{ page_num }}</span>
                             {% endif %}
-                        {% endfor %}
-                        
-                        {% if pagination.has_next %}
-                        <a href="{{ url_for('blog', page=pagination.next_num) }}" class="page-link">Next →</a>
+                        {% else %}
+                        <span class="page-ellipsis">...</span>
                         {% endif %}
-                    </div>
-                    {% endif %}
+                    {% endfor %}
                 </div>
+                
+                {% if pagination.has_next %}
+                <a href="{{ url_for('blog', page=pagination.next_num) }}" class="btn btn-outline">
+                    Next
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
 
-                <!-- Sidebar -->
-                <div class="blog-sidebar">
-                    <!-- Popular Posts -->
-                    <div class="sidebar-widget">
-                        <h3>Popular Posts</h3>
-                        <div class="popular-posts">
-                            {% for post in popular_posts %}
-                            <div class="popular-post">
-                                <img src="{{ post.image_url }}" alt="{{ post.title }}">
-                                <div class="popular-post-content">
-                                    <h4><a href="{{ url_for('blog_post', post_id=post.id) }}">{{ post.title }}</a></h4>
-                                    <span class="date">{{ post.created_at.strftime('%B %d, %Y') }}</span>
-                                </div>
-                            </div>
-                            {% endfor %}
+        <!-- Blog Sidebar -->
+        <aside class="blog-sidebar">
+            <!-- Categories -->
+            <div class="sidebar-widget">
+                <h3>Categories</h3>
+                <ul class="category-list">
+                    {% for category in categories %}
+                    <li>
+                        <a href="{{ url_for('blog', category=category.slug) }}">
+                            {{ category.name }}
+                            <span class="category-count">({{ category.posts|length }})</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Popular Posts -->
+            <div class="sidebar-widget">
+                <h3>Popular Posts</h3>
+                <div class="popular-posts">
+                    {% for post in popular_posts %}
+                    <div class="popular-post">
+                        <div class="popular-post-image">
+                            <img src="{{ post.featured_image or '/static/modern.jpg' }}" alt="{{ post.title }}" loading="lazy">
+                        </div>
+                        <div class="popular-post-content">
+                            <h4><a href="{{ url_for('blog_post', slug=post.slug) }}">{{ post.title }}</a></h4>
+                            <span class="post-date">{{ post.created_at.strftime('%B %d, %Y') }}</span>
                         </div>
                     </div>
-
-                    <!-- Categories -->
-                    <div class="sidebar-widget">
-                        <h3>Categories</h3>
-                        <ul class="category-list">
-                            {% for category in categories %}
-                            <li>
-                                <a href="{{ url_for('blog', category=category.name) }}">
-                                    {{ category.name|title }}
-                                    <span class="count">({{ category.count }})</span>
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    <!-- Newsletter Signup -->
-                    <div class="sidebar-widget newsletter-widget">
-                        <h3>Stay Updated</h3>
-                        <p>Get the latest travel tips and destination guides delivered to your inbox.</p>
-                        <form method="POST" action="{{ url_for('subscribe_newsletter') }}" class="newsletter-form">
-                            <input type="email" name="email" placeholder="Enter your email" required>
-                            <button type="submit" class="btn btn-primary">Subscribe</button>
-                        </form>
-                    </div>
-
-                    <!-- Tags -->
-                    <div class="sidebar-widget">
-                        <h3>Popular Tags</h3>
-                        <div class="tags">
-                            {% for tag in tags %}
-                            <a href="{{ url_for('blog', tag=tag.name) }}" class="tag">{{ tag.name }}</a>
-                            {% endfor %}
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
-        </div>
+
+            <!-- Newsletter Signup -->
+            <div class="sidebar-widget newsletter-widget">
+                <h3>Get Travel Updates</h3>
+                <p>Subscribe to our newsletter for the latest travel tips and deals</p>
+                <form method="POST" action="{{ url_for('subscribe_newsletter') }}" class="sidebar-newsletter-form">
+                    <input type="email" name="email" placeholder="Your email address" required aria-label="Email for newsletter">
+                    <button type="submit" class="btn btn-primary btn-full">Subscribe</button>
+                </form>
+            </div>
+
+            <!-- Travel Inspiration -->
+            <div class="sidebar-widget">
+                <h3>Travel Inspiration</h3>
+                <div class="inspiration-links">
+                    <a href="{{ url_for('travel') }}" class="inspiration-link">
+                        <i class="fas fa-map-marked-alt" aria-hidden="true"></i>
+                        Explore Destinations
+                    </a>
+                    <a href="{{ url_for('offers') }}" class="inspiration-link">
+                        <i class="fas fa-percentage" aria-hidden="true"></i>
+                        Special Offers
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="inspiration-link">
+                        <i class="fas fa-headset" aria-hidden="true"></i>
+                        Get Travel Advice
+                    </a>
+                </div>
+            </div>
+        </aside>
     </div>
 </div>
-
-<style>
-/* Blog Page Styles */
-.blog-page {
-    background: #f8f9fa;
-    min-height: 100vh;
-}
-
-.blog-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 4rem 0;
-    text-align: center;
-}
-
-.blog-hero h1 {
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
-}
-
-.blog-hero p {
-    font-size: 1.3rem;
-    margin-bottom: 3rem;
-    opacity: 0.9;
-}
-
-.blog-search {
-    display: flex;
-    gap: 1rem;
-    max-width: 600px;
-    margin: 0 auto;
-    background: white;
-    padding: 1rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-.blog-search input {
-    flex: 1;
-    padding: 0.8rem;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 1rem;
-}
-
-.blog-search select {
-    padding: 0.8rem;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 1rem;
-    min-width: 150px;
-}
-
-.blog-search button {
-    padding: 0.8rem 1.5rem;
-    white-space: nowrap;
-}
-
-/* Featured Article */
-.featured-article {
-    background: white;
-    padding: 4rem 0;
-    margin-bottom: 2rem;
-}
-
-.featured-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    align-items: center;
-}
-
-.featured-image {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-}
-
-.featured-image img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-}
-
-.featured-badge {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background: #ff6b6b;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 600;
-}
-
-.featured-text h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    color: #333;
-    font-weight: 700;
-}
-
-.featured-text p {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    color: #666;
-    margin-bottom: 2rem;
-}
-
-/* Blog Content */
-.blog-content {
-    padding: 4rem 0;
-}
-
-.blog-layout {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 3rem;
-}
-
-/* Articles Grid */
-.articles-grid {
-    display: grid;
-    gap: 2rem;
-}
-
-.article-card {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-}
-
-.article-card:hover {
-    transform: translateY(-5px);
-}
-
-.article-image {
-    position: relative;
-    height: 250px;
-}
-
-.article-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.article-category {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background: rgba(255,255,255,0.9);
-    color: #333;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.article-content {
-    padding: 2rem;
-}
-
-.article-meta {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.article-content h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    line-height: 1.4;
-}
-
-.article-content h3 a {
-    color: #333;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.article-content h3 a:hover {
-    color: #667eea;
-}
-
-.article-content p {
-    color: #666;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-}
-
-.article-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.author {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.author img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.author span {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.read-more {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s ease;
-}
-
-.read-more:hover {
-    color: #764ba2;
-}
-
-/* Sidebar */
-.blog-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.sidebar-widget {
-    background: white;
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-.sidebar-widget h3 {
-    font-size: 1.3rem;
-    margin-bottom: 1.5rem;
-    color: #333;
-    font-weight: 600;
-}
-
-/* Popular Posts */
-.popular-posts {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.popular-post {
-    display: flex;
-    gap: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.popular-post:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.popular-post img {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-.popular-post-content h4 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-}
-
-.popular-post-content h4 a {
-    color: #333;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.popular-post-content h4 a:hover {
-    color: #667eea;
-}
-
-.popular-post-content .date {
-    font-size: 0.8rem;
-    color: #666;
-}
-
-/* Categories */
-.category-list {
-    list-style: none;
-    padding: 0;
-}
-
-.category-list li {
-    margin-bottom: 0.5rem;
-}
-
-.category-list a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #333;
-    text-decoration: none;
-    padding: 0.5rem 0;
-    transition: color 0.3s ease;
-}
-
-.category-list a:hover {
-    color: #667eea;
-}
-
-.count {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-/* Newsletter Widget */
-.newsletter-widget {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.newsletter-widget h3 {
-    color: white;
-}
-
-.newsletter-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.newsletter-form input {
-    padding: 1rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-}
-
-.newsletter-form button {
-    padding: 1rem;
-    background: #ffd700;
-    color: #333;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.newsletter-form button:hover {
-    background: #ffed4e;
-}
-
-/* Tags */
-.tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.tag {
-    background: #f8f9fa;
-    color: #666;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.tag:hover {
-    background: #667eea;
-    color: white;
-}
-
-/* Pagination */
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 3rem;
-}
-
-.page-link {
-    padding: 0.8rem 1rem;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    text-decoration: none;
-    color: #333;
-    transition: all 0.3s ease;
-}
-
-.page-link:hover,
-.page-link.active {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-}
-
-.page-link.dots {
-    border: none;
-    background: none;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .blog-hero h1 {
-        font-size: 2.5rem;
-    }
-    
-    .blog-search {
-        flex-direction: column;
-    }
-    
-    .featured-content {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-    
-    .blog-layout {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-    
-    .featured-text h2 {
-        font-size: 2rem;
-    }
-}
-</style>
 {% endblock %} 

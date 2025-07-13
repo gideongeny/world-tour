@@ -1,6 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}Travel Destinations - World Tour{% endblock %}
+{% block title %}Travel Destinations - Discover Amazing Places Worldwide | World Tour{% endblock %}
+
+{% block meta_description %}Explore handpicked travel destinations worldwide. Find luxury, budget, and adventure travel packages. Book your next vacation with World Tour - 24/7 support and best prices guaranteed.{% endblock %}
+
+{% block meta_keywords %}travel destinations, vacation packages, luxury travel, budget travel, adventure tours, world travel, holiday packages, travel booking{% endblock %}
+
+{% block og_title %}Travel Destinations - Discover Amazing Places Worldwide{% endblock %}
+
+{% block og_description %}Explore handpicked travel destinations worldwide. Find luxury, budget, and adventure travel packages.{% endblock %}
+
+{% block twitter_title %}Travel Destinations - Discover Amazing Places Worldwide{% endblock %}
+
+{% block twitter_description %}Explore handpicked travel destinations worldwide. Find luxury, budget, and adventure travel packages.{% endblock %}
+
+{% block extra_head %}
+<!-- Destinations listing structured data -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Travel Destinations",
+    "description": "Handpicked destinations from around the world",
+    "url": "{{ request.url }}",
+    "numberOfItems": {{ destinations|length }},
+    "itemListElement": [
+        {% for destination in destinations %}
+        {
+            "@type": "ListItem",
+            "position": {{ loop.index }},
+            "item": {
+                "@type": "TouristDestination",
+                "name": "{{ destination.name }}, {{ destination.country }}",
+                "description": "{{ destination.description[:100] }}...",
+                "image": "{{ url_for('static', filename=destination.image_url.split('/')[-1], _external=True) }}",
+                "url": "{{ url_for('destination_detail', destination_id=destination.id, _external=True) }}",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "{{ destination.price }}",
+                    "priceCurrency": "USD"
+                }
+            }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="travel-page">
