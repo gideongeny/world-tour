@@ -716,22 +716,38 @@ def get_weather(city):
     return weather_data.get(city.lower(), {'temp': 20, 'condition': 'Unknown', 'humidity': 50})
 
 def process_payment(amount, card_details=None):
-    """Simulate payment processing for demo purposes"""
+    """Process payment with Stripe"""
     try:
-        import time
-        time.sleep(1)
-        import uuid
-        payment_id = str(uuid.uuid4())
+        import stripe
+        stripe.api_key = app.config.get('STRIPE_SECRET_KEY', 'sk_test_...')
+        
+        # Create payment intent
+        payment_intent = stripe.PaymentIntent.create(
+            amount=int(amount * 100),  # Convert to cents
+            currency='usd',
+            metadata={'integration_check': 'accept_a_payment'},
+            description='World Tour Booking'
+        )
+        
         return {
-            'success': True,
-            'payment_id': payment_id,
-            'message': 'Payment processed successfully'
+            'success': True, 
+            'payment_id': payment_intent.id,
+            'client_secret': payment_intent.client_secret
         }
+    except stripe.error.CardError as e:
+        return {'success': False, 'error': f'Card error: {e.error.message}'}
+    except stripe.error.RateLimitError as e:
+        return {'success': False, 'error': 'Rate limit exceeded'}
+    except stripe.error.InvalidRequestError as e:
+        return {'success': False, 'error': f'Invalid request: {e.error.message}'}
+    except stripe.error.AuthenticationError as e:
+        return {'success': False, 'error': 'Authentication failed'}
+    except stripe.error.APIConnectionError as e:
+        return {'success': False, 'error': 'Network communication failed'}
+    except stripe.error.StripeError as e:
+        return {'success': False, 'error': f'Stripe error: {e.error.message}'}
     except Exception as e:
-        return {
-            'success': False,
-            'message': f'Payment error: {str(e)}'
-        }
+        return {'success': False, 'error': f'Unexpected error: {str(e)}'}
 
 @app.route('/create-checkout-session', methods=['POST'])
 @login_required
@@ -1077,16 +1093,96 @@ def submit_review(destination_id):
 @app.route('/search')
 def search():
     query = request.args.get('q', '')
+    category = request.args.get('category', '')
+    price_min = request.args.get('price_min', type=float)
+    price_max = request.args.get('price_max', type=float)
+    duration_min = request.args.get('duration_min', type=int)
+    duration_max = request.args.get('duration_max', type=int)
+    rating_min = request.args.get('rating_min', type=float)
+    country = request.args.get('country', '')
+    climate = request.args.get('climate', '')
+    sort_by = request.args.get('sort_by', 'name')
+    sort_order = request.args.get('sort_order', 'asc')
+    
+    # Build query
+    destinations_query = Destination.query.filter(Destination.available == True)
+    
     if query:
-        destinations = Destination.query.filter(
+        destinations_query = destinations_query.filter(
             Destination.name.contains(query) | 
             Destination.country.contains(query) |
             Destination.description.contains(query)
-        ).filter_by(available=True).all()
-    else:
-        destinations = []
+        )
     
-    return render_template('search.html', destinations=destinations, query=query)
+    if category:
+        destinations_query = destinations_query.filter(Destination.category == category)
+    
+    if price_min is not None:
+        destinations_query = destinations_query.filter(Destination.price >= price_min)
+    
+    if price_max is not None:
+        destinations_query = destinations_query.filter(Destination.price <= price_max)
+    
+    if duration_min is not None:
+        destinations_query = destinations_query.filter(Destination.duration >= duration_min)
+    
+    if duration_max is not None:
+        destinations_query = destinations_query.filter(Destination.duration <= duration_max)
+    
+    if rating_min is not None:
+        destinations_query = destinations_query.filter(Destination.rating >= rating_min)
+    
+    if country:
+        destinations_query = destinations_query.filter(Destination.country.contains(country))
+    
+    if climate:
+        destinations_query = destinations_query.filter(Destination.climate == climate)
+    
+    # Sorting
+    if sort_by == 'price':
+        if sort_order == 'desc':
+            destinations_query = destinations_query.order_by(Destination.price.desc())
+        else:
+            destinations_query = destinations_query.order_by(Destination.price.asc())
+    elif sort_by == 'rating':
+        if sort_order == 'desc':
+            destinations_query = destinations_query.order_by(Destination.rating.desc())
+        else:
+            destinations_query = destinations_query.order_by(Destination.rating.asc())
+    elif sort_by == 'duration':
+        if sort_order == 'desc':
+            destinations_query = destinations_query.order_by(Destination.duration.desc())
+        else:
+            destinations_query = destinations_query.order_by(Destination.duration.asc())
+    else:  # name
+        if sort_order == 'desc':
+            destinations_query = destinations_query.order_by(Destination.name.desc())
+        else:
+            destinations_query = destinations_query.order_by(Destination.name.asc())
+    
+    destinations = destinations_query.all()
+    
+    # Get filter options
+    categories = db.session.query(Destination.category).distinct().all()
+    countries = db.session.query(Destination.country).distinct().all()
+    climates = db.session.query(Destination.climate).distinct().all()
+    
+    return render_template('search.html', 
+                         destinations=destinations, 
+                         query=query,
+                         category=category,
+                         price_min=price_min,
+                         price_max=price_max,
+                         duration_min=duration_min,
+                         duration_max=duration_max,
+                         rating_min=rating_min,
+                         country=country,
+                         climate=climate,
+                         sort_by=sort_by,
+                         sort_order=sort_order,
+                         categories=[c[0] for c in categories if c[0]],
+                         countries=[c[0] for c in countries if c[0]],
+                         climates=[c[0] for c in climates if c[0]])
 
 @app.route('/wishlist/add/<int:destination_id>', methods=['POST'])
 @login_required
@@ -1353,6 +1449,27 @@ def api_destinations():
         'image_url': d.image_url
     } for d in destinations])
 
+@app.route('/api/pricing/<int:destination_id>')
+def api_real_time_pricing(destination_id):
+    """Get real-time pricing for a destination"""
+    travel_date = request.args.get('date')
+    guests = request.args.get('guests', 1, type=int)
+    
+    if not travel_date:
+        return jsonify({'error': 'Travel date required'}), 400
+    
+    try:
+        price = get_real_time_pricing(destination_id, travel_date, guests)
+        return jsonify({
+            'success': True,
+            'price': format_price(price),
+            'destination_id': destination_id,
+            'travel_date': travel_date,
+            'guests': guests
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 def get_exchange_rate(from_currency, to_currency):
     """Get exchange rate from currency API with caching"""
     cache_key = f"exchange_rate_{from_currency}_{to_currency}"
@@ -1398,6 +1515,67 @@ def convert_currency(amount, from_currency, to_currency):
         return amount
     rate = get_exchange_rate(from_currency, to_currency)
     return amount * rate
+
+def get_real_time_pricing(destination_id, travel_date, guests=1):
+    """Get real-time pricing for destinations with dynamic pricing"""
+    cache_key = f"pricing_{destination_id}_{travel_date}_{guests}"
+    
+    # Check cache first
+    try:
+        cached_price = cache.get(cache_key)
+        if cached_price:
+            return float(cached_price)
+    except:
+        pass
+    
+    try:
+        # Simulate real-time pricing based on demand and seasonality
+        destination = Destination.query.get(destination_id)
+        if not destination:
+            return None
+        
+        base_price = destination.price
+        
+        # Dynamic pricing factors
+        date_obj = datetime.strptime(travel_date, '%Y-%m-%d')
+        month = date_obj.month
+        
+        # Seasonal pricing (peak season: June-August, December)
+        seasonal_multiplier = 1.0
+        if month in [6, 7, 8, 12]:
+            seasonal_multiplier = 1.3  # 30% higher in peak season
+        elif month in [1, 2, 11]:
+            seasonal_multiplier = 0.8  # 20% lower in off-season
+        
+        # Demand-based pricing (weekend vs weekday)
+        weekday = date_obj.weekday()
+        if weekday >= 5:  # Weekend
+            demand_multiplier = 1.15
+        else:
+            demand_multiplier = 1.0
+        
+        # Guest-based pricing
+        guest_multiplier = 1.0 + (guests - 1) * 0.8  # 80% of base price for additional guests
+        
+        # Calculate final price
+        final_price = base_price * seasonal_multiplier * demand_multiplier * guest_multiplier
+        
+        # Add some randomness to simulate real market conditions
+        import random
+        market_variance = random.uniform(0.95, 1.05)
+        final_price *= market_variance
+        
+        # Cache for 15 minutes (real-time pricing updates frequently)
+        try:
+            cache.set(cache_key, str(final_price), timeout=900)
+        except:
+            pass
+        
+        return round(final_price, 2)
+        
+    except Exception as e:
+        print(f"Error getting real-time pricing: {e}")
+        return None
 
 def format_price(amount, currency_code=None):
     """Format price with currency symbol and conversion"""
@@ -3374,7 +3552,95 @@ def support_chat():
         db.session.add(chat)
         db.session.commit()
     
-    return render_template('support_chat.html', chat=chat)
+    messages = ChatMessage.query.filter_by(chat_id=chat.id).order_by(ChatMessage.created_at.asc()).all()
+    
+    return render_template('live_chat.html', chat=chat, messages=messages)
+
+@app.route('/api/chat/send', methods=['POST'])
+@login_required
+def send_chat_message():
+    data = request.get_json()
+    message_text = data.get('message', '').strip()
+    chat_id = data.get('chat_id')
+    
+    if not message_text or not chat_id:
+        return jsonify({'error': 'Invalid message or chat ID'}), 400
+    
+    # Verify chat belongs to user
+    chat = SupportChat.query.filter_by(id=chat_id, user_id=current_user.id).first()
+    if not chat:
+        return jsonify({'error': 'Chat not found'}), 404
+    
+    # Save user message
+    user_message = ChatMessage(
+        chat_id=chat_id,
+        sender_type='user',
+        sender_id=current_user.id,
+        message=message_text
+    )
+    db.session.add(user_message)
+    
+    # Generate AI response (simulated)
+    ai_response = generate_ai_response(message_text)
+    
+    # Save AI response
+    ai_message = ChatMessage(
+        chat_id=chat_id,
+        sender_type='bot',
+        message=ai_response
+    )
+    db.session.add(ai_message)
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'user_message': {
+            'id': user_message.id,
+            'message': user_message.message,
+            'created_at': user_message.created_at.isoformat()
+        },
+        'ai_response': {
+            'id': ai_message.id,
+            'message': ai_message.message,
+            'created_at': ai_message.created_at.isoformat()
+        }
+    })
+
+def generate_ai_response(message):
+    """Generate AI response for chat support"""
+    message_lower = message.lower()
+    
+    # Simple keyword-based responses
+    if any(word in message_lower for word in ['booking', 'reservation', 'book']):
+        return "I can help you with your booking! What destination are you interested in? You can also check our current offers at /offers"
+    
+    elif any(word in message_lower for word in ['payment', 'pay', 'credit card', 'stripe']):
+        return "We accept all major credit cards and PayPal. All payments are processed securely through Stripe. Is there a specific payment issue you're experiencing?"
+    
+    elif any(word in message_lower for word in ['cancel', 'refund', 'money back']):
+        return "Our cancellation policy allows free cancellation up to 24 hours before departure. For refunds, please contact our support team with your booking reference."
+    
+    elif any(word in message_lower for word in ['flight', 'airline', 'departure']):
+        return "We offer flights to all major destinations. You can search for flights at /flights or check our package deals at /packages"
+    
+    elif any(word in message_lower for word in ['hotel', 'accommodation', 'room']):
+        return "We have partnerships with hotels worldwide. You can browse our hotel options at /hotels or check our package deals that include accommodation."
+    
+    elif any(word in message_lower for word in ['weather', 'climate', 'temperature']):
+        return "You can check the weather for any destination using our weather feature. Just search for your destination and click on the weather tab!"
+    
+    elif any(word in message_lower for word in ['price', 'cost', 'expensive', 'cheap']):
+        return "Our prices are competitive and we offer various packages to suit different budgets. You can use our advanced search filters to find options within your price range."
+    
+    elif any(word in message_lower for word in ['hello', 'hi', 'hey']):
+        return "Hello! Welcome to World Tour support. How can I help you today? I can assist with bookings, payments, travel information, and more!"
+    
+    elif any(word in message_lower for word in ['thank', 'thanks']):
+        return "You're welcome! Is there anything else I can help you with?"
+    
+    else:
+        return "I'm here to help! You can ask me about bookings, payments, destinations, flights, hotels, or any other travel-related questions. What would you like to know?"
 
 # Support and Customer Service Models
 

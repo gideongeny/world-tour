@@ -1,355 +1,335 @@
 {% extends "base.html" %}
 
-{% block title %}Search Results - World Tour{% endblock %}
+{% block title %}Advanced Search - World Tour{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Search Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">Search Results</h1>
-            <p class="text-gray-600">Found {{ results|length }} result{% if results|length != 1 %}s{% endif %} for "{{ query }}"</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <!-- Filters Sidebar -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Filters</h3>
-                    
-                    <form method="GET" class="space-y-6">
+<div class="container-fluid py-5">
+    <div class="row">
+        <!-- Advanced Search Filters Sidebar -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Advanced Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('search') }}" id="searchForm">
                         <!-- Search Query -->
-                        <div>
-                            <label for="q" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
-                            <input type="text" id="q" name="q" value="{{ query }}" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                   placeholder="Search destinations...">
+                        <div class="mb-3">
+                            <label for="q" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="q" name="q" value="{{ query }}" placeholder="Destination, country, or description...">
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">All Categories</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat|title }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <!-- Price Range -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
-                            <div class="space-y-2">
-                                <div class="flex items-center">
-                                    <input type="radio" id="price_all" name="price_range" value="all" 
-                                           {% if price_range == 'all' or not price_range %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                    <label for="price_all" class="ml-2 text-sm text-gray-700">All Prices</label>
+                        <div class="mb-3">
+                            <label class="form-label">Price Range (USD)</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="price_min" name="price_min" value="{{ price_min or '' }}" placeholder="Min">
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="price_low" name="price_range" value="low" 
-                                           {% if price_range == 'low' %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                    <label for="price_low" class="ml-2 text-sm text-gray-700">Under $100/day</label>
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="price_max" name="price_max" value="{{ price_max or '' }}" placeholder="Max">
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="price_medium" name="price_range" value="medium" 
-                                           {% if price_range == 'medium' %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                    <label for="price_medium" class="ml-2 text-sm text-gray-700">$100 - $300/day</label>
+                            </div>
+                        </div>
+
+                        <!-- Duration Range -->
+                        <div class="mb-3">
+                            <label class="form-label">Duration (Days)</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="duration_min" name="duration_min" value="{{ duration_min or '' }}" placeholder="Min">
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="price_high" name="price_range" value="high" 
-                                           {% if price_range == 'high' %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                    <label for="price_high" class="ml-2 text-sm text-gray-700">Over $300/day</label>
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="duration_max" name="duration_max" value="{{ duration_max or '' }}" placeholder="Max">
                                 </div>
                             </div>
                         </div>
 
                         <!-- Rating Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Rating</label>
-                            <div class="space-y-2">
-                                <div class="flex items-center">
-                                    <input type="radio" id="rating_all" name="rating" value="all" 
-                                           {% if rating == 'all' or not rating %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                    <label for="rating_all" class="ml-2 text-sm text-gray-700">Any Rating</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="rating_4" name="rating" value="4" 
-                                           {% if rating == '4' %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                    <label for="rating_4" class="ml-2 text-sm text-gray-700">4+ Stars</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="rating_4_5" name="rating" value="4.5" 
-                                           {% if rating == '4.5' %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                    <label for="rating_4_5" class="ml-2 text-sm text-gray-700">4.5+ Stars</label>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="rating_min" class="form-label">Minimum Rating</label>
+                            <select class="form-select" id="rating_min" name="rating_min">
+                                <option value="">Any Rating</option>
+                                <option value="4.5" {% if rating_min == 4.5 %}selected{% endif %}>4.5+ Stars</option>
+                                <option value="4.0" {% if rating_min == 4.0 %}selected{% endif %}>4.0+ Stars</option>
+                                <option value="3.5" {% if rating_min == 3.5 %}selected{% endif %}>3.5+ Stars</option>
+                                <option value="3.0" {% if rating_min == 3.0 %}selected{% endif %}>3.0+ Stars</option>
+                            </select>
                         </div>
 
-                        <!-- Duration Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Duration</label>
-                            <div class="space-y-2">
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="duration_short" name="duration" value="short" 
-                                           {% if 'short' in duration %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <label for="duration_short" class="ml-2 text-sm text-gray-700">1-3 days</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="duration_medium" name="duration" value="medium" 
-                                           {% if 'medium' in duration %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <label for="duration_medium" class="ml-2 text-sm text-gray-700">4-7 days</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="duration_long" name="duration" value="long" 
-                                           {% if 'long' in duration %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <label for="duration_long" class="ml-2 text-sm text-gray-700">8+ days</label>
-                                </div>
-                            </div>
+                        <!-- Country Filter -->
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Country</label>
+                            <select class="form-select" id="country" name="country">
+                                <option value="">All Countries</option>
+                                {% for c in countries %}
+                                <option value="{{ c }}" {% if country == c %}selected{% endif %}>{{ c }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
 
-                        <!-- Category Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                            <div class="space-y-2">
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="category_beach" name="category" value="beach" 
-                                           {% if 'beach' in category %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <label for="category_beach" class="ml-2 text-sm text-gray-700">Beach</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="category_mountain" name="category" value="mountain" 
-                                           {% if 'mountain' in category %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <label for="category_mountain" class="ml-2 text-sm text-gray-700">Mountain</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="category_city" name="category" value="city" 
-                                           {% if 'city' in category %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <label for="category_city" class="ml-2 text-sm text-gray-700">City</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="category_cultural" name="category" value="cultural" 
-                                           {% if 'cultural' in category %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <label for="category_cultural" class="ml-2 text-sm text-gray-700">Cultural</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="category_adventure" name="category" value="adventure" 
-                                           {% if 'adventure' in category %}checked{% endif %}
-                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                                    <label for="category_adventure" class="ml-2 text-sm text-gray-700">Adventure</label>
-                                </div>
-                            </div>
+                        <!-- Climate Filter -->
+                        <div class="mb-3">
+                            <label for="climate" class="form-label">Climate</label>
+                            <select class="form-select" id="climate" name="climate">
+                                <option value="">All Climates</option>
+                                {% for cl in climates %}
+                                <option value="{{ cl }}" {% if climate == cl %}selected{% endif %}>{{ cl|title }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
 
-                        <!-- Apply Filters Button -->
-                        <button type="submit" 
-                                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200">
-                            Apply Filters
-                        </button>
+                        <!-- Sort Options -->
+                        <div class="mb-3">
+                            <label for="sort_by" class="form-label">Sort By</label>
+                            <select class="form-select" id="sort_by" name="sort_by">
+                                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                                <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price</option>
+                                <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating</option>
+                                <option value="duration" {% if sort_by == 'duration' %}selected{% endif %}>Duration</option>
+                            </select>
+                        </div>
 
-                        <!-- Clear Filters -->
-                        <a href="{{ url_for('search') }}" 
-                           class="block w-full text-center text-gray-600 hover:text-gray-800 py-2 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition duration-200">
-                            Clear All
-                        </a>
+                        <div class="mb-3">
+                            <label for="sort_order" class="form-label">Sort Order</label>
+                            <select class="form-select" id="sort_order" name="sort_order">
+                                <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+                                <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+                            </select>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
+                                <i class="fas fa-times me-2"></i>Clear Filters
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
+        </div>
 
-            <!-- Search Results -->
-            <div class="lg:col-span-3">
-                <!-- Sort Options -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <label for="sort" class="text-sm font-medium text-gray-700">Sort by:</label>
-                            <select id="sort" name="sort" onchange="this.form.submit()" 
-                                    class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>Relevance</option>
-                                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                                <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Highest Rated</option>
-                                <option value="popularity" {% if sort == 'popularity' %}selected{% endif %}>Most Popular</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <button id="grid-view" class="p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                                </svg>
-                            </button>
-                            <button id="list-view" class="p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Results Grid -->
-                {% if results %}
-                <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {% for destination in results %}
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition duration-200">
-                        <div class="relative">
-                            <img src="{{ destination.image_url }}" alt="{{ destination.name }}" 
-                                 class="w-full h-48 object-cover">
-                            <div class="absolute top-4 right-4">
-                                <button class="wishlist-btn p-2 bg-white bg-opacity-90 rounded-full hover:bg-opacity-100 transition duration-200"
-                                        data-destination-id="{{ destination.id }}">
-                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="absolute bottom-4 left-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    {{ destination.category }}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ destination.name }}</h3>
-                            <p class="text-sm text-gray-600 mb-3">{{ destination.country }}</p>
-                            
-                            <div class="flex items-center mb-3">
-                                <div class="flex items-center">
-                                    {% for i in range(5) %}
-                                    <svg class="w-4 h-4 {% if i < destination.rating|int %}text-yellow-400{% else %}text-gray-300{% endif %}" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                    </svg>
-                                    {% endfor %}
-                                </div>
-                                <span class="ml-2 text-sm text-gray-600">{{ "%.1f"|format(destination.rating) }} ({{ destination.reviews_count }})</span>
-                            </div>
-                            
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="text-sm text-gray-600">
-                                    <span class="font-medium">{{ destination.duration }} days</span>
-                                </div>
-                                <div class="text-lg font-bold text-gray-900">
-                                    {{ format_price(destination.price) }}
-                                    <span class="text-sm font-normal text-gray-600">/day</span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex space-x-2">
-                                <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" 
-                                   class="flex-1 bg-blue-600 text-white text-center py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 text-sm font-medium">
-                                    View Details
-                                </a>
-                                <a href="{{ url_for('book_destination', destination_id=destination.id) }}" 
-                                   class="flex-1 bg-green-600 text-white text-center py-2 px-4 rounded-md hover:bg-green-700 transition duration-200 text-sm font-medium">
-                                    Book Now
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
-                <!-- Pagination -->
-                {% if pagination.pages > 1 %}
-                <div class="mt-8 flex items-center justify-center">
-                    <nav class="flex items-center space-x-2">
-                        {% if pagination.has_prev %}
-                        <a href="{{ url_for('search', page=pagination.prev_num, **request.args) }}" 
-                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                            Previous
-                        </a>
+        <!-- Search Results -->
+        <div class="col-lg-9">
+            <!-- Search Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">
+                        {% if query %}
+                            Search Results for "{{ query }}"
+                        {% else %}
+                            All Destinations
                         {% endif %}
-                        
-                        {% for page_num in pagination.iter_pages() %}
-                            {% if page_num %}
-                                {% if page_num != pagination.page %}
-                                <a href="{{ url_for('search', page=page_num, **request.args) }}" 
-                                   class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                                    {{ page_num }}
-                                </a>
-                                {% else %}
-                                <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
-                                    {{ page_num }}
-                                </span>
-                                {% endif %}
-                            {% else %}
-                            <span class="px-3 py-2 text-sm font-medium text-gray-500">...</span>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% if pagination.has_next %}
-                        <a href="{{ url_for('search', page=pagination.next_num, **request.args) }}" 
-                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                            Next
-                        </a>
-                        {% endif %}
-                    </nav>
+                    </h2>
+                    <p class="text-muted mb-0">
+                        {{ destinations|length }} destination{{ 's' if destinations|length != 1 else '' }} found
+                    </p>
                 </div>
-                {% endif %}
-
-                {% else %}
-                <!-- No Results -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900">No destinations found</h3>
-                    <p class="mt-1 text-sm text-gray-500">Try adjusting your search criteria or browse our popular destinations.</p>
-                    <div class="mt-6">
-                        <a href="{{ url_for('travel') }}" 
-                           class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                            Browse All Destinations
-                        </a>
-                    </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="toggleView('grid')">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="toggleView('list')">
+                        <i class="fas fa-list"></i>
+                    </button>
                 </div>
-                {% endif %}
             </div>
+
+            <!-- Active Filters -->
+            {% if query or category or price_min or price_max or duration_min or duration_max or rating_min or country or climate %}
+            <div class="mb-4">
+                <h6 class="mb-2">Active Filters:</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    {% if query %}
+                    <span class="badge bg-primary">Search: {{ query }}</span>
+                    {% endif %}
+                    {% if category %}
+                    <span class="badge bg-info">Category: {{ category }}</span>
+                    {% endif %}
+                    {% if price_min or price_max %}
+                    <span class="badge bg-success">Price: ${{ price_min or '0' }} - ${{ price_max or '∞' }}</span>
+                    {% endif %}
+                    {% if duration_min or duration_max %}
+                    <span class="badge bg-warning">Duration: {{ duration_min or '0' }} - {{ duration_max or '∞' }} days</span>
+                    {% endif %}
+                    {% if rating_min %}
+                    <span class="badge bg-danger">{{ rating_min }}+ Stars</span>
+                    {% endif %}
+                    {% if country %}
+                    <span class="badge bg-secondary">Country: {{ country }}</span>
+                    {% endif %}
+                    {% if climate %}
+                    <span class="badge bg-dark">Climate: {{ climate }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Results Grid -->
+            <div id="resultsGrid" class="row g-4">
+                {% for destination in destinations %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm hover-lift">
+                        <div class="position-relative">
+                            <img src="{{ destination.image_url }}" class="card-img-top" alt="{{ destination.name }}" style="height: 200px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-success">{{ destination.rating|round(1) }} <i class="fas fa-star"></i></span>
+                            </div>
+                            {% if destination.category %}
+                            <div class="position-absolute top-0 start-0 m-2">
+                                <span class="badge bg-primary">{{ destination.category|title }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ destination.name }}</h5>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ destination.country }}
+                            </p>
+                            <p class="card-text flex-grow-1">{{ destination.description[:100] }}{% if destination.description|length > 100 %}...{% endif %}</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="h5 text-primary mb-0">{{ format_price(destination.price) }}</span>
+                                <span class="text-muted">{{ destination.duration }} days</span>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="btn btn-outline-primary flex-fill">
+                                    <i class="fas fa-eye me-1"></i>View
+                                </a>
+                                <a href="{{ url_for('book_destination', destination_id=destination.id) }}" class="btn btn-success flex-fill">
+                                    <i class="fas fa-bookmark me-1"></i>Book
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- No Results -->
+            {% if destinations|length == 0 %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No destinations found</h4>
+                <p class="text-muted">Try adjusting your search criteria or browse all destinations.</p>
+                <a href="{{ url_for('travel') }}" class="btn btn-primary">
+                    <i class="fas fa-globe me-2"></i>Browse All Destinations
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
+<!-- Real-time Pricing Modal -->
+<div class="modal fade" id="pricingModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Real-time Pricing</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="pricingContent">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
 <script>
+// View toggle functionality
+function toggleView(view) {
+    const grid = document.getElementById('resultsGrid');
+    if (view === 'list') {
+        grid.className = 'row g-3';
+        grid.querySelectorAll('.col-md-6').forEach(col => {
+            col.className = 'col-12';
+        });
+    } else {
+        grid.className = 'row g-4';
+        grid.querySelectorAll('.col-12').forEach(col => {
+            col.className = 'col-md-6 col-lg-4';
+        });
+    }
+}
+
+// Clear all filters
+function clearFilters() {
+    document.getElementById('searchForm').reset();
+    window.location.href = "{{ url_for('search') }}";
+}
+
+// Real-time pricing functionality
+function getRealTimePricing(destinationId, travelDate, guests = 1) {
+    fetch(`/api/pricing/${destinationId}?date=${travelDate}&guests=${guests}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('pricingContent').innerHTML = `
+                    <div class="text-center">
+                        <h4>Real-time Price: ${data.price}</h4>
+                        <p class="text-muted">Based on demand and availability</p>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Travel Date:</strong><br>
+                                ${travelDate}
+                            </div>
+                            <div class="col-6">
+                                <strong>Guests:</strong><br>
+                                ${guests}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                new bootstrap.Modal(document.getElementById('pricingModal')).show();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching pricing:', error);
+        });
+}
+
+// Auto-submit form on filter change
 document.addEventListener('DOMContentLoaded', function() {
-    // View toggle functionality
-    const gridView = document.getElementById('grid-view');
-    const listView = document.getElementById('list-view');
-    const resultsGrid = document.getElementById('results-grid');
-
-    gridView.addEventListener('click', function() {
-        resultsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-        gridView.classList.remove('text-gray-400');
-        gridView.classList.add('text-blue-600');
-        listView.classList.remove('text-blue-600');
-        listView.classList.add('text-gray-400');
-    });
-
-    listView.addEventListener('click', function() {
-        resultsGrid.className = 'grid grid-cols-1 gap-6';
-        listView.classList.remove('text-gray-400');
-        listView.classList.add('text-blue-600');
-        gridView.classList.remove('text-blue-600');
-        gridView.classList.add('text-gray-400');
-    });
-
-    // Wishlist functionality
-    const wishlistButtons = document.querySelectorAll('.wishlist-btn');
-    wishlistButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const destinationId = this.getAttribute('data-destination-id');
-            // Add wishlist functionality here
-            this.classList.toggle('text-red-500');
+    const form = document.getElementById('searchForm');
+    const inputs = form.querySelectorAll('select, input[type="number"]');
+    
+    inputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Don't auto-submit for search input
+            if (input.id !== 'q') {
+                form.submit();
+            }
         });
     });
+});
 
-    // Auto-submit form on sort change
-    const sortSelect = document.getElementById('sort');
-    sortSelect.addEventListener('change', function() {
-        this.form.submit();
-    });
+// Search suggestions
+document.getElementById('q').addEventListener('input', function() {
+    const query = this.value;
+    if (query.length > 2) {
+        // Implement search suggestions here
+        console.log('Searching for:', query);
+    }
 });
 </script>
 {% endblock %} 
