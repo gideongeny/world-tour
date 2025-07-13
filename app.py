@@ -41,12 +41,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # 1 year cache for static files
 app.config['TEMPLATES_AUTO_RELOAD'] = False  # Disable auto-reload in production
 
-# Database connection pooling
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'pool_size': 10,
-    'pool_recycle': 3600,
-    'pool_pre_ping': True
-}
+# Database connection pooling (only for non-SQLite databases)
+if not app.config['SQLALCHEMY_DATABASE_URI'].startswith('sqlite'):
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_size': 10,
+        'pool_recycle': 3600,
+        'pool_pre_ping': True
+    }
 
 # Enable database query logging for performance monitoring
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
