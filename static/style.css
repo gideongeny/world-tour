@@ -313,6 +313,63 @@ input:focus, select:focus, textarea:focus {
     }
 }
 
+/* Live Date & Time Display */
+.live-datetime {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-left: 20px;
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.live-datetime:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.live-datetime i {
+    margin-right: 8px;
+    color: #ffd700;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.live-datetime span {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+}
+
+/* Mobile responsive for date/time */
+@media (max-width: 768px) {
+    .live-datetime {
+        font-size: 0.8rem;
+        margin-left: 10px;
+        padding: 6px 12px;
+    }
+    
+    .live-datetime span {
+        display: none; /* Hide on very small screens */
+    }
+    
+    .live-datetime::after {
+        content: "Live";
+        font-size: 0.7rem;
+        color: #ffd700;
+    }
+}
+
 /* Buttons */
 .btn {
     display: inline-block;
