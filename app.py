@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, session, make_response, g
 from flask_sqlalchemy import SQLAlchemy
+from db import db
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
@@ -96,7 +97,6 @@ app.config['MAIL_USERNAME'] = 'your-email@gmail.com'  # Change this
 app.config['MAIL_PASSWORD'] = 'your-app-password'     # Change this
 
 # Import new models
-from new_models import *
 
 # Currency configuration
 app.config['DEFAULT_CURRENCY'] = 'USD'
@@ -108,9 +108,11 @@ app.config['SUPPORTED_CURRENCIES'] = {
     'CAD': {'symbol': 'C$', 'name': 'Canadian Dollar'},
     'AUD': {'symbol': 'A$', 'name': 'Australian Dollar'}
 }
-
 db = SQLAlchemy(app)
+
+db.init_app(app)
 migrate = Migrate(app, db)
+from new_models import *
 babel = Babel(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -802,7 +804,7 @@ def payment_cancel():
 
 # Routes
 @app.route('/')
-@cache_result(timeout=300)  # Cache homepage for 5 minutes
+#@cache_result(timeout=300)  # Cache homepage for 5 minutes
 def home():
     # Get personalized recommendations if user is logged in
     personalized_destinations = []
@@ -1166,7 +1168,7 @@ def cache_result(timeout=300):
     return decorator
 
 @app.route('/travel')
-@cache_result(timeout=600)  # Cache for 10 minutes
+#@cache_result(timeout=600)  # Cache for 10 minutes
 def travel():
     category = request.args.get('category', '')
     search = request.args.get('search', '')
@@ -5523,31 +5525,7 @@ def update_location():
 def chat():
     return render_template('chat.html')
 
-@app.route('/api/chat/send', methods=['POST'])
-@login_required
-def send_chat_message():
-    data = request.get_json()
-    
-    # Get or create chat session
-    chat = SupportChat.query.filter_by(user_id=current_user.id, status='active').first()
-    if not chat:
-        chat = SupportChat(
-            user_id=current_user.id,
-            session_id=str(uuid.uuid4())
-        )
-        db.session.add(chat)
-        db.session.commit()
-    
-    message = ChatMessage(
-        chat_id=chat.id,
-        sender_type='user',
-        sender_id=current_user.id,
-        message=data['message']
-    )
-    db.session.add(message)
-    db.session.commit()
-    
-    return jsonify({'success': True, 'message_id': message.id})
+
 
 # Testing Routes
 @app.route('/admin/tests')
@@ -6145,22 +6123,6 @@ class BoardingPass(db.Model):
     booking = db.relationship('Booking', backref='boarding_passes')
 
 # Customer Support Models
-class SupportTicket(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    subject = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    category = db.Column(db.String(50))  # booking, payment, technical, general
-    priority = db.Column(db.String(20), default='medium')  # low, medium, high, urgent
-    status = db.Column(db.String(20), default='open')  # open, in_progress, resolved, closed
-    assigned_to = db.Column(db.Integer, db.ForeignKey('user.id'))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    resolved_at = db.Column(db.DateTime)
-    user = db.relationship('User', foreign_keys=[user_id], backref='support_tickets')
-    agent = db.relationship('User', foreign_keys=[assigned_to], backref='assigned_tickets')
-    messages = db.relationship('TicketMessage', backref='ticket', lazy=True, cascade='all, delete-orphan')
-
 class TicketMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ticket_id = db.Column(db.Integer, db.ForeignKey('support_ticket.id'), nullable=False)

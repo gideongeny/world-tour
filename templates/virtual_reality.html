@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Virtual Reality Tours - World Tour{% endblock %}
+{% block title %}Virtual Reality Travel - World Tour{% endblock %}
 
 {% block content %}
 <div class="container-fluid p-0">
@@ -9,43 +9,44 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4">Virtual Reality Tours</h1>
-                    <p class="lead mb-4">Experience destinations in immersive 360° virtual reality. Explore cities, landmarks, and hotels before you book. Feel like you're already there!</p>
+                    <h1 class="display-4 fw-bold mb-4">Virtual Reality Travel</h1>
+                    <p class="lead mb-4">Experience destinations in immersive 360° virtual reality before you book. Explore cities, hotels, and attractions from anywhere in the world.</p>
                     <div class="d-flex gap-3">
-                        <button class="btn btn-light btn-lg" id="startVRTour">
-                            <i class="fas fa-vr-cardboard me-2"></i>Start VR Tour
+                        <button class="btn btn-light btn-lg" id="startVRBtn">
+                            <i class="fas fa-vr-cardboard me-2"></i>Start VR Experience
                         </button>
                         <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#vrHelpModal">
-                            <i class="fas fa-question-circle me-2"></i>How to Use
+                            <i class="fas fa-info-circle me-2"></i>VR Guide
                         </button>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="vr-animation text-center">
                         <div class="vr-headset">
-                            <div class="vr-lens left"></div>
-                            <div class="vr-lens right"></div>
-                            <div class="vr-screen"></div>
+                            <div class="headset-frame"></div>
+                            <div class="headset-lens left"></div>
+                            <div class="headset-lens right"></div>
+                            <div class="headset-strap"></div>
                         </div>
-                        <p class="text-white-50 mt-3">Immersive 360° experiences</p>
+                        <p class="text-white-50 mt-3">Immersive VR technology</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- VR Tour Interface -->
+    <!-- VR Experience Interface -->
     <div class="container py-5">
         <div class="row">
-            <div class="col-lg-9">
+            <div class="col-lg-8">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0"><i class="fas fa-vr-cardboard me-2"></i>Virtual Reality Experience</h4>
+                        <h4 class="mb-0"><i class="fas fa-vr-cardboard me-2"></i>VR Travel Experience</h4>
                         <div class="vr-controls">
-                            <button class="btn btn-light btn-sm" id="fullscreenBtn">
+                            <button class="btn btn-sm btn-outline-light" id="fullscreenBtn">
                                 <i class="fas fa-expand"></i>
                             </button>
-                            <button class="btn btn-light btn-sm" id="vrModeBtn">
+                            <button class="btn btn-sm btn-outline-light" id="vrModeBtn">
                                 <i class="fas fa-vr-cardboard"></i>
                             </button>
                         </div>
@@ -55,37 +56,79 @@
                         <div class="vr-viewer" id="vrViewer">
                             <div class="vr-scene" id="vrScene">
                                 <!-- 360° panorama will be loaded here -->
-                                <div class="loading-spinner">
-                                    <div class="spinner"></div>
-                                    <p>Loading VR experience...</p>
+                                <div class="loading-overlay" id="loadingOverlay">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-3">Loading VR experience...</p>
                                 </div>
-                            </div>
-                            
-                            <!-- VR Hotspots -->
-                            <div class="vr-hotspots" id="vrHotspots">
-                                <!-- Hotspots will be generated dynamically -->
                             </div>
                             
                             <!-- VR Controls -->
                             <div class="vr-controls-overlay">
                                 <div class="control-group">
-                                    <button class="vr-control-btn" id="moveLeft">
+                                    <button class="control-btn" id="moveLeft">
                                         <i class="fas fa-arrow-left"></i>
                                     </button>
-                                    <button class="vr-control-btn" id="moveForward">
+                                    <button class="control-btn" id="moveForward">
                                         <i class="fas fa-arrow-up"></i>
                                     </button>
-                                    <button class="vr-control-btn" id="moveRight">
+                                    <button class="control-btn" id="moveRight">
                                         <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                    <button class="control-btn" id="moveBack">
+                                        <i class="fas fa-arrow-down"></i>
                                     </button>
                                 </div>
                                 <div class="control-group">
-                                    <button class="vr-control-btn" id="lookUp">
+                                    <button class="control-btn" id="lookUp">
                                         <i class="fas fa-chevron-up"></i>
                                     </button>
-                                    <button class="vr-control-btn" id="lookDown">
+                                    <button class="control-btn" id="lookDown">
                                         <i class="fas fa-chevron-down"></i>
                                     </button>
+                                </div>
+                            </div>
+
+                            <!-- VR Hotspots -->
+                            <div class="vr-hotspots" id="vrHotspots">
+                                <!-- Hotspots will be dynamically added -->
+                            </div>
+
+                            <!-- VR Info Panel -->
+                            <div class="vr-info-panel" id="vrInfoPanel">
+                                <div class="info-header">
+                                    <h5 id="locationName">Select a Destination</h5>
+                                    <button class="btn-close" id="closeInfoPanel">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="info-content">
+                                    <div class="location-description" id="locationDescription">
+                                        Choose a destination from the list to start your VR experience.
+                                    </div>
+                                    <div class="location-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span id="locationAddress">-</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span id="locationHours">-</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-star"></i>
+                                            <span id="locationRating">-</span>
+                                        </div>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary" id="bookLocationBtn">
+                                            <i class="fas fa-calendar-check me-2"></i>Book Now
+                                        </button>
+                                        <button class="btn btn-outline-primary" id="viewDetailsBtn">
+                                            <i class="fas fa-info-circle me-2"></i>View Details
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -94,181 +137,216 @@
             </div>
 
             <!-- Sidebar -->
-            <div class="col-lg-3">
-                <!-- Destination Info -->
+            <div class="col-lg-4">
+                <!-- Destination Selection -->
                 <div class="card shadow mb-4">
                     <div class="card-header bg-success text-white">
-                        <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Current Location</h5>
+                        <h5 class="mb-0"><i class="fas fa-globe me-2"></i>VR Destinations</h5>
                     </div>
                     <div class="card-body">
-                        <div class="location-info">
-                            <h6 id="currentLocation">Paris, France</h6>
-                            <p class="text-muted" id="locationDescription">Experience the magic of the City of Light in stunning 360° virtual reality.</p>
-                            <div class="location-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Hotspots</span>
-                                    <span class="stat-value" id="hotspotCount">12</span>
+                        <div class="destination-list" id="destinationList">
+                            <div class="destination-item active" data-destination="paris">
+                                <img src="/static/paris.jpg" alt="Paris" class="destination-thumb">
+                                <div class="destination-info">
+                                    <div class="destination-name">Paris, France</div>
+                                    <div class="destination-type">City Tour</div>
+                                    <div class="destination-duration">15 min</div>
                                 </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Duration</span>
-                                    <span class="stat-value" id="tourDuration">15 min</span>
+                                <div class="destination-status">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            </div>
+                            <div class="destination-item" data-destination="bali">
+                                <img src="/static/bali.jpg" alt="Bali" class="destination-thumb">
+                                <div class="destination-info">
+                                    <div class="destination-name">Bali, Indonesia</div>
+                                    <div class="destination-type">Beach Resort</div>
+                                    <div class="destination-duration">20 min</div>
+                                </div>
+                                <div class="destination-status">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            </div>
+                            <div class="destination-item" data-destination="tokyo">
+                                <img src="/static/tokyo.jpg" alt="Tokyo" class="destination-thumb">
+                                <div class="destination-info">
+                                    <div class="destination-name">Tokyo, Japan</div>
+                                    <div class="destination-type">City Experience</div>
+                                    <div class="destination-duration">18 min</div>
+                                </div>
+                                <div class="destination-status">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            </div>
+                            <div class="destination-item" data-destination="santorini">
+                                <img src="/static/greece.jpg" alt="Santorini" class="destination-thumb">
+                                <div class="destination-info">
+                                    <div class="destination-name">Santorini, Greece</div>
+                                    <div class="destination-type">Island Paradise</div>
+                                    <div class="destination-duration">25 min</div>
+                                </div>
+                                <div class="destination-status">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            </div>
+                            <div class="destination-item" data-destination="machu-picchu">
+                                <img src="/static/lima.jpg" alt="Machu Picchu" class="destination-thumb">
+                                <div class="destination-info">
+                                    <div class="destination-name">Machu Picchu, Peru</div>
+                                    <div class="destination-type">Ancient Wonder</div>
+                                    <div class="destination-duration">30 min</div>
+                                </div>
+                                <div class="destination-status">
+                                    <i class="fas fa-play"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Hotspots List -->
+                <!-- VR Features -->
                 <div class="card shadow mb-4">
                     <div class="card-header bg-info text-white">
-                        <h5 class="mb-0"><i class="fas fa-crosshairs me-2"></i>Interactive Hotspots</h5>
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>VR Features</h5>
                     </div>
                     <div class="card-body">
-                        <div class="hotspots-list" id="hotspotsList">
-                            <div class="hotspot-item active" data-hotspot="eiffel-tower">
-                                <div class="hotspot-icon">
-                                    <i class="fas fa-monument"></i>
+                        <div class="vr-features">
+                            <div class="feature-item">
+                                <div class="feature-icon bg-primary">
+                                    <i class="fas fa-360-degrees"></i>
                                 </div>
-                                <div class="hotspot-details">
-                                    <div class="hotspot-name">Eiffel Tower</div>
-                                    <div class="hotspot-description">Iconic iron lattice tower</div>
-                                </div>
-                            </div>
-                            <div class="hotspot-item" data-hotspot="louvre">
-                                <div class="hotspot-icon">
-                                    <i class="fas fa-landmark"></i>
-                                </div>
-                                <div class="hotspot-details">
-                                    <div class="hotspot-name">Louvre Museum</div>
-                                    <div class="hotspot-description">World's largest art museum</div>
+                                <div class="feature-details">
+                                    <div class="feature-name">360° Panoramas</div>
+                                    <div class="feature-description">Full immersive experience</div>
                                 </div>
                             </div>
-                            <div class="hotspot-item" data-hotspot="notre-dame">
-                                <div class="hotspot-icon">
-                                    <i class="fas fa-church"></i>
+                            <div class="feature-item">
+                                <div class="feature-icon bg-success">
+                                    <i class="fas fa-hand-pointer"></i>
                                 </div>
-                                <div class="hotspot-details">
-                                    <div class="hotspot-name">Notre-Dame</div>
-                                    <div class="hotspot-description">Medieval Catholic cathedral</div>
+                                <div class="feature-details">
+                                    <div class="feature-name">Interactive Hotspots</div>
+                                    <div class="feature-description">Click to explore details</div>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon bg-warning">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="feature-details">
+                                    <div class="feature-name">Mobile Compatible</div>
+                                    <div class="feature-description">Works on all devices</div>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon bg-danger">
+                                    <i class="fas fa-vr-cardboard"></i>
+                                </div>
+                                <div class="feature-details">
+                                    <div class="feature-name">VR Headset Ready</div>
+                                    <div class="feature-description">Full VR immersion</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- VR Settings -->
+                <!-- VR Controls Guide -->
                 <div class="card shadow mb-4">
                     <div class="card-header bg-warning text-dark">
-                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>VR Settings</h5>
+                        <h5 class="mb-0"><i class="fas fa-gamepad me-2"></i>Controls</h5>
                     </div>
                     <div class="card-body">
-                        <div class="setting-item">
-                            <label class="form-label">Quality</label>
-                            <select class="form-select" id="qualitySetting">
-                                <option value="low">Low (Faster)</option>
-                                <option value="medium" selected>Medium (Balanced)</option>
-                                <option value="high">High (Best)</option>
-                            </select>
-                        </div>
-                        <div class="setting-item">
-                            <label class="form-label">Movement Speed</label>
-                            <input type="range" class="form-range" id="movementSpeed" min="1" max="10" value="5">
-                        </div>
-                        <div class="setting-item">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="autoRotate" checked>
-                                <label class="form-check-label" for="autoRotate">
-                                    Auto-rotate view
-                                </label>
+                        <div class="controls-guide">
+                            <div class="control-guide-item">
+                                <div class="control-key">Mouse/Touch</div>
+                                <div class="control-action">Look around</div>
+                            </div>
+                            <div class="control-guide-item">
+                                <div class="control-key">WASD</div>
+                                <div class="control-action">Move around</div>
+                            </div>
+                            <div class="control-guide-item">
+                                <div class="control-key">Click</div>
+                                <div class="control-action">Select hotspots</div>
+                            </div>
+                            <div class="control-guide-item">
+                                <div class="control-key">F11</div>
+                                <div class="control-action">Fullscreen</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
+                <!-- VR Statistics -->
                 <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>VR Statistics</h5>
+                    </div>
                     <div class="card-body">
-                        <button class="btn btn-primary w-100 mb-2" id="bookExperienceBtn">
-                            <i class="fas fa-calendar-check me-2"></i>Book This Experience
-                        </button>
-                        <button class="btn btn-outline-secondary w-100 mb-2" id="shareExperienceBtn">
-                            <i class="fas fa-share me-2"></i>Share Experience
-                        </button>
-                        <button class="btn btn-outline-info w-100" id="downloadTourBtn">
-                            <i class="fas fa-download me-2"></i>Download Tour
-                        </button>
+                        <div class="vr-stats">
+                            <div class="stat-item">
+                                <div class="stat-number" id="totalViews">1,247</div>
+                                <div class="stat-label">Total Views</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="avgSession">12.5</div>
+                                <div class="stat-label">Avg. Session (min)</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="conversionRate">23%</div>
+                                <div class="stat-label">Conversion Rate</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="userRating">4.8</div>
+                                <div class="stat-label">User Rating</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Available VR Tours -->
+    <!-- VR Technology -->
     <div class="bg-light py-5">
         <div class="container">
-            <h2 class="text-center mb-5">Available VR Tours</h2>
+            <h2 class="text-center mb-5">VR Technology Benefits</h2>
             <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="vr-tour-card">
-                        <div class="tour-preview">
-                            <img src="/static/images/paris-vr.jpg" alt="Paris VR Tour">
-                            <div class="tour-overlay">
-                                <button class="btn btn-light" onclick="loadVRTour('paris')">
-                                    <i class="fas fa-play me-2"></i>Start Tour
-                                </button>
-                            </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-eye fa-2x"></i>
                         </div>
-                        <div class="tour-info">
-                            <h5>Paris, France</h5>
-                            <p>Experience the magic of the City of Light with 15 interactive hotspots.</p>
-                            <div class="tour-meta">
-                                <span><i class="fas fa-clock me-1"></i>15 min</span>
-                                <span><i class="fas fa-crosshairs me-1"></i>15 hotspots</span>
-                                <span><i class="fas fa-star me-1"></i>4.8</span>
-                            </div>
-                        </div>
+                        <h5>See Before You Go</h5>
+                        <p class="text-muted">Experience destinations in immersive 360° before making travel decisions. See exactly what you're booking.</p>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="vr-tour-card">
-                        <div class="tour-preview">
-                            <img src="/static/images/tokyo-vr.jpg" alt="Tokyo VR Tour">
-                            <div class="tour-overlay">
-                                <button class="btn btn-light" onclick="loadVRTour('tokyo')">
-                                    <i class="fas fa-play me-2"></i>Start Tour
-                                </button>
-                            </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-hand-pointer fa-2x"></i>
                         </div>
-                        <div class="tour-info">
-                            <h5>Tokyo, Japan</h5>
-                            <p>Explore the vibrant streets and modern architecture of Tokyo.</p>
-                            <div class="tour-meta">
-                                <span><i class="fas fa-clock me-1"></i>20 min</span>
-                                <span><i class="fas fa-crosshairs me-1"></i>18 hotspots</span>
-                                <span><i class="fas fa-star me-1"></i>4.9</span>
-                            </div>
-                        </div>
+                        <h5>Interactive Exploration</h5>
+                        <p class="text-muted">Click on hotspots to learn more about attractions, restaurants, and points of interest.</p>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="vr-tour-card">
-                        <div class="tour-preview">
-                            <img src="/static/images/newyork-vr.jpg" alt="New York VR Tour">
-                            <div class="tour-overlay">
-                                <button class="btn btn-light" onclick="loadVRTour('newyork')">
-                                    <i class="fas fa-play me-2"></i>Start Tour
-                                </button>
-                            </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-mobile-alt fa-2x"></i>
                         </div>
-                        <div class="tour-info">
-                            <h5>New York, USA</h5>
-                            <p>Discover the iconic landmarks and bustling streets of NYC.</p>
-                            <div class="tour-meta">
-                                <span><i class="fas fa-clock me-1"></i>18 min</span>
-                                <span><i class="fas fa-crosshairs me-1"></i>16 hotspots</span>
-                                <span><i class="fas fa-star me-1"></i>4.7</span>
-                            </div>
+                        <h5>Anywhere Access</h5>
+                        <p class="text-muted">Access VR experiences on any device - desktop, tablet, or mobile. No special equipment needed.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-vr-cardboard fa-2x"></i>
                         </div>
+                        <h5>VR Headset Ready</h5>
+                        <p class="text-muted">Full VR headset compatibility for the most immersive experience possible.</p>
                     </div>
                 </div>
             </div>
@@ -281,33 +359,35 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">How to Use VR Tours</h5>
+                <h5 class="modal-title">VR Experience Guide</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h6>Desktop Controls</h6>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-mouse me-2"></i>Click and drag to look around</li>
-                            <li><i class="fas fa-arrows-alt me-2"></i>Use arrow keys to move</li>
-                            <li><i class="fas fa-expand me-2"></i>Press F for fullscreen</li>
-                            <li><i class="fas fa-crosshairs me-2"></i>Click hotspots to interact</li>
-                        </ul>
+                        <h6>Getting Started</h6>
+                        <ol>
+                            <li>Select a destination from the list</li>
+                            <li>Wait for the VR experience to load</li>
+                            <li>Use mouse/touch to look around</li>
+                            <li>Click on hotspots for more information</li>
+                            <li>Use VR mode for headset experience</li>
+                        </ol>
                     </div>
                     <div class="col-md-6">
-                        <h6>Mobile Controls</h6>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-mobile-alt me-2"></i>Move device to look around</li>
-                            <li><i class="fas fa-hand-pointer me-2"></i>Tap to interact</li>
-                            <li><i class="fas fa-vr-cardboard me-2"></i>Use VR headset for immersion</li>
-                            <li><i class="fas fa-volume-up me-2"></i>Enable sound for full experience</li>
+                        <h6>Best Experience</h6>
+                        <ul>
+                            <li><strong>Desktop:</strong> Use mouse for smooth navigation</li>
+                            <li><strong>Mobile:</strong> Hold device in landscape mode</li>
+                            <li><strong>VR Headset:</strong> Enable VR mode for immersion</li>
+                            <li><strong>Internet:</strong> High-speed connection recommended</li>
+                            <li><strong>Fullscreen:</strong> Press F11 for best view</li>
                         </ul>
                     </div>
                 </div>
                 <div class="alert alert-info mt-3">
                     <i class="fas fa-info-circle me-2"></i>
-                    <strong>Pro tip:</strong> For the best experience, use a VR headset or view in fullscreen mode on a large screen.
+                    <strong>Compatibility:</strong> VR experiences work on all modern browsers and devices. For the best experience, use Chrome, Firefox, or Safari.
                 </div>
             </div>
         </div>
@@ -318,44 +398,67 @@
 .vr-headset {
     position: relative;
     width: 200px;
-    height: 120px;
+    height: 150px;
     margin: 0 auto;
-    background: linear-gradient(45deg, #333, #666);
-    border-radius: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
-.vr-lens {
-    width: 60px;
-    height: 60px;
-    background: radial-gradient(circle, #000 30%, #333 70%);
-    border-radius: 50%;
+.headset-frame {
     position: absolute;
-    top: 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 80px;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    animation: headsetFloat 3s ease-in-out infinite;
 }
 
-.vr-lens.left {
-    left: 30px;
+.headset-lens {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: lensGlow 2s ease-in-out infinite;
 }
 
-.vr-lens.right {
-    right: 30px;
+.headset-lens.left {
+    left: 15px;
 }
 
-.vr-screen {
-    width: 80px;
-    height: 40px;
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    border-radius: 8px;
-    animation: screenGlow 2s infinite alternate;
+.headset-lens.right {
+    right: 15px;
+    animation-delay: 1s;
 }
 
-@keyframes screenGlow {
-    0% { box-shadow: 0 0 10px rgba(102, 126, 234, 0.5); }
-    100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
+.headset-strap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 2px;
+    animation: strapStretch 2s ease-in-out infinite;
+}
+
+@keyframes headsetFloat {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+    50% { transform: translate(-50%, -50%) translateY(-10px); }
+}
+
+@keyframes lensGlow {
+    0%, 100% { opacity: 0.6; transform: translateY(-50%) scale(1); }
+    50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
+}
+
+@keyframes strapStretch {
+    0%, 100% { transform: translate(-50%, -50%) scaleX(1); }
+    50% { transform: translate(-50%, -50%) scaleX(1.1); }
 }
 
 .vr-viewer {
@@ -363,7 +466,7 @@
     width: 100%;
     height: 500px;
     background: #000;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
 }
 
@@ -371,37 +474,58 @@
     width: 100%;
     height: 100%;
     position: relative;
-    background: url('/static/images/paris-360.jpg') center center;
-    background-size: cover;
-    cursor: grab;
+    background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
 }
 
-.vr-scene:active {
-    cursor: grabbing;
-}
-
-.loading-spinner {
+.loading-overlay {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     color: white;
+    z-index: 10;
 }
 
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid white;
+.vr-controls-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 5;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.control-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
 
 .vr-hotspots {
@@ -411,202 +535,298 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
+    z-index: 3;
 }
 
-.vr-hotspot {
+.hotspot {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.9);
+    width: 30px;
+    height: 30px;
+    background: rgba(102, 126, 234, 0.8);
+    border: 2px solid white;
     border-radius: 50%;
+    cursor: pointer;
+    pointer-events: all;
+    animation: hotspotPulse 2s infinite;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    pointer-events: all;
-    animation: pulse 2s infinite;
-    transition: all 0.3s ease;
-}
-
-.vr-hotspot:hover {
-    transform: scale(1.2);
-    background: rgba(102, 126, 234, 0.9);
     color: white;
+    font-size: 0.8rem;
 }
 
-.vr-controls-overlay {
+.hotspot:hover {
+    background: rgba(102, 126, 234, 1);
+    transform: scale(1.2);
+}
+
+@keyframes hotspotPulse {
+    0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+}
+
+.vr-info-panel {
     position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.vr-info-panel.active {
+    transform: translateX(0);
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.info-header h5 {
+    margin: 0;
+    color: #495057;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.info-content {
+    padding: 20px;
+}
+
+.location-description {
+    color: #6c757d;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.location-details {
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.detail-item i {
+    width: 16px;
+    color: #667eea;
+}
+
+.action-buttons {
     display: flex;
     gap: 10px;
 }
 
-.control-group {
+.action-buttons .btn {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.destination-list {
     display: flex;
-    gap: 5px;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.vr-control-btn {
-    width: 40px;
-    height: 40px;
-    background: rgba(0, 0, 0, 0.7);
-    border: none;
-    border-radius: 50%;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.vr-control-btn:hover {
-    background: rgba(102, 126, 234, 0.8);
-    transform: scale(1.1);
-}
-
-.location-stats {
-    display: flex;
-    gap: 20px;
-    margin-top: 15px;
-}
-
-.stat-item {
-    text-align: center;
-}
-
-.stat-label {
-    display: block;
-    font-size: 0.8rem;
-    color: #6c757d;
-}
-
-.stat-value {
-    display: block;
-    font-weight: bold;
-    color: #495057;
-}
-
-.hotspots-list {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.hotspot-item {
+.destination-item {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 12px;
+    background: #f8f9fa;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-bottom: 8px;
+    border: 2px solid transparent;
 }
 
-.hotspot-item:hover {
+.destination-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.destination-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.destination-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.destination-info {
+    flex: 1;
+}
+
+.destination-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.destination-type {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin: 2px 0;
+}
+
+.destination-item.active .destination-type {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.destination-duration {
+    font-size: 0.8rem;
+    color: #28a745;
+    font-weight: 500;
+}
+
+.destination-item.active .destination-duration {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.destination-status {
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+.destination-item.active .destination-status {
+    color: white;
+}
+
+.vr-features {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
     background: #f8f9fa;
+    border-radius: 8px;
 }
 
-.hotspot-item.active {
-    background: #e3f2fd;
-    border-left: 4px solid #2196f3;
-}
-
-.hotspot-icon {
+.feature-icon {
     width: 40px;
     height: 40px;
-    background: #667eea;
-    color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
     flex-shrink: 0;
 }
 
-.hotspot-details {
+.feature-details {
     flex: 1;
 }
 
-.hotspot-name {
+.feature-name {
     font-weight: 600;
     color: #495057;
+    font-size: 0.9rem;
 }
 
-.hotspot-description {
+.feature-description {
     font-size: 0.8rem;
     color: #6c757d;
 }
 
-.setting-item {
-    margin-bottom: 20px;
+.controls-guide {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.setting-item:last-child {
-    margin-bottom: 0;
+.control-guide-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
 }
 
-.vr-tour-card {
+.control-key {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.control-action {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.vr-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.feature-card {
     background: white;
     border-radius: 12px;
-    overflow: hidden;
+    padding: 30px 20px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     transition: transform 0.3s ease;
 }
 
-.vr-tour-card:hover {
+.feature-card:hover {
     transform: translateY(-5px);
 }
 
-.tour-preview {
-    position: relative;
-    height: 200px;
-    overflow: hidden;
+.feature-icon {
+    transition: transform 0.3s ease;
 }
 
-.tour-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.tour-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.vr-tour-card:hover .tour-overlay {
-    opacity: 1;
-}
-
-.tour-info {
-    padding: 20px;
-}
-
-.tour-info h5 {
-    margin-bottom: 10px;
-    color: #495057;
-}
-
-.tour-info p {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-}
-
-.tour-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: #6c757d;
+.feature-icon:hover {
+    transform: scale(1.1);
 }
 
 @media (max-width: 768px) {
@@ -616,40 +836,58 @@
     
     .vr-controls-overlay {
         bottom: 10px;
+        gap: 10px;
     }
     
-    .vr-control-btn {
+    .control-btn {
         width: 35px;
         height: 35px;
         font-size: 0.8rem;
+    }
+    
+    .vr-info-panel {
+        width: 90%;
+        right: 5%;
+        left: 5%;
+    }
+    
+    .destination-item {
+        padding: 8px;
+    }
+    
+    .destination-thumb {
+        width: 50px;
+        height: 50px;
     }
 }
 </style>
 
 <script>
-class VirtualRealityTour {
+class VirtualRealityExperience {
     constructor() {
-        this.currentTour = 'paris';
+        this.currentDestination = null;
         this.isVRMode = false;
         this.isFullscreen = false;
-        this.autoRotate = true;
-        this.movementSpeed = 5;
-        this.quality = 'medium';
         this.hotspots = [];
-        this.currentHotspot = null;
         this.init();
     }
 
     init() {
         this.bindEvents();
-        this.loadTour(this.currentTour);
-        this.setupHotspots();
+        this.loadDestination('paris');
     }
 
     bindEvents() {
+        // Destination selection
+        document.querySelectorAll('.destination-item').forEach(item => {
+            item.addEventListener('click', () => {
+                this.selectDestination(item.dataset.destination);
+            });
+        });
+
         // VR controls
-        document.getElementById('startVRTour').addEventListener('click', () => {
-            this.startTour();
+        document.getElementById('startVRBtn').addEventListener('click', () => {
+            this.startVRExperience();
         });
 
         document.getElementById('fullscreenBtn').addEventListener('click', () => {
@@ -673,6 +911,10 @@ class VirtualRealityTour {
             this.move('forward');
         });
 
+        document.getElementById('moveBack').addEventListener('click', () => {
+            this.move('back');
+        });
+
         document.getElementById('lookUp').addEventListener('click', () => {
             this.look('up');
         });
@@ -681,352 +923,352 @@ class VirtualRealityTour {
             this.look('down');
         });
 
-        // Settings
-        document.getElementById('qualitySetting').addEventListener('change', (e) => {
-            this.setQuality(e.target.value);
+        // Info panel
+        document.getElementById('closeInfoPanel').addEventListener('click', () => {
+            this.closeInfoPanel();
         });
 
-        document.getElementById('movementSpeed').addEventListener('input', (e) => {
-            this.setMovementSpeed(e.target.value);
+        document.getElementById('bookLocationBtn').addEventListener('click', () => {
+            this.bookLocation();
         });
 
-        document.getElementById('autoRotate').addEventListener('change', (e) => {
-            this.setAutoRotate(e.target.checked);
+        document.getElementById('viewDetailsBtn').addEventListener('click', () => {
+            this.viewDetails();
         });
 
-        // Hotspot interactions
-        document.querySelectorAll('.hotspot-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const hotspotId = item.dataset.hotspot;
-                this.activateHotspot(hotspotId);
-            });
-        });
-
-        // Action buttons
-        document.getElementById('bookExperienceBtn').addEventListener('click', () => {
-            this.bookExperience();
-        });
-
-        document.getElementById('shareExperienceBtn').addEventListener('click', () => {
-            this.shareExperience();
-        });
-
-        document.getElementById('downloadTourBtn').addEventListener('click', () => {
-            this.downloadTour();
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            this.handleKeyboard(e);
         });
 
         // Mouse/touch controls
-        this.setupMouseControls();
+        const vrScene = document.getElementById('vrScene');
+        vrScene.addEventListener('mousedown', (e) => {
+            this.startDrag(e);
+        });
+
+        vrScene.addEventListener('mousemove', (e) => {
+            this.drag(e);
+        });
+
+        vrScene.addEventListener('mouseup', () => {
+            this.endDrag();
+        });
+
+        // Touch controls for mobile
+        vrScene.addEventListener('touchstart', (e) => {
+            this.startTouch(e);
+        });
+
+        vrScene.addEventListener('touchmove', (e) => {
+            this.moveTouch(e);
+        });
+
+        vrScene.addEventListener('touchend', () => {
+            this.endTouch();
+        });
     }
 
-    loadTour(tourName) {
-        const tours = {
-            paris: {
+    selectDestination(destination) {
+        // Update active destination
+        document.querySelectorAll('.destination-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`[data-destination="${destination}"]`).classList.add('active');
+
+        // Load destination
+        this.loadDestination(destination);
+    }
+
+    loadDestination(destination) {
+        this.currentDestination = destination;
+        
+        // Show loading
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        
+        // Simulate loading time
+        setTimeout(() => {
+            this.setupDestination(destination);
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }, 2000);
+    }
+
+    setupDestination(destination) {
+        const destinations = {
+            'paris': {
                 name: 'Paris, France',
-                description: 'Experience the magic of the City of Light in stunning 360° virtual reality.',
-                hotspots: 12,
-                duration: '15 min',
-                background: '/static/images/paris-360.jpg',
+                description: 'Experience the magic of the City of Light with stunning views of the Eiffel Tower, Champs-Élysées, and iconic landmarks.',
+                address: 'Paris, Île-de-France, France',
+                hours: '24/7',
+                rating: '4.9/5',
                 hotspots: [
-                    { id: 'eiffel-tower', x: 50, y: 30, name: 'Eiffel Tower', description: 'Iconic iron lattice tower' },
-                    { id: 'louvre', x: 70, y: 60, name: 'Louvre Museum', description: 'World\'s largest art museum' },
-                    { id: 'notre-dame', x: 30, y: 70, name: 'Notre-Dame', description: 'Medieval Catholic cathedral' }
+                    { x: 50, y: 30, name: 'Eiffel Tower', description: 'Iconic iron lattice tower' },
+                    { x: 70, y: 60, name: 'Louvre Museum', description: 'World-famous art museum' },
+                    { x: 30, y: 70, name: 'Arc de Triomphe', description: 'Historic monument' }
                 ]
             },
-            tokyo: {
+            'bali': {
+                name: 'Bali, Indonesia',
+                description: 'Discover the tropical paradise of Bali with pristine beaches, lush rice terraces, and spiritual temples.',
+                address: 'Bali, Indonesia',
+                hours: '24/7',
+                rating: '4.8/5',
+                hotspots: [
+                    { x: 40, y: 40, name: 'Rice Terraces', description: 'Beautiful agricultural landscapes' },
+                    { x: 60, y: 50, name: 'Beach Resort', description: 'Luxury beachfront accommodation' },
+                    { x: 80, y: 30, name: 'Temple', description: 'Ancient spiritual site' }
+                ]
+            },
+            'tokyo': {
                 name: 'Tokyo, Japan',
-                description: 'Explore the vibrant streets and modern architecture of Tokyo.',
-                hotspots: 18,
-                duration: '20 min',
-                background: '/static/images/tokyo-360.jpg',
+                description: 'Immerse yourself in the vibrant culture of Tokyo with its modern skyscrapers, traditional temples, and bustling streets.',
+                address: 'Tokyo, Japan',
+                hours: '24/7',
+                rating: '4.7/5',
                 hotspots: [
-                    { id: 'shibuya', x: 40, y: 40, name: 'Shibuya Crossing', description: 'World\'s busiest pedestrian crossing' },
-                    { id: 'tokyo-tower', x: 60, y: 30, name: 'Tokyo Tower', description: 'Iconic communications tower' }
+                    { x: 45, y: 35, name: 'Shibuya Crossing', description: 'World\'s busiest pedestrian crossing' },
+                    { x: 65, y: 55, name: 'Tokyo Tower', description: 'Iconic communications tower' },
+                    { x: 25, y: 65, name: 'Senso-ji Temple', description: 'Ancient Buddhist temple' }
                 ]
             },
-            newyork: {
-                name: 'New York, USA',
-                description: 'Discover the iconic landmarks and bustling streets of NYC.',
-                hotspots: 16,
-                duration: '18 min',
-                background: '/static/images/newyork-360.jpg',
+            'santorini': {
+                name: 'Santorini, Greece',
+                description: 'Experience the breathtaking beauty of Santorini with its white-washed buildings, blue domes, and stunning sunsets.',
+                address: 'Santorini, Greece',
+                hours: '24/7',
+                rating: '4.9/5',
                 hotspots: [
-                    { id: 'times-square', x: 50, y: 50, name: 'Times Square', description: 'Famous commercial intersection' },
-                    { id: 'statue-liberty', x: 20, y: 40, name: 'Statue of Liberty', description: 'Iconic American monument' }
+                    { x: 50, y: 40, name: 'Oia Village', description: 'Famous sunset viewpoint' },
+                    { x: 70, y: 60, name: 'Caldera', description: 'Volcanic crater views' },
+                    { x: 30, y: 50, name: 'Beach', description: 'Red sand beach' }
+                ]
+            },
+            'machu-picchu': {
+                name: 'Machu Picchu, Peru',
+                description: 'Explore the ancient Incan citadel of Machu Picchu, one of the most impressive archaeological sites in the world.',
+                address: 'Machu Picchu, Peru',
+                hours: '6:00 AM - 5:30 PM',
+                rating: '4.9/5',
+                hotspots: [
+                    { x: 40, y: 30, name: 'Main Plaza', description: 'Central ceremonial area' },
+                    { x: 60, y: 50, name: 'Temple of the Sun', description: 'Sacred Incan temple' },
+                    { x: 80, y: 40, name: 'Huayna Picchu', description: 'Mountain peak' }
                 ]
             }
         };
 
-        const tour = tours[tourName];
-        if (!tour) return;
+        const dest = destinations[destination];
+        if (!dest) return;
 
-        this.currentTour = tourName;
-        this.hotspots = tour.hotspots;
+        // Update scene background (simulate 360° image)
+        const vrScene = document.getElementById('vrScene');
+        vrScene.style.background = `linear-gradient(45deg, #1a1a1a, #2a2a2a), url('/static/${destination}.jpg')`;
+        vrScene.style.backgroundSize = 'cover';
+        vrScene.style.backgroundPosition = 'center';
 
-        // Update UI
-        document.getElementById('currentLocation').textContent = tour.name;
-        document.getElementById('locationDescription').textContent = tour.description;
-        document.getElementById('hotspotCount').textContent = tour.hotspots.length;
-        document.getElementById('tourDuration').textContent = tour.duration;
+        // Create hotspots
+        this.createHotspots(dest.hotspots);
 
-        // Load background
-        const scene = document.getElementById('vrScene');
-        scene.style.backgroundImage = `url('${tour.background}')`;
-
-        // Setup hotspots
-        this.setupHotspots();
+        // Update info panel
+        this.updateInfoPanel(dest);
     }
 
-    setupHotspots() {
+    createHotspots(hotspots) {
         const hotspotsContainer = document.getElementById('vrHotspots');
         hotspotsContainer.innerHTML = '';
 
-        this.hotspots.forEach(hotspot => {
+        hotspots.forEach((hotspot, index) => {
             const hotspotElement = document.createElement('div');
-            hotspotElement.className = 'vr-hotspot';
+            hotspotElement.className = 'hotspot';
             hotspotElement.style.left = `${hotspot.x}%`;
             hotspotElement.style.top = `${hotspot.y}%`;
-            hotspotElement.innerHTML = '<i class="fas fa-crosshairs"></i>';
+            hotspotElement.innerHTML = '<i class="fas fa-info"></i>';
             hotspotElement.title = hotspot.name;
             
             hotspotElement.addEventListener('click', () => {
-                this.activateHotspot(hotspot.id);
+                this.showHotspotInfo(hotspot);
             });
 
             hotspotsContainer.appendChild(hotspotElement);
         });
     }
 
-    activateHotspot(hotspotId) {
-        const hotspot = this.hotspots.find(h => h.id === hotspotId);
-        if (!hotspot) return;
-
-        this.currentHotspot = hotspot;
-
-        // Update active state in sidebar
-        document.querySelectorAll('.hotspot-item').forEach(item => {
-            item.classList.remove('active');
-            if (item.dataset.hotspot === hotspotId) {
-                item.classList.add('active');
-            }
-        });
-
-        // Show hotspot info
-        this.showHotspotInfo(hotspot);
-    }
-
     showHotspotInfo(hotspot) {
-        // Create modal or overlay with hotspot information
-        const modal = document.createElement('div');
-        modal.className = 'modal fade';
-        modal.innerHTML = `
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">${hotspot.name}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>${hotspot.description}</p>
-                        <div class="hotspot-actions">
-                            <button class="btn btn-primary" onclick="vrTour.bookHotspot('${hotspot.id}')">
-                                <i class="fas fa-calendar-check me-2"></i>Book Experience
-                            </button>
-                            <button class="btn btn-outline-secondary" onclick="vrTour.learnMore('${hotspot.id}')">
-                                <i class="fas fa-info-circle me-2"></i>Learn More
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+        const infoPanel = document.getElementById('vrInfoPanel');
+        const locationName = document.getElementById('locationName');
+        const locationDescription = document.getElementById('locationDescription');
 
-        document.body.appendChild(modal);
-        new bootstrap.Modal(modal).show();
+        locationName.textContent = hotspot.name;
+        locationDescription.textContent = hotspot.description;
+
+        infoPanel.classList.add('active');
     }
 
-    setupMouseControls() {
-        const scene = document.getElementById('vrScene');
-        let isDragging = false;
-        let startX, startY;
-
-        scene.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            scene.style.cursor = 'grabbing';
-        });
-
-        scene.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-
-            const deltaX = e.clientX - startX;
-            const deltaY = e.clientY - startY;
-
-            // Simulate camera movement
-            this.moveCamera(deltaX, deltaY);
-
-            startX = e.clientX;
-            startY = e.clientY;
-        });
-
-        scene.addEventListener('mouseup', () => {
-            isDragging = false;
-            scene.style.cursor = 'grab';
-        });
-
-        scene.addEventListener('mouseleave', () => {
-            isDragging = false;
-            scene.style.cursor = 'grab';
-        });
+    updateInfoPanel(destination) {
+        document.getElementById('locationName').textContent = destination.name;
+        document.getElementById('locationDescription').textContent = destination.description;
+        document.getElementById('locationAddress').textContent = destination.address;
+        document.getElementById('locationHours').textContent = destination.hours;
+        document.getElementById('locationRating').textContent = destination.rating;
     }
 
-    moveCamera(deltaX, deltaY) {
-        // Simulate camera movement by adjusting background position
-        const scene = document.getElementById('vrScene');
-        const currentTransform = scene.style.transform || 'translate(0px, 0px)';
-        
-        // Parse current transform
-        const match = currentTransform.match(/translate\(([^,]+),\s*([^)]+)\)/);
-        const currentX = match ? parseInt(match[1]) : 0;
-        const currentY = match ? parseInt(match[2]) : 0;
-
-        // Calculate new position
-        const newX = currentX + deltaX * 0.1;
-        const newY = currentY + deltaY * 0.1;
-
-        // Apply new transform
-        scene.style.transform = `translate(${newX}px, ${newY}px)`;
+    closeInfoPanel() {
+        document.getElementById('vrInfoPanel').classList.remove('active');
     }
 
-    move(direction) {
-        console.log(`Moving ${direction}`);
-        // Implement movement logic
-    }
-
-    look(direction) {
-        console.log(`Looking ${direction}`);
-        // Implement look logic
+    startVRExperience() {
+        this.showSuccessMessage('Starting VR experience...');
+        // In a real implementation, this would initialize VR mode
     }
 
     toggleFullscreen() {
-        const viewer = document.getElementById('vrViewer');
+        const vrViewer = document.getElementById('vrViewer');
         
         if (!this.isFullscreen) {
-            if (viewer.requestFullscreen) {
-                viewer.requestFullscreen();
-            } else if (viewer.webkitRequestFullscreen) {
-                viewer.webkitRequestFullscreen();
-            } else if (viewer.msRequestFullscreen) {
-                viewer.msRequestFullscreen();
+            if (vrViewer.requestFullscreen) {
+                vrViewer.requestFullscreen();
             }
+            this.isFullscreen = true;
+            document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-compress"></i>';
         } else {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
             }
+            this.isFullscreen = false;
+            document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-expand"></i>';
         }
-
-        this.isFullscreen = !this.isFullscreen;
     }
 
     toggleVRMode() {
         this.isVRMode = !this.isVRMode;
-        const btn = document.getElementById('vrModeBtn');
+        const vrViewer = document.getElementById('vrViewer');
         
         if (this.isVRMode) {
-            btn.innerHTML = '<i class="fas fa-desktop"></i>';
-            btn.title = 'Exit VR Mode';
-            this.enableVRMode();
+            vrViewer.style.transform = 'perspective(1000px) rotateY(0deg)';
+            document.getElementById('vrModeBtn').innerHTML = '<i class="fas fa-desktop"></i>';
+            this.showSuccessMessage('VR mode activated');
         } else {
-            btn.innerHTML = '<i class="fas fa-vr-cardboard"></i>';
-            btn.title = 'Enter VR Mode';
-            this.disableVRMode();
+            vrViewer.style.transform = 'none';
+            document.getElementById('vrModeBtn').innerHTML = '<i class="fas fa-vr-cardboard"></i>';
+            this.showSuccessMessage('VR mode deactivated');
         }
     }
 
-    enableVRMode() {
-        // Implement VR mode features
-        console.log('VR mode enabled');
+    move(direction) {
+        // Simulate movement in VR
+        this.showSuccessMessage(`Moving ${direction}`);
     }
 
-    disableVRMode() {
-        // Disable VR mode features
-        console.log('VR mode disabled');
+    look(direction) {
+        // Simulate looking around in VR
+        this.showSuccessMessage(`Looking ${direction}`);
     }
 
-    setQuality(quality) {
-        this.quality = quality;
-        console.log(`Quality set to: ${quality}`);
-    }
-
-    setMovementSpeed(speed) {
-        this.movementSpeed = speed;
-        console.log(`Movement speed set to: ${speed}`);
-    }
-
-    setAutoRotate(enabled) {
-        this.autoRotate = enabled;
-        console.log(`Auto-rotate ${enabled ? 'enabled' : 'disabled'}`);
-    }
-
-    startTour() {
-        console.log('Starting VR tour...');
-        // Implement tour start logic
-    }
-
-    bookExperience() {
-        if (this.currentHotspot) {
-            window.location.href = `/book/experience/${this.currentHotspot.id}`;
-        } else {
-            window.location.href = '/book/experience';
+    handleKeyboard(e) {
+        switch(e.key.toLowerCase()) {
+            case 'w':
+                this.move('forward');
+                break;
+            case 's':
+                this.move('back');
+                break;
+            case 'a':
+                this.move('left');
+                break;
+            case 'd':
+                this.move('right');
+                break;
+            case 'arrowup':
+                this.look('up');
+                break;
+            case 'arrowdown':
+                this.look('down');
+                break;
+            case 'f11':
+                e.preventDefault();
+                this.toggleFullscreen();
+                break;
         }
     }
 
-    shareExperience() {
-        const url = window.location.href;
-        const title = 'Check out this amazing VR tour!';
+    startDrag(e) {
+        // Mouse drag for looking around
+        this.isDragging = true;
+        this.lastX = e.clientX;
+        this.lastY = e.clientY;
+    }
+
+    drag(e) {
+        if (!this.isDragging) return;
         
-        if (navigator.share) {
-            navigator.share({
-                title: title,
-                url: url
-            });
-        } else {
-            // Fallback to copying to clipboard
-            navigator.clipboard.writeText(url).then(() => {
-                alert('Link copied to clipboard!');
-            });
-        }
+        const deltaX = e.clientX - this.lastX;
+        const deltaY = e.clientY - this.lastY;
+        
+        // Simulate camera movement
+        this.lastX = e.clientX;
+        this.lastY = e.clientY;
     }
 
-    downloadTour() {
-        console.log('Downloading tour...');
-        // Implement tour download logic
+    endDrag() {
+        this.isDragging = false;
     }
 
-    bookHotspot(hotspotId) {
-        window.location.href = `/book/hotspot/${hotspotId}`;
+    startTouch(e) {
+        // Touch controls for mobile
+        this.isTouching = true;
+        this.lastTouchX = e.touches[0].clientX;
+        this.lastTouchY = e.touches[0].clientY;
     }
 
-    learnMore(hotspotId) {
-        window.location.href = `/hotspot/${hotspotId}`;
+    moveTouch(e) {
+        if (!this.isTouching) return;
+        
+        const deltaX = e.touches[0].clientX - this.lastTouchX;
+        const deltaY = e.touches[0].clientY - this.lastTouchY;
+        
+        // Simulate camera movement
+        this.lastTouchX = e.touches[0].clientX;
+        this.lastTouchY = e.touches[0].clientY;
+    }
+
+    endTouch() {
+        this.isTouching = false;
+    }
+
+    bookLocation() {
+        this.showSuccessMessage('Redirecting to booking page...');
+        // In a real implementation, this would redirect to booking
+    }
+
+    viewDetails() {
+        this.showSuccessMessage('Opening detailed information...');
+        // In a real implementation, this would show more details
+    }
+
+    showSuccessMessage(message) {
+        // Create a temporary success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        successDiv.style.top = '20px';
+        successDiv.style.right = '20px';
+        successDiv.style.zIndex = '9999';
+        successDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(successDiv);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            successDiv.remove();
+        }, 3000);
     }
 }
 
-// Global function for loading tours
-function loadVRTour(tourName) {
-    if (window.vrTour) {
-        window.vrTour.loadTour(tourName);
-    }
-}
-
-// Initialize VR tour when page loads
+// Initialize VR experience when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    window.vrTour = new VirtualRealityTour();
+    window.vrExperience = new VirtualRealityExperience();
 });
 </script>
 {% endblock %} 
