@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, session, make_response, g
+from werkzeug.utils import secure_filename
 from db import db
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,6 +7,8 @@ from datetime import datetime, timedelta
 import os
 import json
 import requests
+import base64
+from io import BytesIO
 from flask_mail import Mail, Message
 import uuid
 import stripe
@@ -36,10 +39,19 @@ stripe.api_key = 'sk_test_51Nw8...your_test_key_here...'
 STRIPE_PUBLIC_KEY = 'pk_test_51Nw8...your_test_key_here...'
 
 app = Flask(__name__)
-# TODO: Replace with a secure secret key in production
-app.config['SECRET_KEY'] = 'your-secret-key-change-this-in-production'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///world_tour.db'
+
+# Database configuration for production
+import os
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///world_tour.db')
+if DATABASE_URL.startswith('postgres://'):
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize database
+db.init_app(app)
 
 # Performance optimizations
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # 1 year cache for static files
@@ -100,6 +112,7 @@ app.config['MAIL_USERNAME'] = 'your-email@gmail.com'
 app.config['MAIL_PASSWORD'] = 'your-app-password'
 
 # Import new models
+from new_models import *
 
 # Currency configuration
 app.config['DEFAULT_CURRENCY'] = 'USD'
@@ -461,6 +474,7 @@ class User(UserMixin, db.Model):
     phone = db.Column(db.String(20))
     date_joined = db.Column(db.DateTime, default=datetime.utcnow)
     is_admin = db.Column(db.Boolean, default=False)
+    white_label_partner_id = db.Column(db.Integer, db.ForeignKey('white_label_partner.id'))
     bookings = db.relationship('Booking', backref='user', lazy=True)
     reviews = db.relationship('Review', backref='user', lazy=True)
     wishlist_items = db.relationship('WishlistItem', backref='user', lazy=True)
@@ -817,12 +831,12 @@ def home():
     # Optimize queries with specific column selection
     featured_destinations = Destination.query.with_entities(
         Destination.id, Destination.name, Destination.country, 
-        Destination.price, Destination.rating, Destination.image_url
+        Destination.price, Destination.rating, Destination.image_url, Destination.description
     ).filter_by(available=True).order_by(Destination.rating.desc()).limit(6).all()
     
     latest_destinations = Destination.query.with_entities(
         Destination.id, Destination.name, Destination.country, 
-        Destination.price, Destination.rating, Destination.image_url
+        Destination.price, Destination.rating, Destination.image_url, Destination.description
     ).filter_by(available=True).order_by(Destination.created_at.desc()).limit(3).all()
     
     return render_template('index.html', 
@@ -4067,6 +4081,14 @@ def update_exchange_rates_task():
         return False
 
 # Customer Support Models
+class TicketMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ticket_id = db.Column(db.Integer, db.ForeignKey('support_ticket.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref='ticket_messages')
+
 class SupportTicket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -4102,6 +4124,7 @@ class SupportChat(db.Model):
     ended_at = db.Column(db.DateTime)
     user = db.relationship('User', backref='support_chats')
     messages = db.relationship('ChatMessage', backref='chat', lazy=True, cascade='all, delete-orphan')
+
 
 class ChatMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -4468,6 +4491,7 @@ class APIPartner(db.Model):
 class APIUsageLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     partner_id = db.Column(db.Integer, db.ForeignKey('api_partner.id'), nullable=False)
+    api_marketplace_id = db.Column(db.Integer, db.ForeignKey('api_marketplace.id'))
     endpoint = db.Column(db.String(100), nullable=False)
     method = db.Column(db.String(10), nullable=False)
     response_time = db.Column(db.Float)  # in milliseconds
@@ -8189,4 +8213,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         init_db()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

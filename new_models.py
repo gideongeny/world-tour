@@ -1,5 +1,6 @@
 from db import db
 from datetime import datetime
+import json
 # Advanced Search & Discovery Models
 class MultiCityRoute(db.Model):
     id = db.Column(db.Integer, primary_key=True)
