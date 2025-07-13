@@ -1,0 +1,962 @@
+{% extends "base.html" %}
+
+{% block title %}Dynamic Pricing - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section bg-gradient-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Dynamic Pricing Engine</h1>
+                    <p class="lead mb-4">Real-time price optimization based on demand, seasonality, and market conditions. Get the best deals with our AI-powered pricing algorithm.</p>
+                    <div class="pricing-stats">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <div class="stat-number" id="totalRevenue">$2.4M</div>
+                                    <div class="stat-label">Revenue</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <div class="stat-number" id="avgPrice">$847</div>
+                                    <div class="stat-label">Avg Price</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <div class="stat-number" id="conversionRate">23.4%</div>
+                                    <div class="stat-label">Conversion</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="pricing-chart-container">
+                        <canvas id="pricingChart" width="400" height="200"></canvas>
+                        <div class="chart-overlay">
+                            <div class="price-indicator">
+                                <span class="current-price" id="currentPrice">$847</span>
+                                <span class="price-change up" id="priceChange">+5.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing Dashboard -->
+    <div class="container py-5">
+        <div class="row">
+            <!-- Main Pricing Panel -->
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-chart-line me-2"></i>Real-time Pricing Dashboard</h4>
+                        <div class="pricing-controls">
+                            <button class="btn btn-light btn-sm" id="refreshPricing">
+                                <i class="fas fa-sync-alt me-1"></i>Refresh
+                            </button>
+                            <button class="btn btn-light btn-sm" id="autoUpdate" data-active="true">
+                                <i class="fas fa-play me-1"></i>Auto
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Price Factors -->
+                        <div class="price-factors mb-4">
+                            <h6>Price Adjustment Factors</h6>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="factor-card">
+                                        <div class="factor-icon bg-success">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div class="factor-details">
+                                            <div class="factor-name">Demand</div>
+                                            <div class="factor-value" id="demandFactor">High</div>
+                                            <div class="factor-impact positive">+15%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="factor-card">
+                                        <div class="factor-icon bg-warning">
+                                            <i class="fas fa-calendar"></i>
+                                        </div>
+                                        <div class="factor-details">
+                                            <div class="factor-name">Seasonality</div>
+                                            <div class="factor-value" id="seasonalityFactor">Peak</div>
+                                            <div class="factor-impact positive">+8%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="factor-card">
+                                        <div class="factor-icon bg-info">
+                                            <i class="fas fa-chart-bar"></i>
+                                        </div>
+                                        <div class="factor-details">
+                                            <div class="factor-name">Competition</div>
+                                            <div class="factor-value" id="competitionFactor">Medium</div>
+                                            <div class="factor-impact negative">-3%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="factor-card">
+                                        <div class="factor-icon bg-danger">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="factor-details">
+                                            <div class="factor-name">Urgency</div>
+                                            <div class="factor-value" id="urgencyFactor">Low</div>
+                                            <div class="factor-impact neutral">0%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price History Chart -->
+                        <div class="price-history mb-4">
+                            <h6>Price History (Last 30 Days)</h6>
+                            <canvas id="priceHistoryChart" height="100"></canvas>
+                        </div>
+
+                        <!-- Demand Heatmap -->
+                        <div class="demand-heatmap">
+                            <h6>Demand Heatmap</h6>
+                            <div class="heatmap-container">
+                                <div class="heatmap-grid" id="demandHeatmap">
+                                    <!-- Generated by JavaScript -->
+                                </div>
+                                <div class="heatmap-legend">
+                                    <span class="legend-item"><span class="heat-low"></span> Low</span>
+                                    <span class="legend-item"><span class="heat-medium"></span> Medium</span>
+                                    <span class="legend-item"><span class="heat-high"></span> High</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Current Pricing -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Current Pricing</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="pricing-tiers">
+                            <div class="tier-item">
+                                <div class="tier-name">Economy</div>
+                                <div class="tier-price" id="economyPrice">$450</div>
+                                <div class="tier-change up" id="economyChange">+5.2%</div>
+                            </div>
+                            <div class="tier-item">
+                                <div class="tier-name">Premium Economy</div>
+                                <div class="tier-price" id="premiumPrice">$650</div>
+                                <div class="tier-change up" id="premiumChange">+3.1%</div>
+                            </div>
+                            <div class="tier-item">
+                                <div class="tier-name">Business</div>
+                                <div class="tier-price" id="businessPrice">$1,200</div>
+                                <div class="tier-change down" id="businessChange">-1.8%</div>
+                            </div>
+                            <div class="tier-item">
+                                <div class="tier-name">First Class</div>
+                                <div class="tier-price" id="firstClassPrice">$2,500</div>
+                                <div class="tier-change stable" id="firstClassChange">0.0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Predictions -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-crystal-ball me-2"></i>Price Predictions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="prediction-item">
+                            <div class="prediction-time">Next 24h</div>
+                            <div class="prediction-price">$872</div>
+                            <div class="prediction-confidence">85% confidence</div>
+                        </div>
+                        <div class="prediction-item">
+                            <div class="prediction-time">Next 7 days</div>
+                            <div class="prediction-price">$891</div>
+                            <div class="prediction-confidence">78% confidence</div>
+                        </div>
+                        <div class="prediction-item">
+                            <div class="prediction-time">Next 30 days</div>
+                            <div class="prediction-price">$923</div>
+                            <div class="prediction-confidence">65% confidence</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Insights -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Market Insights</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="insight-item">
+                            <div class="insight-icon bg-success">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div class="insight-content">
+                                <div class="insight-title">High Demand Period</div>
+                                <div class="insight-description">Peak season approaching - prices expected to rise 15%</div>
+                            </div>
+                        </div>
+                        <div class="insight-item">
+                            <div class="insight-icon bg-info">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="insight-content">
+                                <div class="insight-title">Competitor Analysis</div>
+                                <div class="insight-description">Competitors 8% higher - opportunity for market share</div>
+                            </div>
+                        </div>
+                        <div class="insight-item">
+                            <div class="insight-icon bg-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="insight-content">
+                                <div class="insight-title">Supply Constraint</div>
+                                <div class="insight-description">Limited availability in premium cabins</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Alerts -->
+                <div class="card shadow">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Pricing Alerts</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert-list" id="pricingAlerts">
+                            <div class="alert-item">
+                                <div class="alert-time">2 min ago</div>
+                                <div class="alert-message">Price increased by 5.2% due to high demand</div>
+                            </div>
+                            <div class="alert-item">
+                                <div class="alert-time">15 min ago</div>
+                                <div class="alert-message">Competitor price drop detected</div>
+                            </div>
+                            <div class="alert-item">
+                                <div class="alert-time">1 hour ago</div>
+                                <div class="alert-message">Seasonal adjustment applied</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Algorithm Details -->
+    <div class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Pricing Algorithm Details</h2>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="algorithm-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-brain fa-2x"></i>
+                            </div>
+                            <h5>Machine Learning</h5>
+                            <p class="text-muted">Advanced ML algorithms analyze historical data, user behavior, and market trends to predict optimal pricing.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="algorithm-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-chart-line fa-2x"></i>
+                            </div>
+                            <h5>Real-time Analytics</h5>
+                            <p class="text-muted">Continuous monitoring of demand patterns, competitor prices, and market conditions for instant price adjustments.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="algorithm-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="fas fa-cogs fa-2x"></i>
+                            </div>
+                            <h5>Dynamic Optimization</h5>
+                            <p class="text-muted">Automated price optimization that maximizes revenue while maintaining competitive positioning and customer satisfaction.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.pricing-stats {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.pricing-chart-container {
+    position: relative;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.chart-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.price-indicator {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 25px;
+    padding: 15px 25px;
+    color: white;
+}
+
+.current-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: block;
+}
+
+.price-change {
+    font-size: 0.9rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.price-change.up {
+    background: #28a745;
+}
+
+.price-change.down {
+    background: #dc3545;
+}
+
+.price-factors {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.factor-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.factor-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.factor-details {
+    flex: 1;
+}
+
+.factor-name {
+    font-weight: 600;
+    color: #495057;
+}
+
+.factor-value {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.factor-impact {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.factor-impact.positive {
+    background: #d4edda;
+    color: #155724;
+}
+
+.factor-impact.negative {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.factor-impact.neutral {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.pricing-tiers {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.tier-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
+}
+
+.tier-name {
+    font-weight: 600;
+    color: #495057;
+}
+
+.tier-price {
+    font-weight: bold;
+    color: #28a745;
+    font-size: 1.1rem;
+}
+
+.tier-change {
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.tier-change.up {
+    background: #d4edda;
+    color: #155724;
+}
+
+.tier-change.down {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.tier-change.stable {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.prediction-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.prediction-item:last-child {
+    border-bottom: none;
+}
+
+.prediction-time {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.prediction-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #28a745;
+    margin: 5px 0;
+}
+
+.prediction-confidence {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.insight-item:last-child {
+    border-bottom: none;
+}
+
+.insight-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.insight-content {
+    flex: 1;
+}
+
+.insight-title {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.insight-description {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 2px;
+}
+
+.alert-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.alert-item:last-child {
+    border-bottom: none;
+}
+
+.alert-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.alert-message {
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.heatmap-container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 15px;
+}
+
+.heatmap-cell {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.1);
+}
+
+.heat-low {
+    background: #28a745;
+}
+
+.heat-medium {
+    background: #ffc107;
+}
+
+.heat-high {
+    background: #dc3545;
+}
+
+.heatmap-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+}
+
+.legend-item span {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.algorithm-icon {
+    transition: transform 0.3s ease;
+}
+
+.algorithm-icon:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .factor-card {
+        margin-bottom: 15px;
+    }
+    
+    .heatmap-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .heatmap-cell {
+        width: 25px;
+        height: 25px;
+        font-size: 0.6rem;
+    }
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+class DynamicPricing {
+    constructor() {
+        this.currentPrice = 847;
+        this.priceHistory = [];
+        this.demandData = {};
+        this.init();
+    }
+
+    init() {
+        this.generatePriceHistory();
+        this.generateDemandHeatmap();
+        this.initCharts();
+        this.bindEvents();
+        this.startRealTimeUpdates();
+    }
+
+    generatePriceHistory() {
+        const now = new Date();
+        for (let i = 29; i >= 0; i--) {
+            const date = new Date(now);
+            date.setDate(date.getDate() - i);
+            
+            // Generate realistic price data with trends
+            const basePrice = 800;
+            const trend = Math.sin(i / 7) * 50; // Weekly trend
+            const noise = (Math.random() - 0.5) * 20; // Random noise
+            const price = basePrice + trend + noise;
+            
+            this.priceHistory.push({
+                date: date.toISOString().split('T')[0],
+                price: Math.round(price)
+            });
+        }
+    }
+
+    generateDemandHeatmap() {
+        const container = document.getElementById('demandHeatmap');
+        
+        // Generate 7x7 grid for 7 days x 7 time slots
+        for (let day = 0; day < 7; day++) {
+            for (let time = 0; time < 7; time++) {
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+                
+                // Generate demand levels
+                const demand = Math.random();
+                let demandClass = 'heat-low';
+                let demandText = 'L';
+                
+                if (demand > 0.7) {
+                    demandClass = 'heat-high';
+                    demandText = 'H';
+                } else if (demand > 0.4) {
+                    demandClass = 'heat-medium';
+                    demandText = 'M';
+                }
+                
+                cell.classList.add(demandClass);
+                cell.textContent = demandText;
+                cell.title = `Day ${day + 1}, Time ${time + 1}: ${demandClass.replace('heat-', '')} demand`;
+                
+                container.appendChild(cell);
+            }
+        }
+    }
+
+    initCharts() {
+        // Main pricing chart
+        const ctx = document.getElementById('pricingChart').getContext('2d');
+        this.mainChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: this.priceHistory.map(item => item.date),
+                datasets: [{
+                    label: 'Average Price',
+                    data: this.priceHistory.map(item => item.price),
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Price history chart
+        const historyCtx = document.getElementById('priceHistoryChart').getContext('2d');
+        this.historyChart = new Chart(historyCtx, {
+            type: 'line',
+            data: {
+                labels: this.priceHistory.map(item => item.date),
+                datasets: [{
+                    label: 'Price History',
+                    data: this.priceHistory.map(item => item.price),
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            color: 'rgba(0,0,0,0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    bindEvents() {
+        document.getElementById('refreshPricing').addEventListener('click', () => {
+            this.updatePricing();
+        });
+
+        document.getElementById('autoUpdate').addEventListener('click', (e) => {
+            const button = e.target;
+            const isActive = button.dataset.active === 'true';
+            
+            if (isActive) {
+                button.dataset.active = 'false';
+                button.innerHTML = '<i class="fas fa-pause me-1"></i>Auto';
+                button.classList.remove('btn-success');
+                button.classList.add('btn-light');
+            } else {
+                button.dataset.active = 'true';
+                button.innerHTML = '<i class="fas fa-play me-1"></i>Auto';
+                button.classList.remove('btn-light');
+                button.classList.add('btn-success');
+            }
+        });
+    }
+
+    startRealTimeUpdates() {
+        setInterval(() => {
+            if (document.getElementById('autoUpdate').dataset.active === 'true') {
+                this.updatePricing();
+            }
+        }, 30000); // Update every 30 seconds
+    }
+
+    updatePricing() {
+        // Update current price
+        const change = (Math.random() - 0.5) * 0.1; // ±5% change
+        this.currentPrice = Math.round(this.currentPrice * (1 + change));
+        
+        // Update displays
+        document.getElementById('currentPrice').textContent = `$${this.currentPrice}`;
+        
+        const priceChange = change * 100;
+        const changeElement = document.getElementById('priceChange');
+        changeElement.textContent = `${priceChange > 0 ? '+' : ''}${priceChange.toFixed(1)}%`;
+        changeElement.className = `price-change ${priceChange > 0 ? 'up' : 'down'}`;
+        
+        // Update tier prices
+        this.updateTierPrices();
+        
+        // Update factors
+        this.updateFactors();
+        
+        // Add alert
+        this.addPricingAlert();
+        
+        // Update charts
+        this.updateCharts();
+    }
+
+    updateTierPrices() {
+        const tiers = ['economy', 'premium', 'business', 'firstClass'];
+        const basePrices = [450, 650, 1200, 2500];
+        
+        tiers.forEach((tier, index) => {
+            const change = (Math.random() - 0.5) * 0.1;
+            const newPrice = Math.round(basePrices[index] * (1 + change));
+            const changePercent = change * 100;
+            
+            document.getElementById(`${tier}Price`).textContent = `$${newPrice}`;
+            
+            const changeElement = document.getElementById(`${tier}Change`);
+            changeElement.textContent = `${changePercent > 0 ? '+' : ''}${changePercent.toFixed(1)}%`;
+            changeElement.className = `tier-change ${changePercent > 0 ? 'up' : changePercent < 0 ? 'down' : 'stable'}`;
+        });
+    }
+
+    updateFactors() {
+        const factors = ['demand', 'seasonality', 'competition', 'urgency'];
+        const levels = ['Low', 'Medium', 'High'];
+        const impacts = ['negative', 'neutral', 'positive'];
+        
+        factors.forEach(factor => {
+            const level = levels[Math.floor(Math.random() * levels.length)];
+            const impact = impacts[Math.floor(Math.random() * impacts.length)];
+            const impactValue = Math.round((Math.random() - 0.5) * 20);
+            
+            document.getElementById(`${factor}Factor`).textContent = level;
+            const impactElement = document.querySelector(`#${factor}Factor`).nextElementSibling;
+            impactElement.textContent = `${impactValue > 0 ? '+' : ''}${impactValue}%`;
+            impactElement.className = `factor-impact ${impact}`;
+        });
+    }
+
+    addPricingAlert() {
+        const messages = [
+            'Price adjusted based on demand analysis',
+            'Competitor price change detected',
+            'Seasonal factor applied',
+            'Market volatility adjustment',
+            'Supply constraint impact calculated'
+        ];
+        
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+        
+        const alertList = document.getElementById('pricingAlerts');
+        const alertItem = document.createElement('div');
+        alertItem.className = 'alert-item';
+        alertItem.innerHTML = `
+            <div class="alert-time">${time}</div>
+            <div class="alert-message">${randomMessage}</div>
+        `;
+        
+        alertList.insertBefore(alertItem, alertList.firstChild);
+        
+        // Remove old alerts if too many
+        if (alertList.children.length > 5) {
+            alertList.removeChild(alertList.lastChild);
+        }
+    }
+
+    updateCharts() {
+        // Add new data point
+        const now = new Date();
+        const newPrice = this.currentPrice + (Math.random() - 0.5) * 20;
+        
+        this.priceHistory.push({
+            date: now.toISOString().split('T')[0],
+            price: Math.round(newPrice)
+        });
+        
+        // Remove oldest data point
+        this.priceHistory.shift();
+        
+        // Update chart data
+        this.mainChart.data.labels = this.priceHistory.map(item => item.date);
+        this.mainChart.data.datasets[0].data = this.priceHistory.map(item => item.price);
+        this.mainChart.update('none');
+        
+        this.historyChart.data.labels = this.priceHistory.map(item => item.date);
+        this.historyChart.data.datasets[0].data = this.priceHistory.map(item => item.price);
+        this.historyChart.update('none');
+    }
+}
+
+// Initialize dynamic pricing when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    new DynamicPricing();
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,860 @@
+{% extends "base.html" %}
+
+{% block title %}AI Travel Assistant - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section bg-gradient-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">AI Travel Assistant</h1>
+                    <p class="lead mb-4">Your personal AI travel companion. Get instant answers, personalized recommendations, and smart travel planning with natural conversation.</p>
+                    <button class="btn btn-light btn-lg" id="startConversationBtn">
+                        <i class="fas fa-comments me-2"></i>Start Conversation
+                    </button>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ai-animation text-center">
+                        <div class="ai-brain">
+                            <div class="neural-network">
+                                <div class="node"></div>
+                                <div class="node"></div>
+                                <div class="node"></div>
+                                <div class="node"></div>
+                                <div class="node"></div>
+                                <div class="node"></div>
+                            </div>
+                        </div>
+                        <p class="text-white-50 mt-3">AI-powered travel intelligence</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Interface -->
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0"><i class="fas fa-robot me-2"></i>Travel Assistant</h4>
+                            <div class="ai-status">
+                                <span class="status-dot online"></span>
+                                <span class="status-text">Online</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Chat Interface -->
+                        <div class="chat-container" id="chatContainer">
+                            <div class="chat-messages" id="chatMessages">
+                                <!-- Welcome message -->
+                                <div class="message ai-message">
+                                    <div class="message-avatar">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-text">
+                                            Hello! I'm your AI travel assistant. I can help you with:
+                                            <ul class="mt-2">
+                                                <li>Finding the best flights and hotels</li>
+                                                <li>Planning your itinerary</li>
+                                                <li>Getting travel recommendations</li>
+                                                <li>Answering travel questions</li>
+                                                <li>Booking assistance</li>
+                                            </ul>
+                                            How can I help you today?
+                                        </div>
+                                        <div class="message-time">Just now</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="quick-actions" id="quickActions">
+                                <button class="quick-action-btn" data-action="find-flights">
+                                    <i class="fas fa-plane"></i>
+                                    Find Flights
+                                </button>
+                                <button class="quick-action-btn" data-action="book-hotel">
+                                    <i class="fas fa-hotel"></i>
+                                    Book Hotel
+                                </button>
+                                <button class="quick-action-btn" data-action="plan-trip">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                    Plan Trip
+                                </button>
+                                <button class="quick-action-btn" data-action="travel-tips">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Travel Tips
+                                </button>
+                            </div>
+
+                            <!-- Input Area -->
+                            <div class="chat-input-area">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="messageInput" placeholder="Ask me anything about travel..." autocomplete="off">
+                                    <button class="btn btn-primary" id="sendMessageBtn">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                    <button class="btn btn-outline-secondary" id="voiceInputBtn">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                </div>
+                                <div class="input-suggestions" id="inputSuggestions">
+                                    <span class="suggestion-chip">"I want to go to Paris"</span>
+                                    <span class="suggestion-chip">"Best time to visit Japan"</span>
+                                    <span class="suggestion-chip">"Budget travel tips"</span>
+                                    <span class="suggestion-chip">"Book a flight to NYC"</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Features -->
+    <div class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">AI-Powered Features</h2>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-brain fa-2x"></i>
+                        </div>
+                        <h5>Natural Language</h5>
+                        <p class="text-muted">Understand complex travel requests in plain English. No need to learn specific commands.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-user-cog fa-2x"></i>
+                        </div>
+                        <h5>Personalization</h5>
+                        <p class="text-muted">Learns your preferences and provides tailored recommendations based on your travel history.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                        <h5>Real-time Updates</h5>
+                        <p class="text-muted">Get instant updates on flight delays, price changes, and travel alerts in real-time.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-magic fa-2x"></i>
+                        </div>
+                        <h5>Smart Planning</h5>
+                        <p class="text-muted">Automatically creates optimal itineraries considering weather, events, and local insights.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Capabilities -->
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-6">
+                <h3 class="mb-4">What I Can Do</h3>
+                <div class="capability-list">
+                    <div class="capability-item">
+                        <div class="capability-icon bg-success">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h6>Smart Search</h6>
+                            <p>Find flights, hotels, and activities with natural language queries like "I need a hotel in Paris for next weekend"</p>
+                        </div>
+                    </div>
+                    <div class="capability-item">
+                        <div class="capability-icon bg-primary">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h6>Itinerary Planning</h6>
+                            <p>Create detailed day-by-day itineraries considering your interests, budget, and travel style</p>
+                        </div>
+                    </div>
+                    <div class="capability-item">
+                        <div class="capability-icon bg-warning">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h6>Price Analysis</h6>
+                            <p>Analyze price trends and suggest the best time to book for maximum savings</p>
+                        </div>
+                    </div>
+                    <div class="capability-item">
+                        <div class="capability-icon bg-info">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h6>Local Insights</h6>
+                            <p>Provide insider tips, hidden gems, and local recommendations for authentic experiences</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h3 class="mb-4">Example Conversations</h3>
+                <div class="conversation-examples">
+                    <div class="example-conversation">
+                        <div class="user-message">
+                            <strong>You:</strong> "I want to go to Japan in spring to see cherry blossoms"
+                        </div>
+                        <div class="ai-response">
+                            <strong>AI:</strong> "Great choice! Spring is perfect for cherry blossoms. I recommend late March to early May. Let me find you the best flights and suggest an itinerary that includes the most beautiful sakura spots in Tokyo, Kyoto, and Osaka."
+                        </div>
+                    </div>
+                    <div class="example-conversation">
+                        <div class="user-message">
+                            <strong>You:</strong> "What's the cheapest way to get from London to Paris?"
+                        </div>
+                        <div class="ai-response">
+                            <strong>AI:</strong> "The Eurostar train is usually the most cost-effective option, especially if you book in advance. I found tickets for £39 next month. Would you like me to check current prices and book them for you?"
+                        </div>
+                    </div>
+                    <div class="example-conversation">
+                        <div class="user-message">
+                            <strong>You:</strong> "I need a family-friendly hotel in New York with a pool"
+                        </div>
+                        <div class="ai-response">
+                            <strong>AI:</strong> "I found several great options! The Marriott Marquis in Times Square has an indoor pool and is perfect for families. There's also the Hilton Midtown with a rooftop pool. Both have excellent family amenities and are in safe, convenient locations."
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.ai-brain {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.neural-network {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.node {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.node:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+.node:nth-child(2) { top: 20%; right: 20%; animation-delay: 0.3s; }
+.node:nth-child(3) { top: 50%; left: 10%; animation-delay: 0.6s; }
+.node:nth-child(4) { top: 50%; right: 10%; animation-delay: 0.9s; }
+.node:nth-child(5) { bottom: 20%; left: 30%; animation-delay: 1.2s; }
+.node:nth-child(6) { bottom: 20%; right: 30%; animation-delay: 1.5s; }
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.chat-container {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 20px;
+    align-items: flex-start;
+}
+
+.message.user-message {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+    flex-shrink: 0;
+}
+
+.ai-message .message-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.user-message .message-avatar {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.message-content {
+    flex: 1;
+    max-width: 70%;
+}
+
+.message-text {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 18px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    line-height: 1.4;
+}
+
+.user-message .message-text {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.message-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 5px;
+    text-align: right;
+}
+
+.user-message .message-time {
+    text-align: left;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.quick-action-btn {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 25px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quick-action-btn:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+    transform: translateY(-2px);
+}
+
+.chat-input-area {
+    position: relative;
+}
+
+.input-group {
+    margin-bottom: 10px;
+}
+
+.input-suggestions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.suggestion-chip {
+    background: #e9ecef;
+    border-radius: 15px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.suggestion-chip:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.ai-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-dot.online {
+    background: #28a745;
+}
+
+.status-text {
+    font-size: 0.9rem;
+}
+
+.capability-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.capability-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.capability-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.capability-content h6 {
+    margin-bottom: 5px;
+    color: #495057;
+}
+
+.capability-content p {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.conversation-examples {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.example-conversation {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #667eea;
+}
+
+.user-message {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.ai-response {
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-icon:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .chat-container {
+        height: 400px;
+    }
+    
+    .quick-actions {
+        justify-content: center;
+    }
+    
+    .quick-action-btn {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+    
+    .message-content {
+        max-width: 85%;
+    }
+}
+</style>
+
+<script>
+class AITravelAssistant {
+    constructor() {
+        this.conversationHistory = [];
+        this.userPreferences = {};
+        this.isListening = false;
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.loadUserPreferences();
+    }
+
+    bindEvents() {
+        document.getElementById('sendMessageBtn').addEventListener('click', () => {
+            this.sendMessage();
+        });
+
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.sendMessage();
+            }
+        });
+
+        document.getElementById('voiceInputBtn').addEventListener('click', () => {
+            this.toggleVoiceInput();
+        });
+
+        // Quick action buttons
+        document.querySelectorAll('.quick-action-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.dataset.action;
+                this.handleQuickAction(action);
+            });
+        });
+
+        // Suggestion chips
+        document.querySelectorAll('.suggestion-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.getElementById('messageInput').value = chip.textContent.replace(/"/g, '');
+                this.sendMessage();
+            });
+        });
+
+        document.getElementById('startConversationBtn').addEventListener('click', () => {
+            document.querySelector('.chat-container').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
+    sendMessage() {
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
+        
+        if (!message) return;
+
+        // Add user message to chat
+        this.addMessage(message, 'user');
+        input.value = '';
+
+        // Process message and generate response
+        this.processMessage(message);
+    }
+
+    addMessage(text, sender) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        
+        const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+        
+        messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-${sender === 'user' ? 'user' : 'robot'}"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-text">${text}</div>
+                <div class="message-time">${time}</div>
+            </div>
+        `;
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Store in conversation history
+        this.conversationHistory.push({ sender, text, timestamp: new Date() });
+    }
+
+    processMessage(message) {
+        // Show typing indicator
+        this.showTypingIndicator();
+        
+        // Simulate AI processing time
+        setTimeout(() => {
+            this.hideTypingIndicator();
+            const response = this.generateAIResponse(message);
+            this.addMessage(response, 'ai');
+        }, 1000 + Math.random() * 2000);
+    }
+
+    generateAIResponse(message) {
+        const lowerMessage = message.toLowerCase();
+        
+        // Flight-related queries
+        if (lowerMessage.includes('flight') || lowerMessage.includes('fly')) {
+            return this.handleFlightQuery(message);
+        }
+        
+        // Hotel-related queries
+        if (lowerMessage.includes('hotel') || lowerMessage.includes('accommodation') || lowerMessage.includes('stay')) {
+            return this.handleHotelQuery(message);
+        }
+        
+        // Destination queries
+        if (lowerMessage.includes('go to') || lowerMessage.includes('visit') || lowerMessage.includes('travel to')) {
+            return this.handleDestinationQuery(message);
+        }
+        
+        // Planning queries
+        if (lowerMessage.includes('plan') || lowerMessage.includes('itinerary') || lowerMessage.includes('trip')) {
+            return this.handlePlanningQuery(message);
+        }
+        
+        // Price queries
+        if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('cheap') || lowerMessage.includes('expensive')) {
+            return this.handlePriceQuery(message);
+        }
+        
+        // General travel questions
+        if (lowerMessage.includes('best time') || lowerMessage.includes('when to go')) {
+            return this.handleBestTimeQuery(message);
+        }
+        
+        // Default response
+        return this.getDefaultResponse(message);
+    }
+
+    handleFlightQuery(message) {
+        const responses = [
+            "I'd be happy to help you find flights! Could you tell me your departure city, destination, and preferred dates?",
+            "Let me search for the best flight options for you. What's your budget and preferred airline?",
+            "I can help you compare flight prices and find the best deals. When are you planning to travel?"
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+
+    handleHotelQuery(message) {
+        const responses = [
+            "I can help you find the perfect hotel! What's your destination, dates, and budget?",
+            "Let me search for hotels that match your preferences. Do you have any specific requirements like pool, gym, or location?",
+            "I'll find you the best hotel deals. Are you looking for luxury, budget, or something in between?"
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+
+    handleDestinationQuery(message) {
+        const responses = [
+            "Great choice! I can help you plan your trip to that destination. What are your interests - culture, adventure, relaxation, or food?",
+            "Excellent destination! Let me create a personalized itinerary for you. How many days are you planning to stay?",
+            "I love that destination! I can suggest the best attractions, restaurants, and activities. What's your travel style?"
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+
+    handlePlanningQuery(message) {
+        const responses = [
+            "I'll create a detailed itinerary for you! What are your interests and how many days do you have?",
+            "Let me plan the perfect trip! What's your budget and preferred travel style?",
+            "I can design a custom itinerary. Do you prefer guided tours, independent exploration, or a mix of both?"
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+
+    handlePriceQuery(message) {
+        const responses = [
+            "I can help you find the best prices! Let me check current deals and suggest the most cost-effective options.",
+            "I'll analyze price trends and find you the best value. When are you planning to travel?",
+            "I can compare prices across different dates and suggest the most affordable options for your trip."
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+
+    handleBestTimeQuery(message) {
+        const responses = [
+            "I can help you find the best time to visit! Let me check weather patterns, peak seasons, and local events.",
+            "I'll analyze the destination's climate and tourist seasons to suggest the optimal time for your visit.",
+            "I can tell you about the best weather, lowest crowds, and best prices for your destination."
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+
+    getDefaultResponse(message) {
+        const responses = [
+            "I'm here to help with your travel plans! You can ask me about flights, hotels, destinations, itineraries, or travel tips.",
+            "I can assist you with booking flights, finding hotels, planning itineraries, or answering travel questions. What would you like to know?",
+            "I'm your AI travel assistant! I can help you plan trips, find deals, and provide travel recommendations. How can I assist you today?"
+        ];
+        return responses[Math.floor(Math.random() * responses.length)];
+    }
+
+    handleQuickAction(action) {
+        const actions = {
+            'find-flights': 'I can help you find flights! Where would you like to go and when?',
+            'book-hotel': 'I can help you book a hotel! What\'s your destination and dates?',
+            'plan-trip': 'I can help you plan your trip! Where would you like to go and what are your interests?',
+            'travel-tips': 'I can provide travel tips! What destination or topic would you like advice on?'
+        };
+        
+        this.addMessage(actions[action], 'ai');
+    }
+
+    showTypingIndicator() {
+        const chatMessages = document.getElementById('chatMessages');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message ai-message';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-text">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    toggleVoiceInput() {
+        if (!this.isListening) {
+            this.startVoiceInput();
+        } else {
+            this.stopVoiceInput();
+        }
+    }
+
+    startVoiceInput() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            this.recognition = new SpeechRecognition();
+            this.recognition.continuous = false;
+            this.recognition.interimResults = false;
+            this.recognition.lang = 'en-US';
+
+            this.recognition.onstart = () => {
+                this.isListening = true;
+                document.getElementById('voiceInputBtn').innerHTML = '<i class="fas fa-stop"></i>';
+                document.getElementById('voiceInputBtn').classList.add('btn-danger');
+                document.getElementById('voiceInputBtn').classList.remove('btn-outline-secondary');
+            };
+
+            this.recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('messageInput').value = transcript;
+            };
+
+            this.recognition.onend = () => {
+                this.isListening = false;
+                document.getElementById('voiceInputBtn').innerHTML = '<i class="fas fa-microphone"></i>';
+                document.getElementById('voiceInputBtn').classList.remove('btn-danger');
+                document.getElementById('voiceInputBtn').classList.add('btn-outline-secondary');
+            };
+
+            this.recognition.start();
+        } else {
+            alert('Speech recognition is not supported in this browser.');
+        }
+    }
+
+    stopVoiceInput() {
+        if (this.recognition) {
+            this.recognition.stop();
+        }
+    }
+
+    loadUserPreferences() {
+        // Load user preferences from localStorage or API
+        const savedPreferences = localStorage.getItem('travelPreferences');
+        if (savedPreferences) {
+            this.userPreferences = JSON.parse(savedPreferences);
+        }
+    }
+
+    saveUserPreferences() {
+        localStorage.setItem('travelPreferences', JSON.stringify(this.userPreferences));
+    }
+}
+
+// Initialize AI travel assistant when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    new AITravelAssistant();
+});
+</script>
+
+<style>
+.typing-dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.typing-dots span {
+    width: 8px;
+    height: 8px;
+    background: #667eea;
+    border-radius: 50%;
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+    0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 1; }
+}
+</style>
+{% endblock %} 
