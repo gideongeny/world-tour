@@ -1,7 +1,9 @@
-from app import app, db, Destination
+from app import app, Destination
+from db import db
 from PIL import Image, ImageDraw, ImageFont
 import os
 
+# NOTE: This script requires Pillow (PIL). Make sure it is installed.
 def create_placeholder_image(destination_name, country, filename):
     """Create a placeholder image with destination name and country"""
     try:

@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash, session, make_response, g
-from flask_sqlalchemy import SQLAlchemy
 from db import db
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -21,6 +20,7 @@ import logging
 from flask_compress import Compress
 from flask_caching import Cache
 import random
+from decorators import cache_result
 
 # Handle missing Pillow gracefully
 try:
@@ -31,10 +31,12 @@ except ImportError:
     print("Warning: Pillow not available. Image optimization features disabled.")
 
 # Stripe configuration (test keys)
+# TODO: Replace with your real Stripe keys in production
 stripe.api_key = 'sk_test_51Nw8...your_test_key_here...'
 STRIPE_PUBLIC_KEY = 'pk_test_51Nw8...your_test_key_here...'
 
 app = Flask(__name__)
+# TODO: Replace with a secure secret key in production
 app.config['SECRET_KEY'] = 'your-secret-key-change-this-in-production'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///world_tour.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -93,8 +95,9 @@ def get_locale():
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your-email@gmail.com'  # Change this
-app.config['MAIL_PASSWORD'] = 'your-app-password'     # Change this
+# TODO: Replace with your real email and app password in production
+app.config['MAIL_USERNAME'] = 'your-email@gmail.com'
+app.config['MAIL_PASSWORD'] = 'your-app-password'
 
 # Import new models
 
@@ -108,11 +111,7 @@ app.config['SUPPORTED_CURRENCIES'] = {
     'CAD': {'symbol': 'C$', 'name': 'Canadian Dollar'},
     'AUD': {'symbol': 'A$', 'name': 'Australian Dollar'}
 }
-db = SQLAlchemy(app)
 
-db.init_app(app)
-migrate = Migrate(app, db)
-from new_models import *
 babel = Babel(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -186,6 +185,10 @@ def inject_currencies():
 def inject_format_price():
     """Make format_price function available in templates"""
     return dict(format_price=format_price)
+
+def format_price(amount, currency_code=None):
+    # Dummy implementation, replace with your logic
+    return f"{amount} {currency_code or ''}"
 
 def get_text(key, language=None):
     """Enhanced translation function with more languages and keys"""
@@ -1146,26 +1149,6 @@ def profile():
     user_bookings = Booking.query.filter_by(user_id=current_user.id).order_by(Booking.created_at.desc()).all()
     wishlist_items = WishlistItem.query.filter_by(user_id=current_user.id).all()
     return render_template('profile.html', bookings=user_bookings, wishlist_items=wishlist_items)
-
-def cache_result(timeout=300):
-    """Caching decorator using Flask-Caching"""
-    def decorator(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            # Create cache key from function name and arguments
-            cache_key = f"{f.__name__}:{hash(str(args) + str(kwargs))}"
-            
-            # Try to get from cache
-            result = cache.get(cache_key)
-            if result is not None:
-                return result
-            
-            # Execute function and cache result
-            result = f(*args, **kwargs)
-            cache.set(cache_key, result, timeout=timeout)
-            return result
-        return decorated_function
-    return decorator
 
 @app.route('/travel')
 #@cache_result(timeout=600)  # Cache for 10 minutes
@@ -4100,14 +4083,6 @@ class SupportTicket(db.Model):
     agent = db.relationship('User', foreign_keys=[assigned_to], backref='assigned_tickets')
     messages = db.relationship('TicketMessage', backref='ticket', lazy=True, cascade='all, delete-orphan')
 
-class TicketMessage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    ticket_id = db.Column(db.Integer, db.ForeignKey('support_ticket.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    message = db.Column(db.Text, nullable=False)
-    is_internal = db.Column(db.Boolean, default=False)  # Internal notes for agents
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user = db.relationship('User', backref='ticket_messages')
 
 class FAQ(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -4612,8 +4587,6 @@ class UserLocation(db.Model):
     accuracy = db.Column(db.Float)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', backref='location_history')
-
-
 
 # Add these routes after the existing routes (around line 2219, before the models)
 
@@ -6123,14 +6096,6 @@ class BoardingPass(db.Model):
     booking = db.relationship('Booking', backref='boarding_passes')
 
 # Customer Support Models
-class TicketMessage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    ticket_id = db.Column(db.Integer, db.ForeignKey('support_ticket.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    message = db.Column(db.Text, nullable=False)
-    is_internal = db.Column(db.Boolean, default=False)  # Internal notes for agents
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user = db.relationship('User', backref='ticket_messages')
 
 class WhatsAppIntegration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
