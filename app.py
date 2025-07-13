@@ -20,6 +20,14 @@ import logging
 from flask_compress import Compress
 from flask_caching import Cache
 
+# Handle missing Pillow gracefully
+try:
+    from PIL import Image
+    PILLOW_AVAILABLE = True
+except ImportError:
+    PILLOW_AVAILABLE = False
+    print("Warning: Pillow not available. Image optimization features disabled.")
+
 # Stripe configuration (test keys)
 stripe.api_key = 'sk_test_51Nw8...your_test_key_here...'
 STRIPE_PUBLIC_KEY = 'pk_test_51Nw8...your_test_key_here...'
