@@ -1,0 +1,534 @@
+{% extends "base.html" %}
+
+{% block title %}Travel Buddy Finder - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 text-primary">
+                    <i class="fas fa-users me-3"></i>
+                    Find Your Travel Buddy
+                </h1>
+                <p class="lead text-muted">Connect with fellow travelers and make your journey more memorable</p>
+            </div>
+
+            <!-- Create Profile Section -->
+            <div class="card shadow-lg mb-5">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Create Your Travel Profile
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form id="buddyProfileForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="destination" class="form-label">Destination</label>
+                                    <select class="form-select" id="destination" required>
+                                        <option value="">Select Destination</option>
+                                        <option value="1">Paris, France</option>
+                                        <option value="2">Tokyo, Japan</option>
+                                        <option value="3">New York, USA</option>
+                                        <option value="4">London, UK</option>
+                                        <option value="5">Bali, Indonesia</option>
+                                        <option value="6">Sydney, Australia</option>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="startDate" class="form-label">Start Date</label>
+                                            <input type="date" class="form-control" id="startDate" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="endDate" class="form-label">End Date</label>
+                                            <input type="date" class="form-control" id="endDate" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="travelStyle" class="form-label">Travel Style</label>
+                                    <select class="form-select" id="travelStyle" required>
+                                        <option value="">Select Style</option>
+                                        <option value="luxury">Luxury</option>
+                                        <option value="budget">Budget</option>
+                                        <option value="adventure">Adventure</option>
+                                        <option value="cultural">Cultural</option>
+                                        <option value="relaxation">Relaxation</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="interests" class="form-label">Interests</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="photography" id="interest1">
+                                                <label class="form-check-label" for="interest1">Photography</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="food" id="interest2">
+                                                <label class="form-check-label" for="interest2">Food & Dining</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="history" id="interest3">
+                                                <label class="form-check-label" for="interest3">History</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="art" id="interest4">
+                                                <label class="form-check-label" for="interest4">Art & Museums</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="nature" id="interest5">
+                                                <label class="form-check-label" for="interest5">Nature</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="shopping" id="interest6">
+                                                <label class="form-check-label" for="interest6">Shopping</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="nightlife" id="interest7">
+                                                <label class="form-check-label" for="interest7">Nightlife</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="sports" id="interest8">
+                                                <label class="form-check-label" for="interest8">Sports</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="languages" class="form-label">Languages You Speak</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="english" id="lang1" checked>
+                                                <label class="form-check-label" for="lang1">English</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="spanish" id="lang2">
+                                                <label class="form-check-label" for="lang2">Spanish</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="french" id="lang3">
+                                                <label class="form-check-label" for="lang3">French</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="german" id="lang4">
+                                                <label class="form-check-label" for="lang4">German</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="italian" id="lang5">
+                                                <label class="form-check-label" for="lang5">Italian</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="japanese" id="lang6">
+                                                <label class="form-check-label" for="lang6">Japanese</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ageRange" class="form-label">Preferred Age Range</label>
+                                    <select class="form-select" id="ageRange">
+                                        <option value="">Any Age</option>
+                                        <option value="18-25">18-25</option>
+                                        <option value="26-35">26-35</option>
+                                        <option value="36-45">36-45</option>
+                                        <option value="46-55">46-55</option>
+                                        <option value="55+">55+</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-search me-2"></i>
+                                Find Travel Buddies
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results Section -->
+            <div class="card shadow-lg" id="resultsSection" style="display: none;">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-users me-2"></i>
+                        Travel Buddies Found
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="buddyResults">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Destinations -->
+            <div class="card shadow-lg mt-5">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-fire me-2"></i>
+                        Popular Destinations
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='paris.jpg') }}" class="card-img-top" alt="Paris">
+                                <div class="card-body">
+                                    <h6 class="card-title">Paris, France</h6>
+                                    <p class="card-text small text-muted">15 travelers looking for buddies</p>
+                                    <button class="btn btn-sm btn-outline-primary">View Buddies</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='tokyo.jpg') }}" class="card-img-top" alt="Tokyo">
+                                <div class="card-body">
+                                    <h6 class="card-title">Tokyo, Japan</h6>
+                                    <p class="card-text small text-muted">12 travelers looking for buddies</p>
+                                    <button class="btn btn-sm btn-outline-primary">View Buddies</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='bali.jpg') }}" class="card-img-top" alt="Bali">
+                                <div class="card-body">
+                                    <h6 class="card-title">Bali, Indonesia</h6>
+                                    <p class="card-text small text-muted">18 travelers looking for buddies</p>
+                                    <button class="btn btn-sm btn-outline-primary">View Buddies</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='sydney.jpg') }}" class="card-img-top" alt="Sydney">
+                                <div class="card-body">
+                                    <h6 class="card-title">Sydney, Australia</h6>
+                                    <p class="card-text small text-muted">8 travelers looking for buddies</p>
+                                    <button class="btn btn-sm btn-outline-primary">View Buddies</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Buddy Profile Modal -->
+<div class="modal fade" id="buddyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-user me-2"></i>
+                    Travel Buddy Profile
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="buddyModalContent">
+                <!-- Content will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="connectBtn">
+                    <i class="fas fa-handshake me-2"></i>
+                    Connect
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const buddyProfileForm = document.getElementById('buddyProfileForm');
+    
+    buddyProfileForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        createBuddyProfile();
+    });
+});
+
+function createBuddyProfile() {
+    const destination = document.getElementById('destination').value;
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const travelStyle = document.getElementById('travelStyle').value;
+    const ageRange = document.getElementById('ageRange').value;
+    
+    // Get selected interests
+    const interests = [];
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+        if (checkbox.id.startsWith('interest')) {
+            interests.push(checkbox.value);
+        }
+    });
+    
+    // Get selected languages
+    const languages = [];
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+        if (checkbox.id.startsWith('lang')) {
+            languages.push(checkbox.value);
+        }
+    });
+    
+    if (!destination || !startDate || !endDate || !travelStyle) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    const profileData = {
+        destination_id: destination,
+        travel_dates_start: startDate,
+        travel_dates_end: endDate,
+        travel_style: travelStyle,
+        interests: interests,
+        languages: languages,
+        age_range: ageRange
+    };
+    
+    // Simulate API call
+    fetch('/api/travel-buddy/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            searchBuddies();
+        } else {
+            alert('Error creating profile: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // For demo purposes, show mock results
+        showMockResults();
+    });
+}
+
+function searchBuddies() {
+    // Show loading
+    document.getElementById('resultsSection').style.display = 'block';
+    document.getElementById('buddyResults').innerHTML = `
+        <div class="col-12 text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Finding travel buddies...</p>
+        </div>
+    `;
+    
+    // Simulate API call delay
+    setTimeout(() => {
+        showMockResults();
+    }, 2000);
+}
+
+function showMockResults() {
+    const mockBuddies = [
+        {
+            id: 1,
+            name: "Sarah Johnson",
+            age: 28,
+            destination: "Paris, France",
+            travel_style: "Cultural",
+            interests: ["art", "history", "food"],
+            languages: ["english", "french"],
+            match_score: 95,
+            avatar: "https://via.placeholder.com/100x100/007bff/ffffff?text=SJ"
+        },
+        {
+            id: 2,
+            name: "Michael Chen",
+            age: 32,
+            destination: "Paris, France",
+            travel_style: "Adventure",
+            interests: ["photography", "nature", "sports"],
+            languages: ["english", "mandarin"],
+            match_score: 87,
+            avatar: "https://via.placeholder.com/100x100/28a745/ffffff?text=MC"
+        },
+        {
+            id: 3,
+            name: "Emma Rodriguez",
+            age: 25,
+            destination: "Paris, France",
+            travel_style: "Luxury",
+            interests: ["shopping", "food", "nightlife"],
+            languages: ["english", "spanish"],
+            match_score: 82,
+            avatar: "https://via.placeholder.com/100x100/dc3545/ffffff?text=ER"
+        },
+        {
+            id: 4,
+            name: "David Kim",
+            age: 30,
+            destination: "Paris, France",
+            travel_style: "Budget",
+            interests: ["history", "photography", "food"],
+            languages: ["english", "korean"],
+            match_score: 78,
+            avatar: "https://via.placeholder.com/100x100/ffc107/ffffff?text=DK"
+        }
+    ];
+    
+    const resultsContainer = document.getElementById('buddyResults');
+    resultsContainer.innerHTML = mockBuddies.map(buddy => `
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <img src="${buddy.avatar}" class="rounded-circle mb-3" width="80" height="80" alt="${buddy.name}">
+                    <h5 class="card-title">${buddy.name}</h5>
+                    <p class="text-muted mb-2">${buddy.age} years old</p>
+                    <div class="mb-3">
+                        <span class="badge bg-primary me-1">${buddy.travel_style}</span>
+                        <span class="badge bg-success">${buddy.match_score}% Match</span>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            ${buddy.destination}
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <strong>Interests:</strong> ${buddy.interests.join(', ')}
+                        </small>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary btn-sm" onclick="viewBuddyProfile(${buddy.id})">
+                            <i class="fas fa-eye me-1"></i>
+                            View Profile
+                        </button>
+                        <button class="btn btn-success btn-sm" onclick="connectWithBuddy(${buddy.id})">
+                            <i class="fas fa-handshake me-1"></i>
+                            Connect
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function viewBuddyProfile(buddyId) {
+    const modal = new bootstrap.Modal(document.getElementById('buddyModal'));
+    const modalContent = document.getElementById('buddyModalContent');
+    
+    // Mock buddy data
+    const buddy = {
+        name: "Sarah Johnson",
+        age: 28,
+        destination: "Paris, France",
+        travel_style: "Cultural",
+        interests: ["art", "history", "food"],
+        languages: ["english", "french"],
+        match_score: 95,
+        avatar: "https://via.placeholder.com/150x150/007bff/ffffff?text=SJ",
+        bio: "Passionate traveler and art enthusiast. Love exploring museums and trying local cuisine. Looking for someone to share the Parisian experience with!"
+    };
+    
+    modalContent.innerHTML = `
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="${buddy.avatar}" class="rounded-circle mb-3" width="150" height="150" alt="${buddy.name}">
+                <h4>${buddy.name}</h4>
+                <p class="text-muted">${buddy.age} years old</p>
+                <div class="mb-3">
+                    <span class="badge bg-primary me-1">${buddy.travel_style}</span>
+                    <span class="badge bg-success">${buddy.match_score}% Match</span>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <h5>About Me</h5>
+                <p>${buddy.bio}</p>
+                
+                <h6>Travel Details</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-map-marker-alt text-primary me-2"></i>${buddy.destination}</li>
+                    <li><i class="fas fa-calendar text-primary me-2"></i>March 15-22, 2025</li>
+                    <li><i class="fas fa-plane text-primary me-2"></i>${buddy.travel_style} Traveler</li>
+                </ul>
+                
+                <h6>Interests</h6>
+                <div class="mb-3">
+                    ${buddy.interests.map(interest => `<span class="badge bg-light text-dark me-1">${interest}</span>`).join('')}
+                </div>
+                
+                <h6>Languages</h6>
+                <div class="mb-3">
+                    ${buddy.languages.map(lang => `<span class="badge bg-info me-1">${lang}</span>`).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.show();
+}
+
+function connectWithBuddy(buddyId) {
+    // Here you would typically send a connection request
+    alert('Connection request sent! The travel buddy will be notified.');
+}
+</script>
+
+<style>
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.badge {
+    font-size: 0.8em;
+}
+
+.modal-body img {
+    border: 3px solid #007bff;
+}
+
+.timeline-item {
+    position: relative;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+    transform: translateX(-50%);
+}
+</style>
+{% endblock %} 

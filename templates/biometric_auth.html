@@ -1,0 +1,611 @@
+{% extends "base.html" %}
+
+{% block title %}Biometric Authentication - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section bg-gradient-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Biometric Authentication</h1>
+                    <p class="lead mb-4">Secure your account with advanced biometric authentication. Use your fingerprint, face, or voice for instant, secure access.</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg" id="setupBiometricBtn">
+                            <i class="fas fa-fingerprint me-2"></i>Setup Biometric
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" id="testAuthBtn">
+                            <i class="fas fa-shield-alt me-2"></i>Test Authentication
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="biometric-animation text-center">
+                        <div class="fingerprint-scanner">
+                            <div class="scanner-ring"></div>
+                            <i class="fas fa-fingerprint fa-4x text-white"></i>
+                        </div>
+                        <p class="text-white-50 mt-3">Secure biometric authentication</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Methods -->
+    <div class="container py-5">
+        <h2 class="text-center mb-5">Choose Your Authentication Method</h2>
+        <div class="row g-4">
+            <!-- Fingerprint -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 text-center">
+                        <div class="biometric-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-fingerprint fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">Fingerprint</h4>
+                        <p class="card-text">Use your fingerprint for instant authentication. Works with most modern devices.</p>
+                        <div class="form-check form-switch d-flex justify-content-center mb-3">
+                            <input class="form-check-input" type="checkbox" id="fingerprintToggle">
+                            <label class="form-check-label ms-2" for="fingerprintToggle">Enable</label>
+                        </div>
+                        <button class="btn btn-outline-primary" id="setupFingerprint">
+                            <i class="fas fa-cog me-2"></i>Setup
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facial Recognition -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 text-center">
+                        <div class="biometric-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-camera fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">Facial Recognition</h4>
+                        <p class="card-text">Look at your camera for secure facial authentication. Fast and convenient.</p>
+                        <div class="form-check form-switch d-flex justify-content-center mb-3">
+                            <input class="form-check-input" type="checkbox" id="facialToggle">
+                            <label class="form-check-label ms-2" for="facialToggle">Enable</label>
+                        </div>
+                        <button class="btn btn-outline-success" id="setupFacial">
+                            <i class="fas fa-camera me-2"></i>Setup
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Recognition -->
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 text-center">
+                        <div class="biometric-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-microphone fa-2x"></i>
+                        </div>
+                        <h4 class="card-title">Voice Recognition</h4>
+                        <p class="card-text">Use your voice for hands-free authentication. Perfect for accessibility.</p>
+                        <div class="form-check form-switch d-flex justify-content-center mb-3">
+                            <input class="form-check-input" type="checkbox" id="voiceToggle">
+                            <label class="form-check-label ms-2" for="voiceToggle">Enable</label>
+                        </div>
+                        <button class="btn btn-outline-warning" id="setupVoice">
+                            <i class="fas fa-microphone me-2"></i>Setup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Interface -->
+    <div class="bg-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0"><i class="fas fa-cog me-2"></i>Biometric Setup</h4>
+                        </div>
+                        <div class="card-body">
+                            <!-- Setup Steps -->
+                            <div id="setupSteps" class="d-none">
+                                <div class="step-indicator mb-4">
+                                    <div class="step active" data-step="1">
+                                        <div class="step-number">1</div>
+                                        <div class="step-label">Device Check</div>
+                                    </div>
+                                    <div class="step" data-step="2">
+                                        <div class="step-number">2</div>
+                                        <div class="step-label">Enrollment</div>
+                                    </div>
+                                    <div class="step" data-step="3">
+                                        <div class="step-number">3</div>
+                                        <div class="step-label">Verification</div>
+                                    </div>
+                                    <div class="step" data-step="4">
+                                        <div class="step-number">4</div>
+                                        <div class="step-label">Complete</div>
+                                    </div>
+                                </div>
+
+                                <!-- Step Content -->
+                                <div id="stepContent">
+                                    <div id="step1" class="step-content">
+                                        <h5>Device Compatibility Check</h5>
+                                        <p>Checking if your device supports biometric authentication...</p>
+                                        <div class="device-check-results">
+                                            <div class="check-item">
+                                                <i class="fas fa-check text-success me-2"></i>
+                                                <span>WebAuthn API: Available</span>
+                                            </div>
+                                            <div class="check-item">
+                                                <i class="fas fa-check text-success me-2"></i>
+                                                <span>Secure Context: HTTPS</span>
+                                            </div>
+                                            <div class="check-item">
+                                                <i class="fas fa-check text-success me-2"></i>
+                                                <span>Biometric Hardware: Detected</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary mt-3" onclick="nextStep()">Continue</button>
+                                    </div>
+
+                                    <div id="step2" class="step-content d-none">
+                                        <h5>Biometric Enrollment</h5>
+                                        <p>Please follow the prompts to enroll your biometric data.</p>
+                                        <div class="enrollment-interface text-center">
+                                            <div class="enrollment-animation mb-3">
+                                                <div class="pulse-ring"></div>
+                                                <i class="fas fa-fingerprint fa-3x text-primary"></i>
+                                            </div>
+                                            <p class="text-muted">Touch your fingerprint sensor or look at your camera</p>
+                                        </div>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <button class="btn btn-primary" onclick="simulateEnrollment()">Simulate Enrollment</button>
+                                    </div>
+
+                                    <div id="step3" class="step-content d-none">
+                                        <h5>Verification</h5>
+                                        <p>Please verify your biometric data to complete setup.</p>
+                                        <div class="verification-interface text-center">
+                                            <div class="verification-animation mb-3">
+                                                <div class="check-ring"></div>
+                                                <i class="fas fa-shield-check fa-3x text-success"></i>
+                                            </div>
+                                            <p class="text-muted">Verify your biometric data</p>
+                                        </div>
+                                        <button class="btn btn-success" onclick="simulateVerification()">Simulate Verification</button>
+                                    </div>
+
+                                    <div id="step4" class="step-content d-none">
+                                        <h5>Setup Complete!</h5>
+                                        <div class="text-center">
+                                            <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                                            <p>Your biometric authentication has been successfully configured.</p>
+                                            <div class="alert alert-success">
+                                                <strong>Security Level:</strong> Enhanced<br>
+                                                <strong>Authentication Method:</strong> <span id="methodType">Fingerprint</span><br>
+                                                <strong>Setup Date:</strong> <span id="setupDate"></span>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" onclick="completeSetup()">Finish Setup</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Authentication Test -->
+                            <div id="authTest" class="d-none">
+                                <h5>Test Authentication</h5>
+                                <p>Test your biometric authentication setup.</p>
+                                <div class="text-center">
+                                    <button class="btn btn-lg btn-primary" id="testAuthButton">
+                                        <i class="fas fa-fingerprint me-2"></i>Authenticate
+                                    </button>
+                                </div>
+                                <div id="authResult" class="mt-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Features -->
+    <div class="container py-5">
+        <h2 class="text-center mb-5">Security Features</h2>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-lock fa-2x"></i>
+                    </div>
+                    <h5>Encrypted Storage</h5>
+                    <p class="text-muted">Biometric data is encrypted and stored securely on your device.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-shield-alt fa-2x"></i>
+                    </div>
+                    <h5>Liveness Detection</h5>
+                    <p class="text-muted">Advanced algorithms detect real biometric data vs. spoofing attempts.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-history fa-2x"></i>
+                    </div>
+                    <h5>Audit Trail</h5>
+                    <p class="text-muted">Complete log of all authentication attempts for security monitoring.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-mobile-alt fa-2x"></i>
+                    </div>
+                    <h5>Multi-Device</h5>
+                    <p class="text-muted">Sync your biometric settings across all your devices securely.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.fingerprint-scanner {
+    position: relative;
+    display: inline-block;
+}
+
+.scanner-ring {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: scan 2s ease-in-out infinite;
+}
+
+@keyframes scan {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 0.6; }
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+}
+
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 1;
+}
+
+.step.active:not(:last-child)::after {
+    background: #007bff;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    z-index: 2;
+    position: relative;
+}
+
+.step.active .step-number {
+    background: #007bff;
+    color: white;
+}
+
+.step.completed .step-number {
+    background: #28a745;
+    color: white;
+}
+
+.step-label {
+    margin-top: 8px;
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-align: center;
+}
+
+.step.active .step-label {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.enrollment-animation, .verification-animation {
+    position: relative;
+    display: inline-block;
+}
+
+.pulse-ring {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    border: 3px solid #007bff;
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.check-ring {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    border: 3px solid #28a745;
+    border-radius: 50%;
+    animation: check 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes check {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.device-check-results {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.check-item {
+    margin-bottom: 10px;
+}
+
+.biometric-icon {
+    transition: transform 0.3s ease;
+}
+
+.biometric-icon:hover {
+    transform: scale(1.1);
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-icon:hover {
+    transform: scale(1.1);
+}
+</style>
+
+<script>
+let currentStep = 1;
+let currentMethod = 'fingerprint';
+
+class BiometricAuth {
+    constructor() {
+        this.isSetup = false;
+        this.enrolledMethods = [];
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        document.getElementById('setupBiometricBtn').addEventListener('click', () => {
+            this.showSetup();
+        });
+
+        document.getElementById('testAuthBtn').addEventListener('click', () => {
+            this.showAuthTest();
+        });
+
+        // Method toggles
+        document.getElementById('fingerprintToggle').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                this.setupMethod('fingerprint');
+            }
+        });
+
+        document.getElementById('facialToggle').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                this.setupMethod('facial');
+            }
+        });
+
+        document.getElementById('voiceToggle').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                this.setupMethod('voice');
+            }
+        });
+
+        // Setup buttons
+        document.getElementById('setupFingerprint').addEventListener('click', () => {
+            this.setupMethod('fingerprint');
+        });
+
+        document.getElementById('setupFacial').addEventListener('click', () => {
+            this.setupMethod('facial');
+        });
+
+        document.getElementById('setupVoice').addEventListener('click', () => {
+            this.setupMethod('voice');
+        });
+
+        // Test authentication
+        document.getElementById('testAuthButton').addEventListener('click', () => {
+            this.testAuthentication();
+        });
+    }
+
+    showSetup() {
+        document.getElementById('setupSteps').classList.remove('d-none');
+        document.getElementById('authTest').classList.add('d-none');
+        this.showStep(1);
+    }
+
+    showAuthTest() {
+        document.getElementById('setupSteps').classList.add('d-none');
+        document.getElementById('authTest').classList.remove('d-none');
+    }
+
+    setupMethod(method) {
+        currentMethod = method;
+        this.showSetup();
+        this.updateMethodType(method);
+    }
+
+    updateMethodType(method) {
+        const methodNames = {
+            'fingerprint': 'Fingerprint',
+            'facial': 'Facial Recognition',
+            'voice': 'Voice Recognition'
+        };
+        document.getElementById('methodType').textContent = methodNames[method];
+    }
+
+    showStep(step) {
+        currentStep = step;
+        
+        // Update step indicators
+        document.querySelectorAll('.step').forEach((s, index) => {
+            const stepNum = index + 1;
+            s.classList.remove('active', 'completed');
+            if (stepNum < currentStep) {
+                s.classList.add('completed');
+            } else if (stepNum === currentStep) {
+                s.classList.add('active');
+            }
+        });
+
+        // Show step content
+        document.querySelectorAll('.step-content').forEach((content, index) => {
+            const stepNum = index + 1;
+            if (stepNum === currentStep) {
+                content.classList.remove('d-none');
+            } else {
+                content.classList.add('d-none');
+            }
+        });
+    }
+
+    testAuthentication() {
+        const button = document.getElementById('testAuthButton');
+        const result = document.getElementById('authResult');
+        
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Authenticating...';
+        
+        // Simulate authentication process
+        setTimeout(() => {
+            const success = Math.random() > 0.2; // 80% success rate
+            
+            if (success) {
+                result.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>Authentication successful! Welcome back.</div>';
+                button.innerHTML = '<i class="fas fa-check me-2"></i>Success';
+                button.className = 'btn btn-lg btn-success';
+            } else {
+                result.innerHTML = '<div class="alert alert-danger"><i class="fas fa-times-circle me-2"></i>Authentication failed. Please try again.</div>';
+                button.innerHTML = '<i class="fas fa-fingerprint me-2"></i>Authenticate';
+                button.className = 'btn btn-lg btn-primary';
+                button.disabled = false;
+            }
+        }, 2000);
+    }
+}
+
+// Global functions for step navigation
+function nextStep() {
+    if (currentStep < 4) {
+        window.biometricAuth.showStep(currentStep + 1);
+    }
+}
+
+function simulateEnrollment() {
+    const progressBar = document.querySelector('.progress-bar');
+    let progress = 0;
+    
+    const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+                nextStep();
+            }, 500);
+        }
+    }, 200);
+}
+
+function simulateVerification() {
+    setTimeout(() => {
+        nextStep();
+    }, 1500);
+}
+
+function completeSetup() {
+    window.biometricAuth.isSetup = true;
+    window.biometricAuth.enrolledMethods.push(currentMethod);
+    
+    // Update UI
+    document.getElementById('setupSteps').classList.add('d-none');
+    document.getElementById('authTest').classList.remove('d-none');
+    
+    // Set setup date
+    document.getElementById('setupDate').textContent = new Date().toLocaleDateString();
+    
+    // Enable the corresponding toggle
+    const toggleId = currentMethod + 'Toggle';
+    document.getElementById(toggleId).checked = true;
+    
+    // Show success message
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show';
+    alert.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>
+        Biometric authentication setup completed successfully!
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.querySelector('.card-body').insertBefore(alert, document.querySelector('.card-body').firstChild);
+}
+
+// Initialize biometric authentication when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.biometricAuth = new BiometricAuth();
+});
+</script>
+{% endblock %} 

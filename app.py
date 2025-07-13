@@ -19,6 +19,7 @@ import time
 import logging
 from flask_compress import Compress
 from flask_caching import Cache
+import random
 
 # Handle missing Pillow gracefully
 try:
@@ -93,6 +94,9 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'your-email@gmail.com'  # Change this
 app.config['MAIL_PASSWORD'] = 'your-app-password'     # Change this
+
+# Import new models
+from new_models import *
 
 # Currency configuration
 app.config['DEFAULT_CURRENCY'] = 'USD'
@@ -7325,6 +7329,931 @@ def api_analytics_activity():
             'success': False,
             'error': 'Internal server error'
         }), 500
+
+# Advanced Search & Discovery Routes
+@app.route('/multi-city-search')
+def multi_city_search():
+    """Multi-city routing search page"""
+    return render_template('multi_city_search.html')
+
+@app.route('/api/multi-city-routes', methods=['POST'])
+@login_required
+def create_multi_city_route():
+    """Create a multi-city route"""
+    try:
+        data = request.get_json()
+        route = MultiCityRoute(
+            user_id=current_user.id,
+            route_name=data['route_name'],
+            total_price=data['total_price'],
+            total_duration=data['total_duration']
+        )
+        db.session.add(route)
+        db.session.commit()
+        
+        # Add route segments
+        for segment_data in data['segments']:
+            segment = RouteSegment(
+                route_id=route.id,
+                segment_order=segment_data['order'],
+                origin=segment_data['origin'],
+                destination=segment_data['destination'],
+                departure_date=datetime.strptime(segment_data['departure_date'], '%Y-%m-%d').date(),
+                duration=segment_data.get('duration', 1),
+                price=segment_data['price']
+            )
+            db.session.add(segment)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'route_id': route.id,
+            'message': 'Multi-city route created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/flexible-search', methods=['POST'])
+@login_required
+def create_flexible_search():
+    """Create a flexible search"""
+    try:
+        data = request.get_json()
+        search = FlexibleSearch(
+            user_id=current_user.id,
+            search_type=data['search_type'],
+            origin=data.get('origin'),
+            destination_preferences=json.dumps(data.get('destination_preferences', [])),
+            date_range_start=datetime.strptime(data['date_range_start'], '%Y-%m-%d').date() if data.get('date_range_start') else None,
+            date_range_end=datetime.strptime(data['date_range_end'], '%Y-%m-%d').date() if data.get('date_range_end') else None,
+            budget_min=data.get('budget_min'),
+            budget_max=data.get('budget_max'),
+            duration_min=data.get('duration_min'),
+            duration_max=data.get('duration_max')
+        )
+        db.session.add(search)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'search_id': search.id,
+            'message': 'Flexible search created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/price-alerts', methods=['POST'])
+@login_required
+def create_price_alert():
+    """Create a price alert"""
+    try:
+        data = request.get_json()
+        alert = PriceAlert(
+            user_id=current_user.id,
+            destination_id=data['destination_id'],
+            target_price=data['target_price'],
+            current_price=data['current_price']
+        )
+        db.session.add(alert)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'alert_id': alert.id,
+            'message': 'Price alert created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/explore-destinations')
+def explore_destinations():
+    """Explore destinations based on budget/dates"""
+    try:
+        budget = request.args.get('budget', type=float)
+        duration = request.args.get('duration', type=int)
+        travel_style = request.args.get('style')
+        
+        query = Destination.query.filter(Destination.available == True)
+        
+        if budget:
+            query = query.filter(Destination.price <= budget)
+        
+        if duration:
+            query = query.filter(Destination.duration <= duration)
+        
+        if travel_style:
+            query = query.filter(Destination.category == travel_style)
+        
+        destinations = query.limit(12).all()
+        
+        return jsonify({
+            'success': True,
+            'destinations': [{
+                'id': d.id,
+                'name': d.name,
+                'country': d.country,
+                'price': d.price,
+                'duration': d.duration,
+                'image_url': d.image_url,
+                'rating': d.rating
+            } for d in destinations]
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Real-Time Inventory & Pricing Routes
+@app.route('/api/seat-map/<int:flight_id>')
+def get_seat_map(flight_id):
+    """Get seat map for a flight"""
+    try:
+        seat_map = SeatMap.query.filter_by(flight_id=flight_id).first()
+        if not seat_map:
+            # Create a sample seat map
+            seat_map = SeatMap(
+                flight_id=flight_id,
+                aircraft_type='Boeing 737',
+                seat_configuration=json.dumps({
+                    'rows': 30,
+                    'columns': ['A', 'B', 'C', 'D', 'E', 'F'],
+                    'layout': '3-3'
+                }),
+                available_seats=json.dumps(['1A', '1B', '1C', '2A', '2B', '2C']),
+                seat_prices=json.dumps({
+                    'window': 50,
+                    'aisle': 30,
+                    'middle': 20
+                })
+            )
+            db.session.add(seat_map)
+            db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'seat_map': {
+                'aircraft_type': seat_map.aircraft_type,
+                'configuration': json.loads(seat_map.seat_configuration),
+                'available_seats': json.loads(seat_map.available_seats),
+                'seat_prices': json.loads(seat_map.seat_prices)
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/hotel-room-map/<int:hotel_id>')
+def get_hotel_room_map(hotel_id):
+    """Get room map for a hotel"""
+    try:
+        room_map = HotelRoomMap.query.filter_by(hotel_id=hotel_id).first()
+        if not room_map:
+            # Create a sample room map
+            room_map = HotelRoomMap(
+                hotel_id=hotel_id,
+                floor_number=1,
+                room_layout=json.dumps({
+                    'rooms': [
+                        {'number': '101', 'type': 'standard', 'available': True},
+                        {'number': '102', 'type': 'deluxe', 'available': True},
+                        {'number': '103', 'type': 'suite', 'available': False}
+                    ]
+                }),
+                available_rooms=json.dumps(['101', '102']),
+                room_features=json.dumps({
+                    '101': ['king_bed', 'ocean_view'],
+                    '102': ['queen_bed', 'balcony'],
+                    '103': ['king_bed', 'ocean_view', 'jacuzzi']
+                })
+            )
+            db.session.add(room_map)
+            db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'room_map': {
+                'floor_number': room_map.floor_number,
+                'layout': json.loads(room_map.room_layout),
+                'available_rooms': json.loads(room_map.available_rooms),
+                'room_features': json.loads(room_map.room_features)
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/fare-calendar')
+def get_fare_calendar():
+    """Get fare calendar for a route"""
+    try:
+        origin = request.args.get('origin')
+        destination = request.args.get('destination')
+        month = request.args.get('month')
+        
+        # Simulate fare calendar data
+        fares = []
+        base_price = 800
+        for day in range(1, 32):
+            # Simulate price variations
+            variation = random.uniform(0.7, 1.3)
+            price = base_price * variation
+            
+            fares.append({
+                'date': f'2025-{month}-{day:02d}',
+                'price': round(price, 2),
+                'airline': random.choice(['Delta', 'American', 'United', 'Southwest'])
+            })
+        
+        return jsonify({
+            'success': True,
+            'fares': fares
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Advanced Booking Features Routes
+@app.route('/api/passengers/<int:booking_id>', methods=['POST'])
+@login_required
+def add_passenger(booking_id):
+    """Add passenger to booking"""
+    try:
+        data = request.get_json()
+        passenger = Passenger(
+            booking_id=booking_id,
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            date_of_birth=datetime.strptime(data['date_of_birth'], '%Y-%m-%d').date(),
+            passport_number=data.get('passport_number'),
+            nationality=data.get('nationality'),
+            seat_preference=data.get('seat_preference'),
+            meal_preference=data.get('meal_preference'),
+            special_requests=data.get('special_requests')
+        )
+        db.session.add(passenger)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'passenger_id': passenger.id,
+            'message': 'Passenger added successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/seat-selection', methods=['POST'])
+@login_required
+def select_seat():
+    """Select seat for passenger"""
+    try:
+        data = request.get_json()
+        seat_selection = SeatSelection(
+            passenger_id=data['passenger_id'],
+            flight_id=data['flight_id'],
+            seat_number=data['seat_number'],
+            seat_type=data.get('seat_type', 'economy'),
+            price=data.get('price', 0)
+        )
+        db.session.add(seat_selection)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'selection_id': seat_selection.id,
+            'message': 'Seat selected successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/baggage-options', methods=['POST'])
+@login_required
+def add_baggage_option(booking_id):
+    """Add baggage option to booking"""
+    try:
+        data = request.get_json()
+        baggage = BaggageOption(
+            booking_id=booking_id,
+            baggage_type=data['baggage_type'],
+            weight=data.get('weight'),
+            price=data['price']
+        )
+        db.session.add(baggage)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'baggage_id': baggage.id,
+            'message': 'Baggage option added successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Social & Community Features Routes
+@app.route('/travel-buddy')
+@login_required
+def travel_buddy_page():
+    """Travel buddy finder page"""
+    return render_template('travel_buddy.html')
+
+@app.route('/api/travel-buddy/create', methods=['POST'])
+@login_required
+def create_travel_buddy_profile():
+    """Create travel buddy profile"""
+    try:
+        data = request.get_json()
+        buddy = TravelBuddy(
+            user_id=current_user.id,
+            destination_id=data['destination_id'],
+            travel_dates_start=datetime.strptime(data['travel_dates_start'], '%Y-%m-%d').date(),
+            travel_dates_end=datetime.strptime(data['travel_dates_end'], '%Y-%m-%d').date(),
+            travel_style=data.get('travel_style'),
+            interests=json.dumps(data.get('interests', [])),
+            languages=json.dumps(data.get('languages', [])),
+            age_range=data.get('age_range')
+        )
+        db.session.add(buddy)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'buddy_id': buddy.id,
+            'message': 'Travel buddy profile created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/travel-buddy/matches')
+@login_required
+def get_travel_buddy_matches():
+    """Get travel buddy matches"""
+    try:
+        user_buddy = TravelBuddy.query.filter_by(user_id=current_user.id).first()
+        if not user_buddy:
+            return jsonify({
+                'success': False,
+                'error': 'No travel buddy profile found'
+            }), 404
+        
+        # Find potential matches
+        matches = TravelBuddy.query.filter(
+            TravelBuddy.user_id != current_user.id,
+            TravelBuddy.destination_id == user_buddy.destination_id,
+            TravelBuddy.is_active == True
+        ).all()
+        
+        match_data = []
+        for match in matches:
+            # Calculate match score based on preferences
+            score = calculate_buddy_match_score(user_buddy, match)
+            match_data.append({
+                'buddy_id': match.id,
+                'user_name': f"{match.user.first_name} {match.user.last_name}",
+                'travel_style': match.travel_style,
+                'interests': json.loads(match.interests),
+                'languages': json.loads(match.languages),
+                'match_score': score
+            })
+        
+        # Sort by match score
+        match_data.sort(key=lambda x: x['match_score'], reverse=True)
+        
+        return jsonify({
+            'success': True,
+            'matches': match_data
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/traveler-meetups')
+def traveler_meetups():
+    """Traveler meetups page"""
+    meetups = TravelerMeetup.query.filter_by(is_active=True).all()
+    return render_template('traveler_meetups.html', meetups=meetups)
+
+@app.route('/api/meetups/create', methods=['POST'])
+@login_required
+def create_meetup():
+    """Create a traveler meetup"""
+    try:
+        data = request.get_json()
+        meetup = TravelerMeetup(
+            organizer_id=current_user.id,
+            destination_id=data['destination_id'],
+            title=data['title'],
+            description=data.get('description'),
+            meetup_date=datetime.strptime(data['meetup_date'], '%Y-%m-%dT%H:%M'),
+            location=data['location'],
+            max_participants=data.get('max_participants')
+        )
+        db.session.add(meetup)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'meetup_id': meetup.id,
+            'message': 'Meetup created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/meetups/<int:meetup_id>/join', methods=['POST'])
+@login_required
+def join_meetup(meetup_id):
+    """Join a traveler meetup"""
+    try:
+        # Check if already joined
+        existing = MeetupParticipant.query.filter_by(
+            meetup_id=meetup_id,
+            user_id=current_user.id
+        ).first()
+        
+        if existing:
+            return jsonify({
+                'success': False,
+                'error': 'Already joined this meetup'
+            }), 400
+        
+        participant = MeetupParticipant(
+            meetup_id=meetup_id,
+            user_id=current_user.id
+        )
+        db.session.add(participant)
+        
+        # Update current participants count
+        meetup = TravelerMeetup.query.get(meetup_id)
+        meetup.current_participants += 1
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Successfully joined meetup'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/travel-stories')
+def travel_stories():
+    """Travel stories page"""
+    stories = TravelStory.query.filter_by(is_featured=True).order_by(TravelStory.created_at.desc()).limit(10).all()
+    return render_template('travel_stories.html', stories=stories)
+
+@app.route('/api/travel-stories/create', methods=['POST'])
+@login_required
+def create_travel_story():
+    """Create a travel story"""
+    try:
+        data = request.get_json()
+        story = TravelStory(
+            user_id=current_user.id,
+            destination_id=data['destination_id'],
+            title=data['title'],
+            content=data['content']
+        )
+        db.session.add(story)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'story_id': story.id,
+            'message': 'Travel story created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Business Travel Features Routes
+@app.route('/corporate-portal')
+@login_required
+def corporate_portal():
+    """Corporate booking portal"""
+    # Check if user is part of a corporate account
+    corporate_employee = CorporateEmployee.query.filter_by(user_id=current_user.id).first()
+    if not corporate_employee:
+        return redirect(url_for('register_corporate'))
+    
+    return render_template('corporate_portal.html', employee=corporate_employee)
+
+@app.route('/api/corporate-booking', methods=['POST'])
+@login_required
+def create_corporate_booking():
+    """Create a corporate booking with approval workflow"""
+    try:
+        data = request.get_json()
+        
+        # Create the booking first
+        booking = Booking(
+            user_id=current_user.id,
+            destination_id=data.get('destination_id'),
+            flight_id=data.get('flight_id'),
+            hotel_id=data.get('hotel_id'),
+            start_date=datetime.strptime(data['start_date'], '%Y-%m-%d').date(),
+            end_date=datetime.strptime(data['end_date'], '%Y-%m-%d').date(),
+            guests=data.get('guests', 1),
+            total_price=data['total_price']
+        )
+        db.session.add(booking)
+        db.session.flush()  # Get the booking ID
+        
+        # Create corporate booking record
+        corporate_employee = CorporateEmployee.query.filter_by(user_id=current_user.id).first()
+        corporate_booking = CorporateBooking(
+            corporate_account_id=corporate_employee.corporate_account_id,
+            employee_id=current_user.id,
+            booking_id=booking.id,
+            approval_status='pending'
+        )
+        db.session.add(corporate_booking)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'booking_id': booking.id,
+            'corporate_booking_id': corporate_booking.id,
+            'message': 'Corporate booking created and pending approval'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/expense-report', methods=['POST'])
+@login_required
+def create_expense_report():
+    """Create an expense report"""
+    try:
+        data = request.get_json()
+        corporate_employee = CorporateEmployee.query.filter_by(user_id=current_user.id).first()
+        
+        report = ExpenseReport(
+            corporate_account_id=corporate_employee.corporate_account_id,
+            employee_id=current_user.id,
+            report_name=data['report_name'],
+            trip_purpose=data.get('trip_purpose'),
+            total_amount=data.get('total_amount', 0)
+        )
+        db.session.add(report)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'report_id': report.id,
+            'message': 'Expense report created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Advanced Payment & Financial Routes
+@app.route('/api/buy-now-pay-later', methods=['POST'])
+@login_required
+def create_buy_now_pay_later():
+    """Create a buy now pay later option"""
+    try:
+        data = request.get_json()
+        bnpl = BuyNowPayLater(
+            booking_id=data['booking_id'],
+            provider=data['provider'],
+            total_amount=data['total_amount'],
+            installment_count=data['installment_count'],
+            installment_amount=data['installment_amount'],
+            interest_rate=data.get('interest_rate', 0)
+        )
+        db.session.add(bnpl)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'bnpl_id': bnpl.id,
+            'message': 'Buy now pay later option created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/split-payment', methods=['POST'])
+@login_required
+def create_split_payment():
+    """Create a split payment"""
+    try:
+        data = request.get_json()
+        split_payment = SplitPayment(
+            booking_id=data['booking_id'],
+            total_amount=data['total_amount'],
+            split_count=data['split_count'],
+            amount_per_person=data['amount_per_person']
+        )
+        db.session.add(split_payment)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'split_payment_id': split_payment.id,
+            'message': 'Split payment created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Post-Booking Experience Routes
+@app.route('/api/digital-documents/<int:booking_id>')
+@login_required
+def get_digital_documents(booking_id):
+    """Get digital documents for a booking"""
+    try:
+        documents = DigitalDocument.query.filter_by(booking_id=booking_id).all()
+        return jsonify({
+            'success': True,
+            'documents': [{
+                'id': doc.id,
+                'type': doc.document_type,
+                'url': doc.document_url,
+                'number': doc.document_number,
+                'issue_date': doc.issue_date.isoformat() if doc.issue_date else None,
+                'expiry_date': doc.expiry_date.isoformat() if doc.expiry_date else None,
+                'is_valid': doc.is_valid
+            } for doc in documents]
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/travel-updates/<int:booking_id>')
+@login_required
+def get_travel_updates(booking_id):
+    """Get travel updates for a booking"""
+    try:
+        updates = TravelUpdate.query.filter_by(booking_id=booking_id).order_by(TravelUpdate.created_at.desc()).all()
+        return jsonify({
+            'success': True,
+            'updates': [{
+                'id': update.id,
+                'type': update.update_type,
+                'title': update.title,
+                'message': update.message,
+                'severity': update.severity,
+                'is_read': update.is_read,
+                'created_at': update.created_at.isoformat()
+            } for update in updates]
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/in-destination-support', methods=['POST'])
+@login_required
+def request_in_destination_support():
+    """Request in-destination support"""
+    try:
+        data = request.get_json()
+        support = InDestinationSupport(
+            booking_id=data['booking_id'],
+            support_type=data['support_type'],
+            description=data['description'],
+            location=data.get('location')
+        )
+        db.session.add(support)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'support_id': support.id,
+            'message': 'Support request created successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Advanced Technology Routes
+@app.route('/api/voice-booking', methods=['POST'])
+@login_required
+def voice_booking():
+    """Process voice booking request"""
+    try:
+        data = request.get_json()
+        voice_booking = VoiceBooking(
+            user_id=current_user.id,
+            voice_query=data['voice_query'],
+            interpreted_query=data.get('interpreted_query'),
+            booking_type=data.get('booking_type'),
+            confidence_score=data.get('confidence_score', 0)
+        )
+        db.session.add(voice_booking)
+        db.session.commit()
+        
+        # Process the voice query
+        result = process_voice_booking_query(data['voice_query'])
+        
+        return jsonify({
+            'success': True,
+            'voice_booking_id': voice_booking.id,
+            'result': result
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/biometric-auth/setup', methods=['POST'])
+@login_required
+def setup_biometric_auth():
+    """Setup biometric authentication"""
+    try:
+        data = request.get_json()
+        biometric = BiometricAuth(
+            user_id=current_user.id,
+            auth_type=data['auth_type'],
+            device_info=json.dumps(data.get('device_info', {})),
+            is_enabled=True
+        )
+        db.session.add(biometric)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'biometric_id': biometric.id,
+            'message': 'Biometric authentication setup successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Enterprise Features Routes
+@app.route('/api/white-label/setup', methods=['POST'])
+@login_required
+def setup_white_label():
+    """Setup white label solution"""
+    try:
+        if not current_user.is_admin:
+            return jsonify({
+                'success': False,
+                'error': 'Unauthorized'
+            }), 403
+        
+        data = request.get_json()
+        partner = WhiteLabelPartner(
+            partner_name=data['partner_name'],
+            domain=data['domain'],
+            branding_config=json.dumps(data.get('branding_config', {})),
+            commission_rate=data.get('commission_rate', 0.05)
+        )
+        db.session.add(partner)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'partner_id': partner.id,
+            'message': 'White label partner setup successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/marketplace/apis')
+def get_api_marketplace():
+    """Get available APIs in marketplace"""
+    try:
+        apis = APIMarketplace.query.filter_by(is_active=True).all()
+        return jsonify({
+            'success': True,
+            'apis': [{
+                'id': api.id,
+                'name': api.api_name,
+                'provider': api.provider,
+                'description': api.description,
+                'pricing_model': api.pricing_model,
+                'rate_limit': api.rate_limit
+            } for api in apis]
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Helper Functions
+def calculate_buddy_match_score(buddy1, buddy2):
+    """Calculate match score between two travel buddies"""
+    score = 0
+    
+    # Travel style match
+    if buddy1.travel_style == buddy2.travel_style:
+        score += 30
+    
+    # Interest overlap
+    interests1 = set(json.loads(buddy1.interests))
+    interests2 = set(json.loads(buddy2.interests))
+    if interests1 and interests2:
+        overlap = len(interests1.intersection(interests2))
+        score += (overlap / max(len(interests1), len(interests2))) * 40
+    
+    # Language overlap
+    languages1 = set(json.loads(buddy1.languages))
+    languages2 = set(json.loads(buddy2.languages))
+    if languages1 and languages2:
+        overlap = len(languages1.intersection(languages2))
+        score += (overlap / max(len(languages1), len(languages2))) * 30
+    
+    return min(score, 100)
+
+def process_voice_booking_query(query):
+    """Process voice booking query"""
+    query_lower = query.lower()
+    
+    # Simple keyword matching
+    if 'flight' in query_lower and 'london' in query_lower:
+        return {
+            'type': 'flight',
+            'destination': 'London',
+            'suggestions': ['Search flights to London', 'Book flight to London']
+        }
+    elif 'hotel' in query_lower and 'paris' in query_lower:
+        return {
+            'type': 'hotel',
+            'destination': 'Paris',
+            'suggestions': ['Search hotels in Paris', 'Book hotel in Paris']
+        }
+    else:
+        return {
+            'type': 'general',
+            'suggestions': ['Search flights', 'Search hotels', 'Search packages']
+        }
 
 # Register get_locale as a template global
 app.jinja_env.globals['get_locale'] = get_locale
