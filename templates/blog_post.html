@@ -21,7 +21,7 @@
                 <!-- Featured Image -->
                 {% if post.featured_image %}
                 <div class="blog-post-image mb-4">
-                    <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="img-fluid rounded">
+                    <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="blog-post-image" />
                 </div>
                 {% endif %}
 
@@ -284,6 +284,16 @@
 
 .social-share-buttons .btn:hover {
     transform: translateY(-2px);
+}
+
+.blog-post-image {
+    width: 100%;
+    max-width: 700px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    margin: 1.5rem auto 2rem auto;
+    display: block;
+    object-fit: cover;
 }
 
 @media (max-width: 768px) {

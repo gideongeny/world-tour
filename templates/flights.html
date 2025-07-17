@@ -52,7 +52,7 @@
                     <td>{{ flight.seats_available }}</td>
                     <td>
                         {% if flight.seats_available > 0 %}
-                        <a href="{{ url_for('book_flight', flight_id=flight.id) }}" class="btn btn-success btn-sm">Book</a>
+                        <a href="{{ airline_booking_url(flight.airline, flight.destination) }}" class="btn btn-primary" target="_blank">Book on Airline</a>
                         {% else %}
                         <span class="text-danger">Sold Out</span>
                         {% endif %}

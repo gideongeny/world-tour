@@ -139,55 +139,80 @@
             {% if destinations %}
             <div class="destinations-grid" id="destinations-grid">
                 {% for destination in destinations %}
-                <div class="destination-card" data-rating="{{ destination.rating }}" data-price="{{ destination.price }}" data-name="{{ destination.name }}">
-                    <div class="destination-image">
-                        <img src="{{ destination.image_url }}" alt="{{ destination.name }}">
-                        <div class="destination-overlay">
-                            <div class="destination-rating">
-                                <i class="fas fa-star"></i>
-                                <span>{{ "%.1f"|format(destination.rating) }}</span>
-                            </div>
-                            <div class="category-badge">{{ destination.category|title }}</div>
-                            {% if destination.reviews_count > 0 %}
-                            <div class="reviews-count">({{ destination.reviews_count }} reviews)</div>
-                            {% endif %}
-                        </div>
-                        <div class="quick-actions">
-                            {% if current_user.is_authenticated %}
-                            <button onclick="addToWishlist({{ destination.id }})" class="wishlist-btn" title="Add to Wishlist">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                            {% endif %}
-                            <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="view-btn" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="destination-content">
-                        <h3>{{ destination.name }}, {{ destination.country }}</h3>
-                        <div class="destination-meta">
-                            <span class="duration"><i class="fas fa-clock"></i> {{ destination.duration }} days</span>
-                            <span class="climate"><i class="fas fa-cloud"></i> {{ destination.climate }}</span>
-                        </div>
-                        <p class="destination-description">{{ destination.description[:120] }}...</p>
-                        <div class="destination-features">
-                            <span class="feature"><i class="fas fa-map-marker-alt"></i> {{ destination.best_time_to_visit }}</span>
-                        </div>
-                        <div class="destination-actions">
-                            <div class="price-info">
-                                <span class="price">${{ "%.0f"|format(destination.price) }}</span>
-                                <span class="per-day">per day</span>
-                            </div>
-                            <div class="action-buttons">
-                                <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="btn btn-outline">Details</a>
-                                {% if current_user.is_authenticated %}
-                                <a href="{{ url_for('book_destination', destination_id=destination.id) }}" class="btn btn-primary">Book Now</a>
-                                {% else %}
-                                <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Book</a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                <div class="destination-card">
+                    {% if destination.name == 'Amsterdam' %}
+                        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Amsterdam">
+                    {% elif destination.name == 'Bali' %}
+                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Bali">
+                    {% elif destination.name == 'Bangkok' %}
+                        <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80" alt="Bangkok">
+                    {% elif destination.name == 'Barcelona' %}
+                        <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Barcelona">
+                    {% elif destination.name == 'Budapest' %}
+                        <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80" alt="Budapest">
+                    {% elif destination.name == 'Buenos Aires' %}
+                        <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80" alt="Buenos Aires">
+                    {% elif destination.name == 'Cairo' %}
+                        <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="Cairo">
+                    {% elif destination.name == 'Cape Town' %}
+                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Cape Town">
+                    {% elif destination.name == 'Dubai' %}
+                        <img src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=800&q=80" alt="Dubai">
+                    {% elif destination.name == 'Fiji' %}
+                        <img src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=800&q=80" alt="Fiji">
+                    {% elif destination.name == 'Greece' %}
+                        <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80" alt="Greece">
+                    {% elif destination.name == 'Hong Kong' %}
+                        <img src="https://images.unsplash.com/photo-1468852506551-2b7a5e7f2c3b?auto=format&fit=crop&w=800&q=80" alt="Hong Kong">
+                    {% elif destination.name == 'Lima' %}
+                        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80" alt="Lima">
+                    {% elif destination.name == 'Maldives' %}
+                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Maldives">
+                    {% elif destination.name == 'Marrakech' %}
+                        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Marrakech">
+                    {% elif destination.name == 'Mexico City' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Mexico City">
+                    {% elif destination.name == 'Minimalist' %}
+                        <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="Minimalist">
+                    {% elif destination.name == 'Modern' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Modern">
+                    {% elif destination.name == 'Mount Fuji' %}
+                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Mount Fuji">
+                    {% elif destination.name == 'Mumbai' %}
+                        <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="Mumbai">
+                    {% elif destination.name == 'Nairobi' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Nairobi">
+                    {% elif destination.name == 'New York' %}
+                        <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="New York">
+                    {% elif destination.name == 'Paris' %}
+                        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris">
+                    {% elif destination.name == 'Prague' %}
+                        <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Prague">
+                    {% elif destination.name == 'Rio de Janeiro' %}
+                        <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80" alt="Rio de Janeiro">
+                    {% elif destination.name == 'Rome' %}
+                        <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80" alt="Rome">
+                    {% elif destination.name == 'Santiago' %}
+                        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80" alt="Santiago">
+                    {% elif destination.name == 'Seoul' %}
+                        <img src="https://images.unsplash.com/photo-1468852506551-2b7a5e7f2c3b?auto=format&fit=crop&w=800&q=80" alt="Seoul">
+                    {% elif destination.name == 'Singapore' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Singapore">
+                    {% elif destination.name == 'Swiss Alps' %}
+                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Swiss Alps">
+                    {% elif destination.name == 'Sydney' %}
+                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Sydney">
+                    {% elif destination.name == 'Tokyo' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Tokyo">
+                    {% elif destination.name == 'Vienna' %}
+                        <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Vienna">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Destination">
+                    {% endif %}
+                    <h3>{{ destination.name }}</h3>
+                    <p>{{ destination.description }}</p>
+                    <span>{{ format_price(destination.price) }}</span>
+                    <a href="/destination/{{ destination.id }}">View Details</a>
                 </div>
                 {% endfor %}
             </div>

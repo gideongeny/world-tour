@@ -138,7 +138,10 @@
             {% for destination in featured_destinations %}
             <div class="destination-card">
                 <div class="destination-image">
-                    <img src="{{ destination.image_url }}" alt="{{ destination.name }}, {{ destination.country }} - {{ destination.category }} travel package" loading="lazy">
+                    <picture>
+                        <source srcset="/static/{{ destination.name|lower|replace(' ', '_') }}.webp" type="image/webp">
+                        <img src="/static/{{ destination.name|lower|replace(' ', '_') }}.jpg" alt="{{ destination.name }}" class="destination-image" />
+                    </picture>
                     <div class="destination-overlay">
                         <div class="destination-rating">
                             <i class="fas fa-star" aria-hidden="true"></i>
@@ -163,7 +166,7 @@
                     <div class="destination-footer">
                         <div class="price">
                             <span class="price-label">From</span>
-                            <span class="price-amount">${{ "%.0f"|format(destination.price) }}</span>
+                            <span class="price-amount">${{ format_price(destination.price) }}</span>
                             <span class="price-unit">per person</span>
                         </div>
                         <div class="destination-actions">
@@ -264,7 +267,10 @@
             {% for destination in popular_destinations %}
             <div class="destination-card">
                 <div class="destination-image">
-                    <img src="{{ destination.image_url }}" alt="{{ destination.name }}, {{ destination.country }} - Popular travel destination" loading="lazy">
+                    <picture>
+                        <source srcset="{{ destination.image_url.replace('.jpg', '.webp') }}" type="image/webp">
+                        <img src="{{ destination.image_url }}" alt="{{ destination.name }}, {{ destination.country }} - Popular travel destination" loading="lazy">
+                    </picture>
                     <div class="destination-overlay">
                         <div class="destination-rating">
                             <i class="fas fa-star" aria-hidden="true"></i>
@@ -289,7 +295,7 @@
                     <div class="destination-footer">
                         <div class="price">
                             <span class="price-label">From</span>
-                            <span class="price-amount">${{ "%.0f"|format(destination.price) }}</span>
+                            <span class="price-amount">${{ format_price(destination.price) }}</span>
                             <span class="price-unit">per person</span>
                         </div>
                         <div class="destination-actions">
@@ -320,7 +326,10 @@
             {% for destination in latest_destinations %}
             <div class="destination-card new-badge">
                 <div class="destination-image">
-                    <img src="{{ destination.image_url }}" alt="{{ destination.name }}, {{ destination.country }} - New travel destination" loading="lazy">
+                    <picture>
+                        <source srcset="{{ destination.image_url.replace('.jpg', '.webp') }}" type="image/webp">
+                        <img src="{{ destination.image_url }}" alt="{{ destination.name }}, {{ destination.country }} - New travel destination" loading="lazy">
+                    </picture>
                     <div class="destination-overlay">
                         <div class="new-badge">NEW</div>
                         <div class="category-badge">{{ destination.category|title }}</div>
@@ -342,7 +351,7 @@
                     <div class="destination-footer">
                         <div class="price">
                             <span class="price-label">From</span>
-                            <span class="price-amount">${{ "%.0f"|format(destination.price) }}</span>
+                            <span class="price-amount">${{ format_price(destination.price) }}</span>
                             <span class="price-unit">per person</span>
                         </div>
                         <div class="destination-actions">

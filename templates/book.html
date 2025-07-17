@@ -156,6 +156,15 @@
     </div>
 </div>
 
+{% if booking_confirmed %}
+<div class="share-section" style="margin-top:2rem; text-align:center;">
+  <h4>Share your trip:</h4>
+  <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank" class="btn btn-outline" style="margin:0 0.5rem;"><i class="fab fa-facebook"></i> Facebook</a>
+  <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text=I just booked an amazing trip on World Tour!" target="_blank" class="btn btn-outline" style="margin:0 0.5rem;"><i class="fab fa-twitter"></i> Twitter</a>
+  <a href="https://wa.me/?text=I just booked an amazing trip on World Tour! {{ request.url }}" target="_blank" class="btn btn-outline" style="margin:0 0.5rem;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+</div>
+{% endif %}
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const startDate = document.getElementById('start_date');
