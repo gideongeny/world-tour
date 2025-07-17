@@ -647,3 +647,119 @@ class PartnerPortal(db.Model):
     total_revenue = db.Column(db.Float, default=0.0)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) 
+
+# --- STUBS FOR MISSING MODELS AND FUNCTIONS (added for app.py compatibility) ---
+from db import db
+from datetime import datetime
+
+class LoyaltyTier(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+    min_points = db.Column(db.Integer, default=0)
+    discount_percentage = db.Column(db.Float, default=0.0)
+    benefits = db.Column(db.Text)
+    color = db.Column(db.String(20))
+
+class UserLoyalty(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    tier_id = db.Column(db.Integer, db.ForeignKey('loyalty_tier.id'))
+    points_balance = db.Column(db.Integer, default=0)
+    total_spent = db.Column(db.Float, default=0.0)
+    tier = db.relationship('LoyaltyTier', backref='user_loyalties')
+
+class LoyaltyTransaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    points = db.Column(db.Integer, default=0)
+    transaction_type = db.Column(db.String(50))
+    description = db.Column(db.Text)
+    booking_id = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class CustomerLifetimeValue(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    total_revenue = db.Column(db.Float, default=0.0)
+    total_orders = db.Column(db.Integer, default=0)
+    average_order_value = db.Column(db.Float, default=0.0)
+    first_purchase_date = db.Column(db.DateTime)
+    last_purchase_date = db.Column(db.DateTime)
+    predicted_lifetime_value = db.Column(db.Float, default=0.0)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class PriceAlert(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    destination_id = db.Column(db.Integer, db.ForeignKey('destination.id'))
+    target_price = db.Column(db.Float)
+    current_price = db.Column(db.Float)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class TwoFactorAuth(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    secret_key = db.Column(db.String(100))
+    is_enabled = db.Column(db.Boolean, default=False)
+
+class CorporateEmployee(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    corporate_account_id = db.Column(db.Integer, db.ForeignKey('corporate_account.id'))
+    position = db.Column(db.String(100))
+    is_active = db.Column(db.Boolean, default=True)
+
+class CorporateAccount(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    company_name = db.Column(db.String(200))
+    contact_email = db.Column(db.String(120))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# --- Utility function stubs ---
+def log_error(context, message):
+    print(f"[ERROR] {context}: {message}")
+
+def get_flight_tracking(flight_number):
+    return None
+
+def get_hotel_availability(hotel_id, check_in, check_out):
+    return None
+
+def calculate_dynamic_pricing(destination_id, travel_date, demand_factor):
+    return 100.0
+
+def track_user_behavior(user_id, session_id, page_url, action_type, action_data):
+    pass
+
+def get_personalized_recommendations_ml(user_id, limit=6):
+    return []
+
+def generate_boarding_pass(booking_id, passenger_name, flight_number):
+    class BoardingPass:
+        def __init__(self, passenger_name, flight_number):
+            self.id = 1
+            self.qr_code = "dummy_qr_code"
+            self.passenger_name = passenger_name
+            self.flight_number = flight_number
+    return BoardingPass(passenger_name, flight_number)
+
+def create_support_ticket(user_id, subject, description, category, priority):
+    class Ticket:
+        def __init__(self, subject):
+            self.id = 1
+            self.subject = subject
+            self.status = "open"
+            self.created_at = datetime.utcnow()
+    return Ticket(subject)
+
+def generate_2fa_secret():
+    return "DUMMYSECRET"
+
+def verify_2fa_code(secret_key, code):
+    return True
+
+def track_conversion_funnel(funnel_name, step_name, step_order, user_id):
+    pass
+
+def send_notification_task(user_id, title, message, notification_type):
+    pass 

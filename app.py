@@ -4466,8 +4466,11 @@ def process_voice_booking_query(query):
 # Register get_locale as a template global
 app.jinja_env.globals['get_locale'] = get_locale
 
+def init_db():
+    db.create_all()
+    # Add any initial data setup here
+
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
         init_db()
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
