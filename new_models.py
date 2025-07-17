@@ -763,3 +763,10 @@ def track_conversion_funnel(funnel_name, step_name, step_order, user_id):
 
 def send_notification_task(user_id, title, message, notification_type):
     pass 
+
+# --- Minimal APIUsageLog model for APIMarketplace relationship ---
+class APIUsageLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    api_marketplace_id = db.Column(db.Integer, db.ForeignKey('api_marketplace.id'))
+    usage_time = db.Column(db.DateTime, default=datetime.utcnow)
+    request_count = db.Column(db.Integer, default=0) 
