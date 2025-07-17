@@ -4470,6 +4470,10 @@ def init_db():
     db.create_all()
     # Add any initial data setup here
 
+@app.route('/local-events')
+def local_events():
+    return render_template('local_events.html')
+
 if __name__ == '__main__':
     with app.app_context():
         init_db()
