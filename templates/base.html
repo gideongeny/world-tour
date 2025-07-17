@@ -155,12 +155,6 @@
                 <i class="fas fa-globe"></i> World Tour
             </a>
             
-            <!-- Live Date & Time Display -->
-            <div class="live-datetime">
-                <i class="fas fa-clock"></i>
-                <span id="current-datetime"></span>
-            </div>
-            
             <!-- Mobile Navigation Toggle -->
             <button class="navbar-toggler nav-toggle" type="button" id="nav-toggle" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span></span>
@@ -170,41 +164,22 @@
             
             <div class="navbar-nav ms-auto" id="navbarNav">
                 <a href="{{ url_for('home') }}" class="nav-link">{{ t('home') }}</a>
-                
-                <!-- Destinations Dropdown -->
-                <div class="nav-item dropdown pro-dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="destinationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-map-marker-alt"></i> {{ t('destinations') }}
-                    </a>
-                    <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="destinationsDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('travel') }}"><i class="fas fa-globe"></i> {{ t('all_destinations') }}</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('travel', category='luxury') }}"><i class="fas fa-crown"></i> {{ t('luxury_destinations') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('travel', category='budget') }}"><i class="fas fa-dollar-sign"></i> {{ t('budget_destinations') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('travel', category='adventure') }}"><i class="fas fa-mountain"></i> {{ t('adventure_destinations') }}</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('travel_guides') }}"><i class="fas fa-book"></i> {{ t('travel_guides') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('interactive_map', destination_id=1) }}"><i class="fas fa-map"></i> {{ t('interactive_maps') }}</a></li>
-                    </ul>
-                </div>
-                
+                <a href="{{ url_for('travel') }}" class="nav-link">{{ t('destinations') }}</a>
                 <a href="{{ url_for('flights') }}" class="nav-link">{{ t('flights') }}</a>
                 <a href="{{ url_for('hotels') }}" class="nav-link">{{ t('hotels') }}</a>
                 <a href="{{ url_for('packages') }}" class="nav-link">{{ t('packages') }}</a>
                 
                 <!-- Advanced Features Dropdown -->
-                <div class="nav-item dropdown pro-dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="advancedDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="advancedDropdown" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-star"></i> Features
                     </a>
-                    <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="advancedDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('travel_guides') }}"><i class="fas fa-book"></i> {{ t('travel_guides') }}</a></li>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('travel_guides') }}"><i class="fas fa-book"></i> Travel Guides</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('local_events') }}"><i class="fas fa-calendar"></i> Local Events</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('video_content') }}"><i class="fas fa-video"></i> Videos</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('travel_insurance') }}"><i class="fas fa-shield-alt"></i> Insurance</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('offline_maps') }}"><i class="fas fa-map"></i> Offline Maps</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('flight_tracking_page') }}"><i class="fas fa-plane"></i> Flight Tracking</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('mobile_features') }}"><i class="fas fa-mobile-alt"></i> Mobile App</a></li>
                         {% if current_user.is_authenticated %}
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{{ url_for('itinerary_builder') }}"><i class="fas fa-route"></i> Itinerary Builder</a></li>
@@ -214,32 +189,11 @@
                         <li><a class="dropdown-item" href="{{ url_for('social_feed') }}"><i class="fas fa-share-alt"></i> Social Feed</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('notifications') }}"><i class="fas fa-bell"></i> Notifications</a></li>
                         {% endif %}
-                        {% if current_user.is_authenticated and current_user.is_admin %}
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('analytics_dashboard') }}"><i class="fas fa-chart-line"></i> Analytics Dashboard</a></li>
-                        {% endif %}
                     </ul>
                 </div>
                 
                 <a href="{{ url_for('blog') }}" class="nav-link">{{ t('blog') }}</a>
-                
-                <!-- Special Offers Dropdown -->
-                <div class="nav-item dropdown pro-dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="offersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-tags"></i> {{ t('offers') }}
-                    </a>
-                    <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="offersDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('offers') }}"><i class="fas fa-percentage"></i> {{ t('all_special_offers') }}</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=flash"><i class="fas fa-bolt"></i> {{ t('flash_deals') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=seasonal"><i class="fas fa-calendar"></i> {{ t('seasonal_offers') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=last_minute"><i class="fas fa-clock"></i> {{ t('last_minute_deals') }}</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('loyalty') }}"><i class="fas fa-gem"></i> {{ t('loyalty_rewards') }}</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('group_bookings') }}"><i class="fas fa-users"></i> {{ t('group_discounts') }}</a></li>
-                    </ul>
-                </div>
-                
+                <a href="{{ url_for('offers') }}" class="nav-link">{{ t('offers') }}</a>
                 <a href="{{ url_for('contact') }}" class="nav-link">{{ t('contact') }}</a>
                 
                 <!-- Language Selector -->
@@ -336,51 +290,33 @@
             </div>
             <hr>
             <div class="text-center">
-                <p>&copy; 2025 World Tour. {{ t('all_rights_reserved') }}</p>
+                <p>&copy; 2024 World Tour. {{ t('all_rights_reserved') }}</p>
             </div>
         </div>
     </footer>
 
-    <!-- Bootstrap JS - Load immediately for mobile navigation -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JavaScript -->
-    <script src="{{ url_for('static', filename='script.js') }}?v=1.1"></script>
-    
-    <!-- Live Date & Time Script -->
+    <!-- Deferred JavaScript loading -->
     <script>
-        function updateDateTime() {
-            const now = new Date();
-            const options = {
-                weekday: 'short',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                timeZoneName: 'short'
-            };
-            
-            const dateTimeString = now.toLocaleDateString('en-US', options);
-            const dateTimeElement = document.getElementById('current-datetime');
-            
-            if (dateTimeElement) {
-                dateTimeElement.textContent = dateTimeString;
-            }
+        // Load Bootstrap JS asynchronously
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
         }
         
-        // Update immediately
-        updateDateTime();
-        
-        // Update every second
-        setInterval(updateDateTime, 1000);
-        
-        // Update when page becomes visible (for better performance)
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                updateDateTime();
-            }
+        // Load non-critical scripts after page load
+        window.addEventListener('load', function() {
+            // Load Bootstrap JS
+            loadScript('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
+                .then(() => {
+                    // Load custom JS after Bootstrap
+                    return loadScript('{{ url_for("static", filename="script.js") }}?v=1.1');
+                })
+                .catch(err => console.error('Script loading failed:', err));
         });
     </script>
     

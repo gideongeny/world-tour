@@ -55,7 +55,7 @@ db.init_app(app)
 
 # Performance optimizations
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # 1 year cache for static files
-app.config['TEMPLATES_AUTO_RELOAD'] = False  # Disable auto-reload in production
+app.config['TEMPLATES_AUTO_RELOAD'] = True  # Enable auto-reload for development
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_pre_ping': True,
     'pool_recycle': 300,
@@ -828,21 +828,37 @@ def home():
     if current_user.is_authenticated:
         personalized_destinations = get_personalized_recommendations(current_user.id)
     
-    # Optimize queries with specific column selection
-    featured_destinations = Destination.query.with_entities(
+    # Get all available destinations with all images
+    all_destinations = Destination.query.with_entities(
         Destination.id, Destination.name, Destination.country, 
-        Destination.price, Destination.rating, Destination.image_url, Destination.description
-    ).filter_by(available=True).order_by(Destination.rating.desc()).limit(6).all()
+        Destination.price, Destination.rating, Destination.image_url, Destination.description,
+        Destination.category, Destination.duration, Destination.reviews_count
+    ).filter_by(available=True).all()
     
-    latest_destinations = Destination.query.with_entities(
-        Destination.id, Destination.name, Destination.country, 
-        Destination.price, Destination.rating, Destination.image_url, Destination.description
-    ).filter_by(available=True).order_by(Destination.created_at.desc()).limit(3).all()
+    # Featured destinations (top rated)
+    featured_destinations = sorted(all_destinations, key=lambda x: x.rating, reverse=True)[:6]
+    
+    # Latest destinations
+    latest_destinations = sorted(all_destinations, key=lambda x: x.id, reverse=True)[:3]
+    
+    # Category destinations for the categories section
+    category_destinations = {
+        'luxury': [d for d in all_destinations if d.category == 'luxury'][:4],
+        'budget': [d for d in all_destinations if d.category == 'budget'][:4],
+        'adventure': [d for d in all_destinations if d.category == 'adventure'][:4],
+        'beach': [d for d in all_destinations if d.category == 'beach'][:4],
+        'cultural': [d for d in all_destinations if d.category == 'cultural'][:4]
+    }
+    
+    # Popular destinations by reviews
+    popular_destinations = sorted(all_destinations, key=lambda x: x.reviews_count, reverse=True)[:6]
     
     return render_template('index.html', 
                          featured_destinations=featured_destinations,
                          latest_destinations=latest_destinations,
-                         personalized_destinations=personalized_destinations)
+                         personalized_destinations=personalized_destinations,
+                         category_destinations=category_destinations,
+                         popular_destinations=popular_destinations)
 
 def get_personalized_recommendations(user_id, limit=6):
     """Get AI-powered personalized destination recommendations"""
