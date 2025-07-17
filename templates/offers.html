@@ -78,9 +78,9 @@
               <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Tokyo">
             {% elif offer.name == 'Vienna' %}
               <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Vienna">
-            {% else %}
+                    {% else %}
               <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Destination">
-            {% endif %}
+                    {% endif %}
             <h3>{{ offer.name }}</h3>
             <p>{{ offer.description }}</p>
             <span>{{ format_price(offer.price) }}</span>
