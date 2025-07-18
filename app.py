@@ -4482,6 +4482,10 @@ def video_content():
 def travel_insurance():
     return render_template('travel_insurance.html')
 
+@app.route('/offline-maps')
+def offline_maps():
+    return render_template('offline.html')
+
 if __name__ == '__main__':
     with app.app_context():
         init_db()
