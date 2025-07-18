@@ -4478,6 +4478,10 @@ def local_events():
 def video_content():
     return render_template('video_content.html')
 
+@app.route('/travel-insurance')
+def travel_insurance():
+    return render_template('travel_insurance.html')
+
 if __name__ == '__main__':
     with app.app_context():
         init_db()
