@@ -35,19 +35,18 @@ except ImportError:
     print("Warning: Pillow not available. Image optimization features disabled.")
 
 # Stripe configuration (test keys)
-# TODO: Replace with your real Stripe keys in production
-stripe.api_key = 'sk_test_51Nw8...your_test_key_here...'
-STRIPE_PUBLIC_KEY = 'pk_test_51Nw8...your_test_key_here...'
+# Use environment variables for Stripe keys
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY', 'sk_test_placeholder')
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', 'pk_test_placeholder')
 
 app = Flask(__name__)
 
 # Database configuration for production
-import os
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///world_tour.db')
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'please-set-a-real-secret-key')
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -108,9 +107,8 @@ def get_locale():
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-# TODO: Replace with your real email and app password in production
-app.config['MAIL_USERNAME'] = 'your-email@gmail.com'
-app.config['MAIL_PASSWORD'] = 'your-app-password'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', 'your-email@gmail.com')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', 'your-app-password')
 
 # Import new models
 from new_models import *
@@ -133,10 +131,12 @@ login_manager.login_view = 'login'
 mail = Mail(app)
 
 # Redis configuration (disabled for development)
-redis_client = None
+# To enable Redis on Render, set up a Redis instance and update the config below
+redis_client = None  # Example: redis.Redis(host=os.environ.get('REDIS_HOST'), port=6379, password=os.environ.get('REDIS_PASSWORD'))
 
 # Celery configuration (disabled for development)
-celery_app = None
+# To enable Celery on Render, set up a Redis instance and configure the broker URL
+celery_app = None  # Example: Celery(app.name, broker=os.environ.get('REDIS_URL'))
 
 # Performance monitoring
 @app.before_request
@@ -183,13 +183,13 @@ def set_currency(currency):
 @app.context_processor
 def inject_languages():
     current_lang = session.get('language', 'en')
-    print(f"Current language: {current_lang}")  # Debug
+    # print(f"Current language: {current_lang}")  # Debug
     return dict(languages=app.config['LANGUAGES'], current_language=current_lang)
 
 @app.context_processor
 def inject_currencies():
     current_curr = session.get('currency', app.config['DEFAULT_CURRENCY'])
-    print(f"Current currency: {current_curr}")  # Debug
+    # print(f"Current currency: {current_curr}")  # Debug
     return dict(
         currencies=app.config['SUPPORTED_CURRENCIES'], 
         current_currency=current_curr
@@ -4473,6 +4473,10 @@ def init_db():
 @app.route('/local-events')
 def local_events():
     return render_template('local_events.html')
+
+@app.route('/video-content')
+def video_content():
+    return render_template('video_content.html')
 
 if __name__ == '__main__':
     with app.app_context():
