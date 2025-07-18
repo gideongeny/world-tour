@@ -288,7 +288,7 @@
                 <div class="col-md-4">
                     <h5>{{ t('support') }}</h5>
                     <ul class="list-unstyled">
-                        <li><a href="{{ url_for('support') }}" class="text-light">{{ t('help_center') }}</a></li>
+                        {# <li><a href="{{ url_for('support') }}" class="text-light">{{ t('help_center') }}</a></li> #}
                         <li><a href="{{ url_for('faq') }}" class="text-light">FAQ</a></li>
                         <li><a href="{{ url_for('contact') }}" class="text-light">{{ t('contact') }}</a></li>
                         {% if current_user.is_authenticated %}
