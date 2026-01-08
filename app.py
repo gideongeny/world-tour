@@ -35,9 +35,7 @@ except ImportError:
     PILLOW_AVAILABLE = False
     print("Warning: Pillow not available. Image optimization features disabled.")
 
-# Stripe configuration (test keys)
-stripe.api_key = os.environ.get('STRIPE_SECRET_KEY', 'sk_test_placeholder')
-STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', 'pk_test_placeholder')
+# Stripe configuration is managed in services/stripe_service.py
 
 app = Flask(__name__)
 CORS(app)

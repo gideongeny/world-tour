@@ -71,7 +71,23 @@ def live_hotel_search():
     hotels = liteapi_service.search_hotels(dest, guests, checkin, checkout)
     return jsonify(hotels)
 
-@booking_bp.route('/external/flights/search')
+@booking_bp.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    from services.stripe_service import stripe_service
+    data = request.json
+    item_name = data.get('name', 'Travel Booking')
+    amount = data.get('price', 0)
+    
+    # In a real app, success/cancel URLs would be your production domain
+    host = request.host_url.rstrip('/')
+    success_url = f"{host}/checkout?success=true"
+    cancel_url = f"{host}/checkout?cancel=true"
+    
+    url, session_id = stripe_service.create_checkout_session(item_name, amount, success_url, cancel_url)
+    
+    if url:
+        return jsonify({'url': url, 'sessionId': session_id})
+    return jsonify({'error': 'Failed to create checkout session'}), 500
 def external_flight_search():
     from services.redirect_service import redirect_service
     origin = request.args.get('origin', 'NYC')

@@ -41,6 +41,8 @@ I have automated the push for you. All your latest features are now in your repo
      - `LITEAPI_SANDBOX_KEY`: `sand_6e482b71-1bc4-4c45-b18c-cd0cd4977587`
      - `LITEAPI_PUBLIC_KEY`: `cfff8058-e454-4bff-abaf-8e6f0b44d6bb`
      - `HOTELBEDS_API_KEY`: `0f01a4e17c5508c923224a2ddf30c7d7`
+     - `STRIPE_SECRET_KEY`: (Your Stripe Secret Key)
+     - `STRIPE_PUBLISHABLE_KEY`: (Your Stripe Publishable Key)
      - `GOOGLE_API_KEY`: (Your Gemini key)
 5. Click **Deploy**.
 

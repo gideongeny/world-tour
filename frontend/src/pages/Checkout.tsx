@@ -1,31 +1,52 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CreditCard, ShieldCheck, Mail, User, Phone, CheckCircle2 } from 'lucide-react';
 
 function Checkout() {
     const location = useLocation();
     const navigate = useNavigate();
-    const [step, setStep] = useState(1); // 1: Info, 2: Payment, 3: Success
+
+    // Check for Stripe return states
+    const query = new URLSearchParams(location.search);
+    const success = query.get('success') === 'true';
+
+    const [step, setStep] = useState(success ? 3 : 1);
     const [loading, setLoading] = useState(false);
 
-    // Get order details from URL
-    const query = new URLSearchParams(location.search);
     const itemType = query.get('type') || 'Booking';
     const itemName = query.get('name') || 'Travel Selection';
     const itemPrice = query.get('price') || '0';
     const itemImage = query.get('image') || 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80';
 
-    const handleConfirmBooking = (e: React.FormEvent) => {
+    const handleConfirmBooking = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+
+        try {
+            const response = await fetch('/booking/create-checkout-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: itemName,
+                    price: itemPrice,
+                    type: itemType
+                })
+            });
+            const data = await response.json();
+            if (data.url) {
+                // Redirect to Stripe Checkout
+                window.location.href = data.url;
+            } else {
+                throw new Error(data.error || 'Failed to create session');
+            }
+        } catch (err) {
+            console.error("Payment failed:", err);
+            alert("Payment failed to initialize. Please try again.");
             setLoading(false);
-            setStep(3);
-        }, 1500);
+        }
     };
 
-    if (step === 3) {
+    if (success) {
         return (
             <div className="pt-32 pb-20 px-6 max-w-2xl mx-auto text-center">
                 <div className="mb-8 flex justify-center">

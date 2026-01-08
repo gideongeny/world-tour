@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plane, Calendar, ArrowRight, Clock } from 'lucide-react';
+import { Plane, Calendar, Clock } from 'lucide-react';
 
 interface Flight {
     id: number;
@@ -15,7 +15,6 @@ interface Flight {
 function Flights() {
     const navigate = useNavigate();
     const [flights, setFlights] = useState<Flight[]>([]);
-    const [loading, setLoading] = useState(true);
     const [origin, setOrigin] = useState('');
     const [destination, setDestination] = useState('');
     const [date, setDate] = useState('');
@@ -29,9 +28,8 @@ function Flights() {
                     { id: 1, airline: 'Emirates', origin: 'New York (JFK)', destination: 'Dubai (DXB)', price: 850, departure: '10:00 AM', duration: '12h 45m' },
                     { id: 2, airline: 'British Airways', origin: 'London (LHR)', destination: 'New York (JFK)', price: 620, departure: '02:30 PM', duration: '8h 15m' },
                 ]);
-                setLoading(false);
             })
-            .catch(() => setLoading(false));
+            .catch(() => { });
     }, []);
 
     const handleSearch = () => {

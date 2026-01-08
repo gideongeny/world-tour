@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
+import { User } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 
 export default function Login() {
@@ -76,8 +76,11 @@ export default function Login() {
                             placeholder="Enter your password"
                         />
                     </div>
-                    <button className="w-full bg-primary text-white py-4 rounded-xl font-black shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all">
-                        Sign In
+                    <button
+                        disabled={loading}
+                        className={`w-full bg-primary text-white py-4 rounded-xl font-black shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    >
+                        {loading ? 'Signing In...' : 'Sign In'}
                     </button>
                 </form>
 
