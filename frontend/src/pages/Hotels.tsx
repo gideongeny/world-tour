@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Star, MapPin, Wifi, Coffee, Globe } from 'lucide-react';
 
 interface Hotel {
@@ -11,7 +12,7 @@ interface Hotel {
     description?: string;
 }
 
-const HotelCard = ({ hotel }: { hotel: Hotel }) => (
+const HotelCard = ({ hotel, onBook }: { hotel: Hotel, onBook: (h: Hotel) => void }) => (
     <div className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
         <div className="relative h-64 overflow-hidden">
             <img
@@ -50,8 +51,11 @@ const HotelCard = ({ hotel }: { hotel: Hotel }) => (
                     <span className="text-lg font-black text-primary">${hotel.price}</span>
                     <span className="text-slate-400 text-sm">/night</span>
                 </div>
-                <button className="px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors">
-                    View Details
+                <button
+                    onClick={() => onBook(hotel)}
+                    className="px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors"
+                >
+                    Book Now
                 </button>
             </div>
         </div>
@@ -59,6 +63,7 @@ const HotelCard = ({ hotel }: { hotel: Hotel }) => (
 );
 
 function Hotels() {
+    const navigate = useNavigate();
     const [hotels, setHotels] = useState<Hotel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -107,6 +112,16 @@ function Hotels() {
             });
     };
 
+    const handleBook = (hotel: Hotel) => {
+        const params = new URLSearchParams({
+            type: 'Hotel',
+            name: hotel.name,
+            price: hotel.price.toString(),
+            image: hotel.image_url
+        });
+        navigate(`/checkout?${params.toString()}`);
+    };
+
     return (
         <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
             <div className="mb-12 text-center">
@@ -145,7 +160,7 @@ function Hotels() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {hotels.map(h => <HotelCard key={h.id} hotel={h} />)}
+                    {hotels.map(h => <HotelCard key={h.id} hotel={h} onBook={handleBook} />)}
                 </div>
             )}
         </div>

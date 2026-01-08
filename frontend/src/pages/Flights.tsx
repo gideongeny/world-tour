@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plane, Calendar, ArrowRight, Clock } from 'lucide-react';
 
 interface Flight {
@@ -12,6 +13,7 @@ interface Flight {
 }
 
 function Flights() {
+    const navigate = useNavigate();
     const [flights, setFlights] = useState<Flight[]>([]);
     const [loading, setLoading] = useState(true);
     const [origin, setOrigin] = useState('');
@@ -51,8 +53,14 @@ function Flights() {
             .catch(err => console.error("Flight search failed:", err));
     };
 
-    const handleBook = (flightId: number) => {
-        alert(`Flight ${flightId} selected! Redirecting to payment...`);
+    const handleBook = (flight: Flight) => {
+        const params = new URLSearchParams({
+            type: 'Flight',
+            name: `${flight.airline} (${flight.origin} → ${flight.destination})`,
+            price: flight.price.toString(),
+            image: `https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80`
+        });
+        navigate(`/checkout?${params.toString()}`);
     };
 
     return (
@@ -148,7 +156,7 @@ function Flights() {
                         <div className="w-full md:w-auto text-right">
                             <div className="text-3xl font-black text-slate-900 dark:text-white mb-2">${flight.price}</div>
                             <button
-                                onClick={() => handleBook(flight.id)}
+                                onClick={() => handleBook(flight)}
                                 className="w-full px-6 py-3 bg-slate-900 dark:bg-white dark:text-slate-900 text-white rounded-xl font-bold hover:opacity-90 transition-opacity">
                                 Select Flight
                             </button>
