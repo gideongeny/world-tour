@@ -57,11 +57,31 @@ def book_destination(destination_id):
 @booking_bp.route('/hotels')
 def hotels():
     all_hotels = Hotel.query.all()
+    if request.is_json or request.args.get('format') == 'json':
+        return jsonify([{
+            'id': h.id,
+            'name': h.name,
+            'location': h.location,
+            'price': h.price,
+            'rating': h.rating,
+            'image_url': h.image_url,
+            'description': h.description
+        } for h in all_hotels])
     return render_template('hotels.html', hotels=all_hotels)
 
 @booking_bp.route('/flights')
 def flights():
     all_flights = Flight.query.all()
+    if request.is_json or request.args.get('format') == 'json':
+        return jsonify([{
+            'id': f.id,
+            'airline': f.airline,
+            'origin': f.origin,
+            'destination': f.destination,
+            'price': f.price,
+            'departure': f.departure_time.strftime('%I:%M %p') if f.departure_time else '10:00 AM',
+            'duration': f.duration
+        } for f in all_flights])
     return render_template('flights.html', flights=all_flights)
 
 @booking_bp.route('/packages')

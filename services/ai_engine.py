@@ -4,7 +4,10 @@ import json
 
 class AIEngine:
     def __init__(self):
-        self.api_key = os.environ.get('GOOGLE_API_KEY')
+    def __init__(self):
+        # Use env var or fall back to provided specific key
+        self.api_key = os.environ.get('GOOGLE_API_KEY', 'AIzaSyAQOFn1SVkbrQDJn7VeRMs5vAV1mYErImM')
+        self.model = "gemini-1.5-flash"
         self.model = "gemini-1.5-flash"
         self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
 
