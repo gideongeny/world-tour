@@ -50,7 +50,7 @@ function App() {
       <main className="max-w-7xl mx-auto px-6 pt-24 pb-20">
         <Hero />
 
-        <section className="mb-20">
+        <section id="destinations" className="mb-20">
           <div className="flex justify-between items-end mb-8">
             <div>
               <h2 className="text-4xl font-black mb-2 tracking-tight">World Class Destinations</h2>
@@ -74,7 +74,7 @@ function App() {
           )}
         </section>
 
-        <section className="mb-20">
+        <section id="map" className="mb-20">
           <div className="mb-8">
             <h2 className="text-4xl font-black mb-2 tracking-tight">Explore the Map</h2>
             <p className="text-slate-500 dark:text-slate-400">Visualise your next journey across the globe</p>

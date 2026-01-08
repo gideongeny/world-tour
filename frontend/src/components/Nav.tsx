@@ -21,10 +21,11 @@ const Nav: FC = () => {
                 </div>
 
                 <div className="hidden md:flex items-center gap-8 font-medium">
-                    <a href="#" className="hover:text-primary transition-colors">Destinations</a>
-                    <a href="#" className="hover:text-primary transition-colors">Hotels</a>
-                    <a href="#" className="hover:text-primary transition-colors">Flights</a>
-                    <a href="#" className="hover:text-primary transition-colors">AI Assistant</a>
+                    <a href="#destinations" className="hover:text-primary transition-colors">Destinations</a>
+                    <a href="#map" className="hover:text-primary transition-colors">Map</a>
+                    <a href="#" onClick={() => alert('Hotels booking coming soon!')} className="hover:text-primary transition-colors">Hotels</a>
+                    <a href="#" onClick={() => alert('Flights booking coming soon!')} className="hover:text-primary transition-colors">Flights</a>
+                    <a href="#" onClick={() => alert('AI Assistant coming soon!')} className="hover:text-primary transition-colors">AI Assistant</a>
                 </div>
 
                 <div className="flex items-center gap-4">
