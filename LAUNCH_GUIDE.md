@@ -62,3 +62,6 @@ Once the deployment is green:
 - [ ] Vercel Postgres storage connected.
 - [ ] Code pushed to GitHub.
 - [ ] Visited `/seed` to initialize data.
+
+---
+*Last deployment trigger: 2026-01-09*
