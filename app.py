@@ -18,6 +18,10 @@ from flask_cors import CORS
 
 from functools import wraps
 import pickle
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 import time
 import logging
 from flask_compress import Compress

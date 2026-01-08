@@ -48,8 +48,8 @@ export default function Contact() {
                                     <Phone className="w-6 h-6 text-primary mt-1" />
                                     <div>
                                         <h3 className="font-bold mb-1">Phone</h3>
-                                        <p className="text-slate-600 dark:text-slate-400">+1 (555) 123-4567</p>
-                                        <p className="text-sm text-slate-500">Mon-Fri, 9am-6pm EST</p>
+                                        <p className="text-slate-600 dark:text-slate-400">+254 720 317 626</p>
+                                        <p className="text-sm text-slate-500">Mon-Fri, 9am-6pm EAT</p>
                                     </div>
                                 </div>
 
@@ -58,9 +58,9 @@ export default function Contact() {
                                     <div>
                                         <h3 className="font-bold mb-1">Office</h3>
                                         <p className="text-slate-600 dark:text-slate-400">
-                                            123 Travel Street<br />
-                                            Adventure City, AC 12345<br />
-                                            United States
+                                            Kenyatta Avenue, CBD<br />
+                                            Nairobi, 00100<br />
+                                            Kenya
                                         </p>
                                     </div>
                                 </div>
