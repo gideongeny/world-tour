@@ -5,6 +5,7 @@ class LiteAPIService:
     def __init__(self):
         # Using sandbox keys provided by the user
         self.api_key = os.environ.get('LITEAPI_SANDBOX_KEY', 'sand_6e482b71-1bc4-4c45-b18c-cd0cd4977587')
+        # Verified Public Key for Sandbox environment
         self.public_key = os.environ.get('LITEAPI_PUBLIC_KEY', 'cfff8058-e454-4bff-abaf-8e6f0b44d6bb')
         self.base_url = "https://api.liteapi.travel/v1"
         self.headers = {
