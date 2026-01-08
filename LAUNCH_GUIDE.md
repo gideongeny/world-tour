@@ -29,28 +29,28 @@ I have already created a `vercel.json` in your root directory. This file tells V
 ## 3. Deployment Steps
 
 ### Step A: Push to GitHub
-If you haven't pushed the latest `vercel.json` I just created:
-```bash
-git add vercel.json
-git commit -m "Add Vercel deployment configuration"
-git push origin main
-```
+I have automated the push for you. All your latest features are now in your repository.
 
 ### Step B: Connect to Vercel
 1. Log in to [vercel.com](https://vercel.com).
 2. Click **Add New** > **Project**.
 3. Import your `world-tour` repository.
-4. **Environment Variables**: Add your `GOOGLE_API_KEY` (from Gemini) to the project settings.
+4. **Environment Variables**: This is critical for your APIs to work.
+   - Go to your Project **Settings** -> **Environment Variables**.
+   - Add the following keys and values:
+     - `LITEAPI_SANDBOX_KEY`: `sand_6e482b71-1bc4-4c45-b18c-cd0cd4977587`
+     - `LITEAPI_PUBLIC_KEY`: `cfff8058-e454-4bff-abaf-8e6f0b44d6bb`
+     - `HOTELBEDS_API_KEY`: `0f01a4e17c5508c923224a2ddf30c7d7`
+     - `GOOGLE_API_KEY`: (Your Gemini key)
 5. Click **Deploy**.
 
 ---
 
 ## 4. Initializing your Production Site
-Once the deployment index is green:
+Once the deployment is green:
 1. Visit your Vercel URL (e.g., `https://world-tour.vercel.app`).
-2. Navigate to `your-url.vercel.app/seed`. 
-   - This will create the database tables in Postgres and populate them with your destinations and images.
-3. Go back to your homepage — **Your site is live!** 🌍
+2. Navigate to `your-url.vercel.app/seed` to initialize the database.
+3. Your site is live! Your search bar will now use **LiteAPI** for live results and **Hotelbeds** as a powerful backup.
 
 ---
 

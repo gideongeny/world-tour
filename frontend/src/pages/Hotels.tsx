@@ -61,15 +61,14 @@ const HotelCard = ({ hotel }: { hotel: Hotel }) => (
 function Hotels() {
     const [hotels, setHotels] = useState<Hotel[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        // Fallback or API call
         fetch('/booking/hotels?format=json')
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setHotels(data);
                 else {
-                    // Fallback mock data if API fails or returns HTML initially
                     setHotels([
                         { id: 1, name: 'Grand Plaza', location: 'Paris, France', price: 350, rating: 4.8, image_url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80' },
                         { id: 2, name: 'Ocean View Resort', location: 'Bali, Indonesia', price: 220, rating: 4.9, image_url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80' },
@@ -82,6 +81,32 @@ function Hotels() {
             });
     }, []);
 
+    const handleSearch = () => {
+        if (!searchQuery.trim()) return;
+        setLoading(true);
+
+        // Fetch live results from LiteAPI via our backend
+        fetch(`/booking/live/hotels/search?q=${encodeURIComponent(searchQuery)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    setHotels(data);
+                } else {
+                    // Fallback to Booking.com redirect if no live results
+                    fetch(`/booking/external/hotels/search?q=${encodeURIComponent(searchQuery)}`)
+                        .then(res => res.json())
+                        .then(extData => {
+                            if (extData.url) window.open(extData.url, '_blank');
+                        });
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("LiteAPI search failed:", err);
+                setLoading(false);
+            });
+    };
+
     return (
         <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
             <div className="mb-12 text-center">
@@ -89,18 +114,27 @@ function Hotels() {
                 <p className="text-xl text-slate-500 max-w-2xl mx-auto">Find the perfect accommodation for your journey. From boutique hotels to luxury resorts.</p>
             </div>
 
-            {/* Search Bar Placeholder */}
             <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl max-w-4xl mx-auto -mt-6 mb-16 flex gap-4 overflow-hidden border border-slate-100 dark:border-slate-700">
                 <div className="flex-1 px-4 py-2">
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Destination</label>
-                    <input type="text" placeholder="Where are you going?" className="w-full bg-transparent font-bold outline-none text-slate-800 dark:text-white" />
+                    <input
+                        type="text"
+                        placeholder="Where are you going?"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                        className="w-full bg-transparent font-bold outline-none text-slate-800 dark:text-white"
+                    />
                 </div>
                 <div className="bg-slate-200 w-px my-1"></div>
                 <div className="flex-1 px-4 py-2">
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Dates</label>
-                    <input type="text" placeholder="Add dates" className="w-full bg-transparent font-bold outline-none text-slate-800 dark:text-white" />
+                    <input type="text" placeholder="Add dates (Optional)" className="w-full bg-transparent font-bold outline-none text-slate-800 dark:text-white" />
                 </div>
-                <button className="bg-primary text-white px-8 rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all">
+                <button
+                    onClick={handleSearch}
+                    className="bg-primary text-white px-8 rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all"
+                >
                     Search
                 </button>
             </div>

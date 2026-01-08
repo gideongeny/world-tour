@@ -50,3 +50,33 @@ def flights():
             'duration': f.duration
         } for f in all_flights])
     return render_template('flights.html', flights=all_flights)
+@booking_bp.route('/external/hotels/search')
+def external_hotel_search():
+    from services.redirect_service import redirect_service
+    dest = request.args.get('q', 'Paris')
+    checkin = request.args.get('checkin') # YYYY-MM-DD
+    checkout = request.args.get('checkout') # YYYY-MM-DD
+    
+    url = redirect_service.get_booking_url(dest, checkin, checkout)
+    return jsonify({'url': url})
+
+@booking_bp.route('/live/hotels/search')
+def live_hotel_search():
+    from services.liteapi_service import liteapi_service
+    dest = request.args.get('q', 'Paris')
+    guests = request.args.get('guests', 2)
+    checkin = request.args.get('checkin')
+    checkout = request.args.get('checkout')
+    
+    hotels = liteapi_service.search_hotels(dest, guests, checkin, checkout)
+    return jsonify(hotels)
+
+@booking_bp.route('/external/flights/search')
+def external_flight_search():
+    from services.redirect_service import redirect_service
+    origin = request.args.get('origin', 'NYC')
+    dest = request.args.get('dest', 'PAR')
+    date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
+    
+    url = redirect_service.get_google_flights_url(origin, dest, date)
+    return jsonify({'url': url})

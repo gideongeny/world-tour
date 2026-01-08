@@ -14,6 +14,9 @@ interface Flight {
 function Flights() {
     const [flights, setFlights] = useState<Flight[]>([]);
     const [loading, setLoading] = useState(true);
+    const [origin, setOrigin] = useState('');
+    const [destination, setDestination] = useState('');
+    const [date, setDate] = useState('');
 
     useEffect(() => {
         fetch('/booking/flights?format=json')
@@ -29,6 +32,25 @@ function Flights() {
             .catch(() => setLoading(false));
     }, []);
 
+    const handleSearch = () => {
+        if (!origin.trim() || !destination.trim()) return;
+
+        const params = new URLSearchParams({
+            origin,
+            dest: destination,
+            date: date || new Date().toISOString().split('T')[0]
+        });
+
+        fetch(`/booking/external/flights/search?${params.toString()}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.url) {
+                    window.open(data.url, '_blank');
+                }
+            })
+            .catch(err => console.error("Flight search failed:", err));
+    };
+
     const handleBook = (flightId: number) => {
         alert(`Flight ${flightId} selected! Redirecting to payment...`);
     };
@@ -42,27 +64,47 @@ function Flights() {
 
             {/* Search Widget */}
             <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-xl mb-12 border border-slate-100 dark:border-slate-700">
-                {/* ... (search inputs retained) ... */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl">
                         <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                             <Plane className="w-3 h-3" /> From
                         </label>
-                        <input type="text" placeholder="Origin City" className="w-full bg-transparent font-bold outline-none" />
+                        <input
+                            type="text"
+                            placeholder="Origin City"
+                            value={origin}
+                            onChange={(e) => setOrigin(e.target.value)}
+                            className="w-full bg-transparent font-bold outline-none"
+                        />
                     </div>
                     <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl">
                         <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                             <Plane className="w-3 h-3 rotate-90" /> To
                         </label>
-                        <input type="text" placeholder="Destination City" className="w-full bg-transparent font-bold outline-none" />
+                        <input
+                            type="text"
+                            placeholder="Destination City"
+                            value={destination}
+                            onChange={(e) => setDestination(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                            className="w-full bg-transparent font-bold outline-none"
+                        />
                     </div>
                     <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl">
                         <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                             <Calendar className="w-3 h-3" /> Departure
                         </label>
-                        <input type="date" className="w-full bg-transparent font-bold outline-none" />
+                        <input
+                            type="date"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            className="w-full bg-transparent font-bold outline-none"
+                        />
                     </div>
-                    <button className="bg-primary text-white rounded-xl font-bold shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
+                    <button
+                        onClick={handleSearch}
+                        className="bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                    >
                         Search Flights
                     </button>
                 </div>
