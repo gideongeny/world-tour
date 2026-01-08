@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import Nav from './components/Nav';
@@ -8,6 +8,10 @@ import Flights from './pages/Flights';
 import AIAssistant from './pages/AIAssistant';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Cookies from './pages/Cookies';
+import Contact from './pages/Contact';
 
 function App() {
   return (
@@ -24,6 +28,10 @@ function App() {
               <Route path="/ai-assistant" element={<AIAssistant />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/cookies" element={<Cookies />} />
+              <Route path="/contact" element={<Contact />} />
             </Routes>
 
             <footer className="py-12 px-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 mt-auto">
@@ -33,9 +41,9 @@ function App() {
                 </div>
                 <p>© 2026 World Tour. All rights reserved.</p>
                 <div className="flex gap-8">
-                  <a href="#" className="hover:text-primary transition-colors">Privacy</a>
-                  <a href="#" className="hover:text-primary transition-colors">Terms</a>
-                  <a href="#" className="hover:text-primary transition-colors">Cookies</a>
+                  <Link to="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
+                  <Link to="/terms" className="hover:text-primary transition-colors">Terms</Link>
+                  <Link to="/cookies" className="hover:text-primary transition-colors">Cookies</Link>
                 </div>
               </div>
             </footer>

@@ -8,7 +8,10 @@ interface Message {
 
 function AIAssistant() {
     const [messages, setMessages] = useState<Message[]>([
-        { role: 'assistant', content: 'Hello! I am your AI Travel Assistant. How can I help you plan your dream trip today? I can suggest destinations, find hotels, or plan itineraries.' }
+        {
+            role: 'assistant',
+            content: '✈️ Hey there! I\'m your AI Travel Assistant, and I\'m excited to help you plan an amazing trip! 🌍\n\nI can help you with:\n• Finding the perfect destination for your budget and interests\n• Recommending hotels and flights\n• Creating custom itineraries\n• Sharing insider tips and local insights\n\nWhat kind of adventure are you dreaming about? Beach getaway? Mountain trek? City exploration? Let\'s make it happen! ⭐'
+        }
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);

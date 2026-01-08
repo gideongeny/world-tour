@@ -19,13 +19,24 @@ function Home() {
 
     useEffect(() => {
         fetch('/booking/destinations?format=json')
-            .then((res: Response) => res.json())
-            .then((data: Destination[]) => {
-                setDestinations(data);
+            .then((res: Response) => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then((data: any) => {
+                if (Array.isArray(data)) {
+                    setDestinations(data);
+                } else if (data && typeof data === 'object' && Array.isArray(data.destinations)) {
+                    setDestinations(data.destinations);
+                } else {
+                    console.error("Data is not an array:", data);
+                    setDestinations([]);
+                }
                 setLoading(false);
             })
             .catch((err: Error) => {
                 console.error("Failed to fetch destinations:", err);
+                setDestinations([]);
                 setLoading(false);
             });
     }, []);

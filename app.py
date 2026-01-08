@@ -43,7 +43,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Database configuration for production
-DATABASE_URL = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL') or 'sqlite:///world_tour.db'
+DATABASE_URL = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL') or 'sqlite:///world_tour_v2.db'
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
@@ -59,7 +59,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 
-from new_models import User
+from new_models import User, Destination, Hotel, Flight, Booking, Review, WishlistItem, AITravelAssistant, UserAnalytics
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -84,6 +85,9 @@ def seed_db():
         # Clear existing data for fresh seed
         db.session.query(Flight).delete()
         db.session.query(Hotel).delete()
+        # Only delete destinations if we plan to re-seed them, specifically if we want to update images
+        # For this fix, let's update everything to be safe
+        db.session.query(Destination).delete()
         db.session.commit()
         
         # 1. Destinations (Expanded)
@@ -95,49 +99,68 @@ def seed_db():
             Destination(name='New York', country='USA', description='The city that never sleeps.', price=280, duration=4, image_url='https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&q=80', category='city', latitude=40.7128, longitude=-74.0060, climate='Temperate', best_time_to_visit='Fall'),
             Destination(name='Rome', country='Italy', description='The Eternal City.', price=190, duration=6, image_url='https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&q=80', category='cultural', latitude=41.9028, longitude=12.4964, climate='Mediterranean', best_time_to_visit='Spring'),
             Destination(name='Cape Town', country='South Africa', description='Where ocean meets mountain.', price=170, duration=8, image_url='https://images.unsplash.com/photo-1580060839134-75a5edca2e99?auto=format&fit=crop&q=80', category='adventure', latitude=-33.9249, longitude=18.4241, climate='Mediterranean', best_time_to_visit='Summer'),
-            Destination(name='Dubai', country='UAE', description='Ultramodern luxury.', price=350, duration=4, image_url='https://images.unsplash.com/photo-1512453979798-5ea90b7cadc9?auto=format&fit=crop&q=80', category='luxury', latitude=25.2048, longitude=55.2708, climate='Desert', best_time_to_visit='Winter')
+            Destination(name='Dubai', country='UAE', description='Ultramodern luxury.', price=350, duration=4, image_url='https://images.unsplash.com/photo-1512453979798-5ea90b7cadc9?auto=format&fit=crop&q=80', category='luxury', latitude=25.2048, longitude=55.2708, climate='Desert', best_time_to_visit='Winter'),
+            Destination(name='Maldives', country='Maldives', description='Tropical paradise.', price=400, duration=6, image_url='https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&q=80', category='beach', latitude=3.2028, longitude=73.2207, climate='Tropical', best_time_to_visit='Winter'),
+            Destination(name='London', country='UK', description='Historic charm.', price=220, duration=5, image_url='https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80', category='city', latitude=51.5074, longitude=-0.1278, climate='Temperate', best_time_to_visit='Summer'),
+            Destination(name='Barcelona', country='Spain', description='Architecture and sea.', price=180, duration=5, image_url='https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&q=80', category='city', latitude=41.3851, longitude=2.1734, climate='Mediterranean', best_time_to_visit='Spring'),
+            Destination(name='Iceland', country='Iceland', description='Fire and ice.', price=320, duration=7, image_url='https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&q=80', category='nature', latitude=64.9631, longitude=-19.0208, climate='Cold', best_time_to_visit='Summer'),
         ]
         
+        destinations_map = {}
         for d in destinations:
-            existing = Destination.query.filter_by(name=d.name).first()
-            if not existing:
-                db.session.add(d)
+            db.session.add(d)
+            destinations_map[d.name] = d
         
-        db.session.commit() # Commit to generate IDs
+        db.session.commit()
         
         # 2. Hotels
-        paris = Destination.query.filter_by(name='Paris').first()
-        bali = Destination.query.filter_by(name='Bali').first()
-        tokyo = Destination.query.filter_by(name='Tokyo').first()
-        dubai = Destination.query.filter_by(name='Dubai').first()
-
-        hotels = [
-            Hotel(name='The Ritz Paris', location='Paris, France', price=1200, rating=5.0, image_url='https://images.unsplash.com/photo-1566073771259-6a8506099945', destination_id=paris.id if paris else None, description='Legendary luxury in the heart of Paris.'),
-            Hotel(name='Hotel Le Meurice', location='Paris, France', price=900, rating=4.9, image_url='https://images.unsplash.com/photo-1551882547-ff40c63fe5fa', destination_id=paris.id if paris else None, description='The embodiment of French elegance.'),
-            Hotel(name='Ayana Resort', location='Bali, Indonesia', price=450, rating=4.8, image_url='https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9', destination_id=bali.id if bali else None, description='Clifftop luxury with sunset views.'),
-            Hotel(name='Viceroy Bali', location='Bali, Indonesia', price=600, rating=4.9, image_url='https://images.unsplash.com/photo-1540541338287-41700207dee6', destination_id=bali.id if bali else None, description='Romantic jungle retreat.'),
-            Hotel(name='Aman Tokyo', location='Tokyo, Japan', price=1100, rating=5.0, image_url='https://images.unsplash.com/photo-1618773928121-c32242e63f39', destination_id=tokyo.id if tokyo else None, description='Urban sanctuary high above the city.'),
-            Hotel(name='Burj Al Arab', location='Dubai, UAE', price=2500, rating=5.0, image_url='https://images.unsplash.com/photo-1635548232958-812005086d1f', destination_id=dubai.id if dubai else None, description='The world\'s only 7-star hotel.')
+        hotels_data = [
+            ('The Ritz Paris', 'Paris, France', 1200, 5.0, 'Paris'),
+            ('Hotel Le Meurice', 'Paris, France', 900, 4.9, 'Paris'),
+            ('Ayana Resort', 'Bali, Indonesia', 450, 4.8, 'Bali'),
+            ('Viceroy Bali', 'Bali, Indonesia', 600, 4.9, 'Bali'),
+            ('Aman Tokyo', 'Tokyo, Japan', 1100, 5.0, 'Tokyo'),
+            ('Burj Al Arab', 'Dubai, UAE', 2500, 5.0, 'Dubai'),
         ]
         
-        for h in hotels:
-            db.session.add(h)
-
-        # 3. Flights (Dynamic "Live" Data)
+        for name, location, price, rating, dest_name in hotels_data:
+            dest = destinations_map.get(dest_name)
+            if dest:
+                hotel = Hotel(
+                    name=name,
+                    location=location,
+                    price=price,
+                    rating=rating,
+                    destination_id=dest.id,
+                    image_url='https://images.unsplash.com/photo-1566073771259-6a8506099945',
+                    description=f'Luxury accommodation in {location}'
+                )
+                db.session.add(hotel)
+        
+        # 3. Flights
         now = datetime.now()
-        flights = [
-            Flight(airline='Emirates', origin='JFK (New York)', destination='DXB (Dubai)', price=1200, departure_time=now + timedelta(hours=2), duration='12h 30m', flight_number='EK201'),
-            Flight(airline='Air France', origin='JFK (New York)', destination='CDG (Paris)', price=800, departure_time=now + timedelta(hours=5), duration='7h 20m', flight_number='AF007'),
-            Flight(airline='JAL', origin='LAX (Los Angeles)', destination='HND (Tokyo)', price=1100, departure_time=now + timedelta(days=1, hours=10), duration='11h 45m', flight_number='JL061'),
-            Flight(airline='Singapore Airlines', origin='LHR (London)', destination='SIN (Singapore)', price=950, departure_time=now + timedelta(hours=8), duration='13h 10m', flight_number='SQ308'),
-            Flight(airline='Qatar Airways', origin='LHR (London)', destination='DOH (Doha)', price=850, departure_time=now + timedelta(hours=3), duration='6h 45m', flight_number='QR004'),
-            Flight(airline='British Airways', origin='LHR (London)', destination='JFK (New York)', price=650, departure_time=now + timedelta(hours=4), duration='7h 55m', flight_number='BA117'),
-            Flight(airline='Lufthansa', origin='FRA (Frankfurt)', destination='LHR (London)', price=200, departure_time=now + timedelta(hours=1), duration='1h 30m', flight_number='LH904'),
-            Flight(airline='Delta', origin='ATL (Atlanta)', destination='LHR (London)', price=900, departure_time=now + timedelta(hours=6), duration='8h 15m', flight_number='DL030')
+        flights_data = [
+            ('Emirates', 'JFK (New York)', 'DXB (Dubai)', 1200, 2, '12h 30m', 'EK201'),
+            ('Air France', 'JFK (New York)', 'CDG (Paris)', 800, 5, '7h 20m', 'AF007'),
+            ('JAL', 'LAX (Los Angeles)', 'HND (Tokyo)', 1100, 34, '11h 45m', 'JL061'),
+            ('Singapore Airlines', 'LHR (London)', 'SIN (Singapore)', 950, 8, '13h 10m', 'SQ308'),
+            ('Qatar Airways', 'LHR (London)', 'DOH (Doha)', 850, 3, '6h 45m', 'QR004'),
+            ('British Airways', 'LHR (London)', 'JFK (New York)', 650, 4, '7h 55m', 'BA117'),
+            ('Lufthansa', 'FRA (Frankfurt)', 'LHR (London)', 200, 1, '1h 30m', 'LH904'),
+            ('Delta', 'ATL (Atlanta)', 'LHR (London)', 900, 6, '8h 15m', 'DL030'),
         ]
         
-        for f in flights:
-            db.session.add(f)
+        for airline, origin, dest, price, hours, duration, flight_num in flights_data:
+            flight = Flight(
+                airline=airline,
+                origin=origin,
+                destination=dest,
+                price=price,
+                departure_time=now + timedelta(hours=hours),
+                duration=duration,
+                flight_number=flight_num
+            )
+            db.session.add(flight)
             
         db.session.commit()
         
@@ -149,7 +172,10 @@ def seed_db():
         })
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        import traceback
+        traceback.print_exc()
+        print(f"Seed Error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/populate')
 def populate_data():

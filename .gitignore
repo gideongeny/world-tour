@@ -11,6 +11,8 @@ env.bak/
 venv.bak/
 firebase-key.json
 world_tour.db
+world_tour_v2.db
+instance/
 dist/
 node_modules/
 .DS_Store
