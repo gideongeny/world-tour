@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Travel Blog - Travel Tips, Guides & Stories | World Tour{% endblock %}
+
+{% block meta_description %}Discover amazing travel stories, tips, and guides on the World Tour blog. Get insider knowledge about destinations, travel hacks, and inspiration for your next adventure.{% endblock %}
+
+{% block meta_keywords %}travel blog, travel tips, travel guides, travel stories, destination guides, travel inspiration, travel advice{% endblock %}
+
+{% block og_title %}Travel Blog - Travel Tips, Guides & Stories{% endblock %}
+
+{% block og_description %}Discover amazing travel stories, tips, and guides. Get insider knowledge about destinations and travel inspiration.{% endblock %}
+
+{% block twitter_title %}Travel Blog - Travel Tips, Guides & Stories{% endblock %}
+
+{% block twitter_description %}Discover amazing travel stories, tips, and guides. Get insider knowledge about destinations and travel inspiration.{% endblock %}
+
+{% block extra_head %}
+<!-- Blog structured data -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "World Tour Travel Blog",
+    "description": "Travel tips, guides, and stories from around the world",
+    "url": "{{ request.url }}",
+    "publisher": {
+        "@type": "TravelAgency",
+        "name": "World Tour",
+        "url": "{{ request.url_root }}"
+    },
+    "blogPost": [
+        {% for post in posts %}
+        {
+            "@type": "BlogPosting",
+            "headline": "{{ post.title }}",
+            "description": "{{ post.excerpt or post.content[:200] }}",
+            "author": {
+                "@type": "Person",
+                "name": "{{ post.author.first_name }} {{ post.author.last_name }}"
+            },
+            "datePublished": "{{ post.created_at.strftime('%Y-%m-%d') }}",
+            "dateModified": "{{ post.updated_at.strftime('%Y-%m-%d') }}",
+            "url": "{{ url_for('blog_post', slug=post.slug, _external=True) }}",
+            "image": "{% if post.featured_image %}{{ url_for('static', filename=post.featured_image, _external=True) }}{% endif %}",
+            "publisher": {
+                "@type": "TravelAgency",
+                "name": "World Tour"
+            }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="blog-page">
+    <!-- Blog Header -->
+    <div class="blog-header">
+        <div class="container">
+            <h1>Travel Blog</h1>
+            <p>Discover amazing travel stories, tips, and guides from around the world</p>
+            
+            <!-- Blog Search -->
+            <form method="GET" action="{{ url_for('blog') }}" class="blog-search">
+                <input type="text" name="search" placeholder="Search articles..." value="{{ request.args.get('search', '') }}" aria-label="Search blog articles">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="blog-content">
+            <!-- Featured Post -->
+            {% if featured_post %}
+            <div class="featured-post">
+                <div class="featured-post-image">
+                    <img src="{{ featured_post.featured_image or '/static/modern.jpg' }}" alt="{{ featured_post.title }}" loading="lazy">
+                    <div class="featured-badge">Featured</div>
+                </div>
+                <div class="featured-post-content">
+                    <div class="post-meta">
+                        <span class="post-category">{{ featured_post.category.name if featured_post.category else 'Travel' }}</span>
+                        <span class="post-date">{{ featured_post.created_at.strftime('%B %d, %Y') }}</span>
+                    </div>
+                    <h2><a href="{{ url_for('blog_post', slug=featured_post.slug) }}">{{ featured_post.title }}</a></h2>
+                    <p class="post-excerpt">{{ featured_post.excerpt or featured_post.content[:200] }}...</p>
+                    <div class="post-footer">
+                        <div class="post-author">
+                            <i class="fas fa-user" aria-hidden="true"></i>
+                            <span>{{ featured_post.author.first_name }} {{ featured_post.author.last_name }}</span>
+                        </div>
+                        <a href="{{ url_for('blog_post', slug=featured_post.slug) }}" class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Blog Posts Grid -->
+            <div class="blog-grid">
+                {% for post in posts %}
+                <article class="blog-card">
+                    <div class="blog-card-image">
+                        <img src="{{ post.featured_image or '/static/modern.jpg' }}" alt="{{ post.title }}" loading="lazy">
+                        {% if post.is_featured %}
+                        <div class="featured-badge">Featured</div>
+                        {% endif %}
+                    </div>
+                    <div class="blog-card-content">
+                        <div class="post-meta">
+                            <span class="post-category">{{ post.category.name if post.category else 'Travel' }}</span>
+                            <span class="post-date">{{ post.created_at.strftime('%B %d, %Y') }}</span>
+                        </div>
+                        <h3><a href="{{ url_for('blog_post', slug=post.slug) }}">{{ post.title }}</a></h3>
+                        <p class="post-excerpt">{{ post.excerpt or post.content[:150] }}...</p>
+                        <div class="post-footer">
+                            <div class="post-author">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                                <span>{{ post.author.first_name }} {{ post.author.last_name }}</span>
+                            </div>
+                            <div class="post-stats">
+                                <span class="post-views">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                    {{ post.view_count }}
+                                </span>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('blog_post', slug=post.slug) }}" class="btn btn-outline btn-sm">Read More</a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <div class="pagination">
+                {% if pagination.has_prev %}
+                <a href="{{ url_for('blog', page=pagination.prev_num) }}" class="btn btn-outline">
+                    <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                    Previous
+                </a>
+                {% endif %}
+                
+                <div class="page-numbers">
+                    {% for page_num in pagination.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != pagination.page %}
+                            <a href="{{ url_for('blog', page=page_num) }}" class="page-number">{{ page_num }}</a>
+                            {% else %}
+                            <span class="page-number active">{{ page_num }}</span>
+                            {% endif %}
+                        {% else %}
+                        <span class="page-ellipsis">...</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                {% if pagination.has_next %}
+                <a href="{{ url_for('blog', page=pagination.next_num) }}" class="btn btn-outline">
+                    Next
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Blog Sidebar -->
+        <aside class="blog-sidebar">
+            <!-- Categories -->
+            <div class="sidebar-widget">
+                <h3>Categories</h3>
+                <ul class="category-list">
+                    {% for category in categories %}
+                    <li>
+                        <a href="{{ url_for('blog', category=category.slug) }}">
+                            {{ category.name }}
+                            <span class="category-count">({{ category.posts|length }})</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Popular Posts -->
+            <div class="sidebar-widget">
+                <h3>Popular Posts</h3>
+                <div class="popular-posts">
+                    {% for post in popular_posts %}
+                    <div class="popular-post">
+                        <div class="popular-post-image">
+                            <img src="{{ post.featured_image or '/static/modern.jpg' }}" alt="{{ post.title }}" loading="lazy">
+                        </div>
+                        <div class="popular-post-content">
+                            <h4><a href="{{ url_for('blog_post', slug=post.slug) }}">{{ post.title }}</a></h4>
+                            <span class="post-date">{{ post.created_at.strftime('%B %d, %Y') }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Newsletter Signup -->
+            <div class="sidebar-widget newsletter-widget">
+                <h3>Get Travel Updates</h3>
+                <p>Subscribe to our newsletter for the latest travel tips and deals</p>
+                <form method="POST" action="{{ url_for('subscribe_newsletter') }}" class="sidebar-newsletter-form">
+                    <input type="email" name="email" placeholder="Your email address" required aria-label="Email for newsletter">
+                    <button type="submit" class="btn btn-primary btn-full">Subscribe</button>
+                </form>
+            </div>
+
+            <!-- Travel Inspiration -->
+            <div class="sidebar-widget">
+                <h3>Travel Inspiration</h3>
+                <div class="inspiration-links">
+                    <a href="{{ url_for('travel') }}" class="inspiration-link">
+                        <i class="fas fa-map-marked-alt" aria-hidden="true"></i>
+                        Explore Destinations
+                    </a>
+                    <a href="{{ url_for('offers') }}" class="inspiration-link">
+                        <i class="fas fa-percentage" aria-hidden="true"></i>
+                        Special Offers
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="inspiration-link">
+                        <i class="fas fa-headset" aria-hidden="true"></i>
+                        Get Travel Advice
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %} 

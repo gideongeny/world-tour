@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Special Offers - World Tour{% endblock %}
+
+{% block content %}
+<div class="offers-page">
+    <div class="offers-header">
+        <h1>Special Offers & Deals</h1>
+        <p>Discover amazing discounts on your next adventure</p>
+    </div>
+
+    <div class="offers-grid">
+        {% for offer in offers %}
+        <div class="offer-card">
+            {% if offer.name == 'Amsterdam' %}
+              <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Amsterdam">
+            {% elif offer.name == 'Bali' %}
+              <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Bali">
+            {% elif offer.name == 'Bangkok' %}
+              <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80" alt="Bangkok">
+            {% elif offer.name == 'Barcelona' %}
+              <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Barcelona">
+            {% elif offer.name == 'Budapest' %}
+              <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80" alt="Budapest">
+            {% elif offer.name == 'Buenos Aires' %}
+              <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80" alt="Buenos Aires">
+            {% elif offer.name == 'Cairo' %}
+              <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="Cairo">
+            {% elif offer.name == 'Cape Town' %}
+              <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Cape Town">
+            {% elif offer.name == 'Dubai' %}
+              <img src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=800&q=80" alt="Dubai">
+            {% elif offer.name == 'Fiji' %}
+              <img src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=800&q=80" alt="Fiji">
+            {% elif offer.name == 'Greece' %}
+              <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80" alt="Greece">
+            {% elif offer.name == 'Hong Kong' %}
+              <img src="https://images.unsplash.com/photo-1468852506551-2b7a5e7f2c3b?auto=format&fit=crop&w=800&q=80" alt="Hong Kong">
+            {% elif offer.name == 'Lima' %}
+              <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80" alt="Lima">
+            {% elif offer.name == 'Maldives' %}
+              <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Maldives">
+            {% elif offer.name == 'Marrakech' %}
+              <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Marrakech">
+            {% elif offer.name == 'Mexico City' %}
+              <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Mexico City">
+            {% elif offer.name == 'Minimalist' %}
+              <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="Minimalist">
+            {% elif offer.name == 'Modern' %}
+              <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Modern">
+            {% elif offer.name == 'Mount Fuji' %}
+              <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Mount Fuji">
+            {% elif offer.name == 'Mumbai' %}
+              <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="Mumbai">
+            {% elif offer.name == 'Nairobi' %}
+              <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Nairobi">
+            {% elif offer.name == 'New York' %}
+              <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="New York">
+            {% elif offer.name == 'Paris' %}
+              <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris">
+            {% elif offer.name == 'Prague' %}
+              <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Prague">
+            {% elif offer.name == 'Rio de Janeiro' %}
+              <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80" alt="Rio de Janeiro">
+            {% elif offer.name == 'Rome' %}
+              <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80" alt="Rome">
+            {% elif offer.name == 'Santiago' %}
+              <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80" alt="Santiago">
+            {% elif offer.name == 'Seoul' %}
+              <img src="https://images.unsplash.com/photo-1468852506551-2b7a5e7f2c3b?auto=format&fit=crop&w=800&q=80" alt="Seoul">
+            {% elif offer.name == 'Singapore' %}
+              <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Singapore">
+            {% elif offer.name == 'Swiss Alps' %}
+              <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Swiss Alps">
+            {% elif offer.name == 'Sydney' %}
+              <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Sydney">
+            {% elif offer.name == 'Tokyo' %}
+              <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Tokyo">
+            {% elif offer.name == 'Vienna' %}
+              <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Vienna">
+                    {% else %}
+              <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Destination">
+                    {% endif %}
+            <h3>{{ offer.name }}</h3>
+            <p>{{ offer.description }}</p>
+            <span>{{ format_price(offer.price) }}</span>
+            <a href="/destination/{{ offer.id }}">View Details</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="special-promotions">
+        <h2>Limited Time Promotions</h2>
+        <div class="promotions-grid">
+            <div class="promotion-card">
+                <div class="promotion-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h3>First Time Traveler</h3>
+                <p>Get 15% off your first booking when you sign up!</p>
+                <a href="/register" class="btn btn-outline">Sign Up Now</a>
+            </div>
+            
+            <div class="promotion-card">
+                <div class="promotion-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Group Discount</h3>
+                <p>Book for 4+ people and save up to 25% on your trip!</p>
+                <a href="/travel" class="btn btn-outline">Explore Destinations</a>
+            </div>
+            
+            <div class="promotion-card">
+                <div class="promotion-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3>Early Bird Special</h3>
+                <p>Book 3 months in advance and get 10% off any destination!</p>
+                <a href="/travel" class="btn btn-outline">Book Early</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

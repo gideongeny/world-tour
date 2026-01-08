@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Performance Optimizations -->
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    
+    <!-- Critical CSS Inline -->
+    <style>
+        /* Critical CSS for above-the-fold content */
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1rem 0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .hero { background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/static/modern.jpg'); background-size: cover; color: white; text-align: center; padding: 8rem 0; }
+        .btn { display: inline-block; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        @media (max-width: 768px) { .hero { padding: 4rem 0; } .container { padding: 0 15px; } }
+        .language-selector select, .currency-selector select {
+            padding: 0.4rem 1.2rem 0.4rem 0.8rem;
+            border-radius: 8px;
+            border: 1.5px solid #e2e8f0;
+            background: #fff;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: border-color 0.2s;
+        }
+        .language-selector select:focus, .currency-selector select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+    </style>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="{% block meta_description %}World Tour - Your Ultimate Travel Companion. Discover amazing destinations, book flights, hotels, and travel packages worldwide. Best prices, 24/7 support, and unforgettable experiences.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}travel, tourism, flights, hotels, vacation, booking, world tour, travel agency, holiday packages, cheap flights, luxury travel, adventure tours{% endblock %}">
+    <meta name="author" content="Gideon Ngeno">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:title" content="{% block og_title %}World Tour - Your Ultimate Travel Companion{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Discover amazing destinations, book flights, hotels, and travel packages worldwide{% endblock %}">
+    <meta property="og:image" content="{{ url_for('static', filename='icons/icon-512x512.png', _external=True) }}">
+    <meta property="og:site_name" content="World Tour">
+    <meta property="og:locale" content="{{ get_locale() }}">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.url }}">
+    <meta property="twitter:title" content="{% block twitter_title %}World Tour - Your Ultimate Travel Companion{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Discover amazing destinations, book flights, hotels, and travel packages worldwide{% endblock %}">
+    <meta property="twitter:image" content="{{ url_for('static', filename='icons/icon-512x512.png', _external=True) }}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.url }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/icon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/icon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/icon-180x180.png') }}">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="World Tour">
+    
+    <title>{% block title %}World Tour - Your Ultimate Travel Companion{% endblock %}</title>
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TravelAgency",
+        "name": "World Tour",
+        "description": "Your Ultimate Travel Companion. Discover amazing destinations, book flights, hotels, and travel packages worldwide.",
+        "url": "{{ request.url_root }}",
+        "logo": "{{ url_for('static', filename='icons/icon-512x512.png', _external=True) }}",
+        "image": "{{ url_for('static', filename='icons/icon-512x512.png', _external=True) }}",
+        "telephone": "+254 720 317 626",
+        "email": "gideongeng@gmail.com",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "KE"
+        },
+        "sameAs": [
+            "https://world-tour-1.onrender.com"
+        ],
+        "openingHours": "Mo-Su 00:00-23:59",
+        "priceRange": "$$",
+        "currenciesAccepted": "USD, EUR, GBP, JPY, CAD, AUD",
+        "paymentAccepted": "Credit Card, PayPal, Bank Transfer",
+        "areaServed": "Worldwide",
+        "serviceType": "Travel Agency",
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Travel Packages",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Luxury Travel Packages",
+                        "description": "Premium travel experiences worldwide"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Budget Travel Packages",
+                        "description": "Affordable travel options"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Adventure Tours",
+                        "description": "Exciting adventure travel experiences"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+    
+    <!-- Non-critical CSS loaded asynchronously -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"></noscript>
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
+    <!-- Custom CSS with cache busting -->
+    <link rel="preload" href="{{ url_for('static', filename='style.css') }}?v=1.1" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=1.1"></noscript>
+    
+    <!-- Preload critical images -->
+    <link rel="preload" href="{{ url_for('static', filename='modern.jpg') }}" as="image">
+    <link rel="preload" href="{{ url_for('static', filename='luxury.jpg') }}" as="image">
+    <link rel="preload" href="{{ url_for('static', filename='minimalist.jpg') }}" as="image">
+    
+    <!-- Google Analytics (add your tracking ID) -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    </script> -->
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="fas fa-globe"></i> World Tour
+            </a>
+            
+            <!-- Mobile Navigation Toggle -->
+            <button class="navbar-toggler nav-toggle" type="button" id="nav-toggle" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="navbar-nav ms-auto" id="navbarNav">
+                <a href="{{ url_for('home') }}" class="nav-link">{{ t('home') }}</a>
+                <a href="{{ url_for('travel') }}" class="nav-link">{{ t('destinations') }}</a>
+                <a href="{{ url_for('flights') }}" class="nav-link">{{ t('flights') }}</a>
+                <a href="{{ url_for('hotels') }}" class="nav-link">{{ t('hotels') }}</a>
+                <a href="{{ url_for('packages') }}" class="nav-link">{{ t('packages') }}</a>
+                
+                <!-- Advanced Features Dropdown -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="advancedDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-star"></i> Features
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('travel_stories') }}"><i class="fas fa-book"></i> Travel Guides</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('local_events') }}"><i class="fas fa-calendar"></i> Local Events</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('video_content') }}"><i class="fas fa-video"></i> Videos</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('travel_insurance') }}"><i class="fas fa-shield-alt"></i> Insurance</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('offline_maps') }}"><i class="fas fa-map"></i> Offline Maps</a></li>
+                        {% if current_user.is_authenticated %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('itinerary_builder') }}"><i class="fas fa-route"></i> Itinerary Builder</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('travel_checklist') }}"><i class="fas fa-check-square"></i> Travel Checklist</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('loyalty_dashboard') }}"><i class="fas fa-gem"></i> Loyalty Program</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('group_bookings') }}"><i class="fas fa-users"></i> Group Bookings</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('social_feed') }}"><i class="fas fa-share-alt"></i> Social Feed</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('notifications') }}"><i class="fas fa-bell"></i> Notifications</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <a href="{{ url_for('blog') }}" class="nav-link">{{ t('blog') }}</a>
+                <a href="{{ url_for('offers') }}" class="nav-link">{{ t('offers') }}</a>
+                <a href="{{ url_for('contact') }}" class="nav-link">{{ t('contact') }}</a>
+                
+                <!-- Language Selector -->
+                <div class="language-selector">
+                    <select onchange="window.location.href='/set_language/' + this.value">
+                        {% for code, name in languages.items() %}
+                        <option value="{{ code }}" {% if code == current_language %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Currency Selector -->
+                <div class="currency-selector">
+                    <select onchange="window.location.href='/set_currency/' + this.value">
+                        {% for code, info in currencies.items() %}
+                        <option value="{{ code }}" {% if code == current_currency %}selected{% endif %}>{{ info.symbol }} {{ code }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> {{ current_user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">{{ t('profile') }}</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('affiliate_dashboard') }}">Affiliate Program</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">{{ t('logout') }}</a></li>
+                            {% if current_user.is_admin %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">Admin Panel</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="nav-link">{{ t('login') }}</a>
+                    <a href="{{ url_for('register') }}" class="nav-link">{{ t('register') }}</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>World Tour</h5>
+                    <p>{{ t('footer_description') }}</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>{{ t('quick_links') }}</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('travel') }}" class="text-light">{{ t('destinations') }}</a></li>
+                        <li><a href="{{ url_for('flights') }}" class="text-light">{{ t('flights') }}</a></li>
+                        <li><a href="{{ url_for('hotels') }}" class="text-light">{{ t('hotels') }}</a></li>
+                        <li><a href="{{ url_for('packages') }}" class="text-light">{{ t('packages') }}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>{{ t('support') }}</h5>
+                    <ul class="list-unstyled">
+                        {# <li><a href="{{ url_for('support') }}" class="text-light">{{ t('help_center') }}</a></li> #}
+                        <li><a href="{{ url_for('faq') }}" class="text-light">FAQ</a></li>
+                        <li><a href="{{ url_for('contact') }}" class="text-light">{{ t('contact') }}</a></li>
+                        {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('my_tickets') }}" class="text-light">{{ t('my_tickets') }}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>{{ t('contact_info') }}</h5>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:gideongeng@gmail.com" class="text-light">gideongeng@gmail.com</a></p>
+                    <p><i class="fas fa-phone"></i> <a href="tel:+254720317626" class="text-light">+254 720 317 626</a></p>
+                    <p><small class="text-muted">Direct contact with Gideon Ngeno, Founder</small></p>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2024 World Tour. {{ t('all_rights_reserved') }}</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Deferred JavaScript loading -->
+    <script>
+        // Load Bootstrap JS asynchronously
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
+        // Load non-critical scripts after page load
+        window.addEventListener('load', function() {
+            // Load Bootstrap JS
+            loadScript('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js')
+                .then(() => {
+                    // Load custom JS after Bootstrap
+                    return loadScript('{{ url_for("static", filename="script.js") }}?v=1.1');
+                })
+                .catch(err => console.error('Script loading failed:', err));
+        });
+    </script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker registration failed');
+                    });
+            });
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

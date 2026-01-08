@@ -1,0 +1,18 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [
+    react(),
+  ],
+  server: {
+    proxy: {
+      '/auth': 'http://localhost:5000',
+      '/booking': 'http://localhost:5000',
+      '/ai': 'http://localhost:5000',
+      '/finance': 'http://localhost:5000',
+      '/admin': 'http://localhost:5000',
+    }
+  }
+})

@@ -1,0 +1,740 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard - Business Intelligence | World Tour{% endblock %}
+
+{% block meta_description %}Comprehensive analytics dashboard for World Tour. Track conversions, customer lifetime value, A/B tests, and business performance metrics in real-time.{% endblock %}
+
+{% block content %}
+<div class="analytics-dashboard">
+    <div class="dashboard-header">
+        <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1>
+        <p>Real-time business intelligence and performance metrics</p>
+    </div>
+
+    <!-- Key Metrics Overview -->
+    <div class="metrics-overview">
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="metric-content">
+                <h3 id="total-users">0</h3>
+                <p>Total Users</p>
+                <span class="metric-change positive" id="users-change">+0%</span>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-plane"></i>
+            </div>
+            <div class="metric-content">
+                <h3 id="total-bookings">0</h3>
+                <p>Total Bookings</p>
+                <span class="metric-change positive" id="bookings-change">+0%</span>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="metric-content">
+                <h3 id="total-revenue">$0</h3>
+                <p>Total Revenue</p>
+                <span class="metric-change positive" id="revenue-change">+0%</span>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="metric-content">
+                <h3 id="conversion-rate">0%</h3>
+                <p>Conversion Rate</p>
+                <span class="metric-change positive" id="conversion-change">+0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="chart-container">
+            <h3>Revenue Trends</h3>
+            <canvas id="revenue-chart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3>User Growth</h3>
+            <canvas id="users-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Conversion Funnel -->
+    <div class="funnel-section">
+        <h3>Conversion Funnel</h3>
+        <div class="funnel-container">
+            <div class="funnel-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Website Visitors</h4>
+                    <p id="visitors-count">0</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Destination Views</h4>
+                    <p id="views-count">0</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Booking Started</h4>
+                    <p id="started-count">0</p>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Completed Bookings</h4>
+                    <p id="completed-count">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- A/B Testing Results -->
+    <div class="ab-testing-section">
+        <h3>A/B Testing Results</h3>
+        <div class="ab-tests-grid" id="ab-tests-container">
+            <!-- A/B test results will be populated here -->
+        </div>
+    </div>
+
+    <!-- Customer Lifetime Value -->
+    <div class="clv-section">
+        <h3>Customer Lifetime Value Analysis</h3>
+        <div class="clv-metrics">
+            <div class="clv-card">
+                <h4>Average CLV</h4>
+                <p id="avg-clv">$0</p>
+            </div>
+            <div class="clv-card">
+                <h4>Top 10% CLV</h4>
+                <p id="top-clv">$0</p>
+            </div>
+            <div class="clv-card">
+                <h4>CLV Growth</h4>
+                <p id="clv-growth">+0%</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-time Activity -->
+    <div class="realtime-section">
+        <h3>Real-time Activity</h3>
+        <div class="activity-feed" id="activity-feed">
+            <!-- Real-time activities will be populated here -->
+        </div>
+    </div>
+</div>
+
+<style>
+.analytics-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.dashboard-header h1 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.dashboard-header h1 i {
+    color: #667eea;
+    margin-right: 0.5rem;
+}
+
+.metrics-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.metric-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.metric-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.metric-content {
+    flex: 1;
+}
+
+.metric-content h3 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.metric-content p {
+    margin: 0 0 0.5rem 0;
+    color: #666;
+    font-weight: 500;
+}
+
+.metric-change {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+.metric-change.positive {
+    background: #d4edda;
+    color: #155724;
+}
+
+.metric-change.negative {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.charts-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.chart-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.chart-container h3 {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.funnel-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 3rem;
+}
+
+.funnel-section h3 {
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.funnel-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.funnel-step {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.step-content {
+    flex: 1;
+    text-align: center;
+}
+
+.step-content h4 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.step-content p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.funnel-arrow {
+    font-size: 1.5rem;
+    color: #667eea;
+    font-weight: bold;
+}
+
+.ab-testing-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 3rem;
+}
+
+.ab-testing-section h3 {
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.ab-tests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.ab-test-card {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.ab-test-card h4 {
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+.ab-test-card .test-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.test-stat {
+    text-align: center;
+}
+
+.test-stat .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.test-stat .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.clv-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-bottom: 3rem;
+}
+
+.clv-section h3 {
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.clv-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.clv-card {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.clv-card h4 {
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+.clv-card p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.realtime-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.realtime-section h3 {
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.activity-feed {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-text {
+    margin: 0 0 0.25rem 0;
+    color: #333;
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .metrics-overview {
+        grid-template-columns: 1fr;
+    }
+    
+    .charts-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .ab-tests-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .clv-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts
+    initializeCharts();
+    
+    // Load initial data
+    loadDashboardData();
+    
+    // Set up real-time updates
+    setInterval(loadDashboardData, 30000); // Update every 30 seconds
+    
+    // Set up real-time activity feed
+    setInterval(loadActivityFeed, 10000); // Update every 10 seconds
+});
+
+function initializeCharts() {
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenue-chart').getContext('2d');
+    window.revenueChart = new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Revenue',
+                data: [],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Users Chart
+    const usersCtx = document.getElementById('users-chart').getContext('2d');
+    window.usersChart = new Chart(usersCtx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Users',
+                data: [],
+                backgroundColor: '#764ba2',
+                borderColor: '#764ba2',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function loadDashboardData() {
+    // Load key metrics
+    fetch('/api/analytics/metrics')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateMetrics(data.data);
+            }
+        })
+        .catch(error => console.error('Error loading metrics:', error));
+
+    // Load conversion funnel
+    fetch('/api/analytics/funnel')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateFunnel(data.data);
+            }
+        })
+        .catch(error => console.error('Error loading funnel:', error));
+
+    // Load A/B test results
+    fetch('/api/analytics/ab-tests')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateABTests(data.data);
+            }
+        })
+        .catch(error => console.error('Error loading A/B tests:', error));
+
+    // Load CLV data
+    fetch('/api/analytics/clv')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateCLV(data.data);
+            }
+        })
+        .catch(error => console.error('Error loading CLV:', error));
+}
+
+function updateMetrics(metrics) {
+    document.getElementById('total-users').textContent = metrics.total_users.toLocaleString();
+    document.getElementById('total-bookings').textContent = metrics.total_bookings.toLocaleString();
+    document.getElementById('total-revenue').textContent = '$' + metrics.total_revenue.toLocaleString();
+    document.getElementById('conversion-rate').textContent = metrics.conversion_rate.toFixed(2) + '%';
+
+    // Update change indicators
+    updateChangeIndicator('users-change', metrics.users_change);
+    updateChangeIndicator('bookings-change', metrics.bookings_change);
+    updateChangeIndicator('revenue-change', metrics.revenue_change);
+    updateChangeIndicator('conversion-change', metrics.conversion_change);
+
+    // Update charts
+    updateCharts(metrics);
+}
+
+function updateChangeIndicator(elementId, change) {
+    const element = document.getElementById(elementId);
+    element.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '%';
+    element.className = 'metric-change ' + (change >= 0 ? 'positive' : 'negative');
+}
+
+function updateCharts(metrics) {
+    // Update revenue chart
+    if (metrics.revenue_trend) {
+        window.revenueChart.data.labels = metrics.revenue_trend.labels;
+        window.revenueChart.data.datasets[0].data = metrics.revenue_trend.data;
+        window.revenueChart.update();
+    }
+
+    // Update users chart
+    if (metrics.users_trend) {
+        window.usersChart.data.labels = metrics.users_trend.labels;
+        window.usersChart.data.datasets[0].data = metrics.users_trend.data;
+        window.usersChart.update();
+    }
+}
+
+function updateFunnel(funnelData) {
+    document.getElementById('visitors-count').textContent = funnelData.visitors.toLocaleString();
+    document.getElementById('views-count').textContent = funnelData.views.toLocaleString();
+    document.getElementById('started-count').textContent = funnelData.started.toLocaleString();
+    document.getElementById('completed-count').textContent = funnelData.completed.toLocaleString();
+}
+
+function updateABTests(abTests) {
+    const container = document.getElementById('ab-tests-container');
+    container.innerHTML = '';
+
+    abTests.forEach(test => {
+        const testCard = document.createElement('div');
+        testCard.className = 'ab-test-card';
+        testCard.innerHTML = `
+            <h4>${test.name}</h4>
+            <div class="test-stats">
+                <div class="test-stat">
+                    <div class="stat-value">${test.variant_a_conversion.toFixed(2)}%</div>
+                    <div class="stat-label">Variant A</div>
+                </div>
+                <div class="test-stat">
+                    <div class="stat-value">${test.variant_b_conversion.toFixed(2)}%</div>
+                    <div class="stat-label">Variant B</div>
+                </div>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                ${test.winner ? `Winner: ${test.winner}` : 'Test in progress'}
+            </p>
+        `;
+        container.appendChild(testCard);
+    });
+}
+
+function updateCLV(clvData) {
+    document.getElementById('avg-clv').textContent = '$' + clvData.average_clv.toLocaleString();
+    document.getElementById('top-clv').textContent = '$' + clvData.top_10_percent_clv.toLocaleString();
+    document.getElementById('clv-growth').textContent = (clvData.growth >= 0 ? '+' : '') + clvData.growth.toFixed(1) + '%';
+}
+
+function loadActivityFeed() {
+    fetch('/api/analytics/activity')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateActivityFeed(data.data);
+            }
+        })
+        .catch(error => console.error('Error loading activity feed:', error));
+}
+
+function updateActivityFeed(activities) {
+    const feed = document.getElementById('activity-feed');
+    feed.innerHTML = '';
+
+    activities.forEach(activity => {
+        const activityItem = document.createElement('div');
+        activityItem.className = 'activity-item';
+        activityItem.innerHTML = `
+            <div class="activity-icon">
+                <i class="fas ${getActivityIcon(activity.type)}"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-text">${activity.description}</div>
+                <div class="activity-time">${formatTime(activity.timestamp)}</div>
+            </div>
+        `;
+        feed.appendChild(activityItem);
+    });
+}
+
+function getActivityIcon(type) {
+    const icons = {
+        'booking': 'fa-plane',
+        'user': 'fa-user',
+        'payment': 'fa-credit-card',
+        'review': 'fa-star',
+        'search': 'fa-search'
+    };
+    return icons[type] || 'fa-info-circle';
+}
+
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+    
+    if (diff < 60000) { // Less than 1 minute
+        return 'Just now';
+    } else if (diff < 3600000) { // Less than 1 hour
+        const minutes = Math.floor(diff / 60000);
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else if (diff < 86400000) { // Less than 1 day
+        const hours = Math.floor(diff / 3600000);
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else {
+        return date.toLocaleDateString();
+    }
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,641 @@
+{% extends "base.html" %}
+
+{% block title %}Travel Destinations - Discover Amazing Places Worldwide | World Tour{% endblock %}
+
+{% block meta_description %}Explore handpicked travel destinations worldwide. Find luxury, budget, and adventure travel packages. Book your next vacation with World Tour - 24/7 support and best prices guaranteed.{% endblock %}
+
+{% block meta_keywords %}travel destinations, vacation packages, luxury travel, budget travel, adventure tours, world travel, holiday packages, travel booking{% endblock %}
+
+{% block og_title %}Travel Destinations - Discover Amazing Places Worldwide{% endblock %}
+
+{% block og_description %}Explore handpicked travel destinations worldwide. Find luxury, budget, and adventure travel packages.{% endblock %}
+
+{% block twitter_title %}Travel Destinations - Discover Amazing Places Worldwide{% endblock %}
+
+{% block twitter_description %}Explore handpicked travel destinations worldwide. Find luxury, budget, and adventure travel packages.{% endblock %}
+
+{% block extra_head %}
+<!-- Destinations listing structured data -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Travel Destinations",
+    "description": "Handpicked destinations from around the world",
+    "url": "{{ request.url }}",
+    "numberOfItems": {{ destinations|length }},
+    "itemListElement": [
+        {% for destination in destinations %}
+        {
+            "@type": "ListItem",
+            "position": {{ loop.index }},
+            "item": {
+                "@type": "TouristDestination",
+                "name": "{{ destination.name }}, {{ destination.country }}",
+                "description": "{{ destination.description[:100] }}...",
+                "image": "{{ url_for('static', filename=destination.image_url.split('/')[-1], _external=True) }}",
+                "url": "{{ url_for('destination_detail', destination_id=destination.id, _external=True) }}",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "{{ destination.price }}",
+                    "priceCurrency": "USD"
+                }
+            }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="travel-page">
+    <!-- Advanced Search Section -->
+    <div class="search-hero">
+        <div class="container">
+            <h1>Discover Your Perfect Destination</h1>
+            <p>Explore handpicked destinations from around the world</p>
+            
+            <form method="GET" action="{{ url_for('travel') }}" class="advanced-search-form">
+                <div class="search-row">
+                    <div class="search-group">
+                        <input type="text" name="search" placeholder="Where do you want to go?" value="{{ request.args.get('search', '') }}" class="search-input">
+                    </div>
+                    <div class="search-group">
+                        <select name="category" class="search-select">
+                            <option value="">All Categories</option>
+                            <option value="luxury" {% if request.args.get('category') == 'luxury' %}selected{% endif %}>Luxury</option>
+                            <option value="budget" {% if request.args.get('category') == 'budget' %}selected{% endif %}>Budget</option>
+                            <option value="adventure" {% if request.args.get('category') == 'adventure' %}selected{% endif %}>Adventure</option>
+                            <option value="romantic" {% if request.args.get('category') == 'romantic' %}selected{% endif %}>Romantic</option>
+                            <option value="family" {% if request.args.get('category') == 'family' %}selected{% endif %}>Family</option>
+                        </select>
+                    </div>
+                    <div class="search-group">
+                        <select name="duration" class="search-select">
+                            <option value="">Any Duration</option>
+                            <option value="1" {% if request.args.get('duration') == '1' %}selected{% endif %}>1-3 days</option>
+                            <option value="4" {% if request.args.get('duration') == '4' %}selected{% endif %}>4-7 days</option>
+                            <option value="8" {% if request.args.get('duration') == '8' %}selected{% endif %}>8-14 days</option>
+                            <option value="15" {% if request.args.get('duration') == '15' %}selected{% endif %}>15+ days</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="search-row">
+                    <div class="search-group">
+                        <label>Price Range (per day)</label>
+                        <div class="price-range">
+                            <input type="number" name="min_price" placeholder="Min" value="{{ request.args.get('min_price', '') }}" class="price-input">
+                            <span>-</span>
+                            <input type="number" name="max_price" placeholder="Max" value="{{ request.args.get('max_price', '') }}" class="price-input">
+                        </div>
+                    </div>
+                    <div class="search-group">
+                        <label>Rating</label>
+                        <select name="rating" class="search-select">
+                            <option value="">Any Rating</option>
+                            <option value="4.5" {% if request.args.get('rating') == '4.5' %}selected{% endif %}>4.5+ Stars</option>
+                            <option value="4.0" {% if request.args.get('rating') == '4.0' %}selected{% endif %}>4.0+ Stars</option>
+                            <option value="3.5" {% if request.args.get('rating') == '3.5' %}selected{% endif %}>3.5+ Stars</option>
+                        </select>
+                    </div>
+                    <div class="search-group">
+                        <label>Climate</label>
+                        <select name="climate" class="search-select">
+                            <option value="">Any Climate</option>
+                            <option value="Tropical" {% if request.args.get('climate') == 'Tropical' %}selected{% endif %}>Tropical</option>
+                            <option value="Temperate" {% if request.args.get('climate') == 'Temperate' %}selected{% endif %}>Temperate</option>
+                            <option value="Mediterranean" {% if request.args.get('climate') == 'Mediterranean' %}selected{% endif %}>Mediterranean</option>
+                            <option value="Desert" {% if request.args.get('climate') == 'Desert' %}selected{% endif %}>Desert</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="search-actions">
+                    <button type="submit" class="btn btn-primary btn-large">Search Destinations</button>
+                    <a href="{{ url_for('travel') }}" class="btn btn-outline">Clear Filters</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section">
+        <div class="container">
+            <div class="results-header">
+                <h2>{{ destinations|length }} Destinations Found</h2>
+                <div class="sort-options">
+                    <label>Sort by:</label>
+                    <select id="sort-select" onchange="sortDestinations()">
+                        <option value="rating">Rating</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="name">Name A-Z</option>
+                    </select>
+                </div>
+            </div>
+
+            {% if destinations %}
+            <div class="destinations-grid" id="destinations-grid">
+                {% for destination in destinations %}
+                <div class="destination-card">
+                    {% if destination.name == 'Amsterdam' %}
+                        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Amsterdam">
+                    {% elif destination.name == 'Bali' %}
+                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Bali">
+                    {% elif destination.name == 'Bangkok' %}
+                        <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80" alt="Bangkok">
+                    {% elif destination.name == 'Barcelona' %}
+                        <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Barcelona">
+                    {% elif destination.name == 'Budapest' %}
+                        <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80" alt="Budapest">
+                    {% elif destination.name == 'Buenos Aires' %}
+                        <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80" alt="Buenos Aires">
+                    {% elif destination.name == 'Cairo' %}
+                        <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="Cairo">
+                    {% elif destination.name == 'Cape Town' %}
+                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Cape Town">
+                    {% elif destination.name == 'Dubai' %}
+                        <img src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=800&q=80" alt="Dubai">
+                    {% elif destination.name == 'Fiji' %}
+                        <img src="https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=800&q=80" alt="Fiji">
+                    {% elif destination.name == 'Greece' %}
+                        <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80" alt="Greece">
+                    {% elif destination.name == 'Hong Kong' %}
+                        <img src="https://images.unsplash.com/photo-1468852506551-2b7a5e7f2c3b?auto=format&fit=crop&w=800&q=80" alt="Hong Kong">
+                    {% elif destination.name == 'Lima' %}
+                        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80" alt="Lima">
+                    {% elif destination.name == 'Maldives' %}
+                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Maldives">
+                    {% elif destination.name == 'Marrakech' %}
+                        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Marrakech">
+                    {% elif destination.name == 'Mexico City' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Mexico City">
+                    {% elif destination.name == 'Minimalist' %}
+                        <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="Minimalist">
+                    {% elif destination.name == 'Modern' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Modern">
+                    {% elif destination.name == 'Mount Fuji' %}
+                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Mount Fuji">
+                    {% elif destination.name == 'Mumbai' %}
+                        <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="Mumbai">
+                    {% elif destination.name == 'Nairobi' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Nairobi">
+                    {% elif destination.name == 'New York' %}
+                        <img src="https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80" alt="New York">
+                    {% elif destination.name == 'Paris' %}
+                        <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" alt="Paris">
+                    {% elif destination.name == 'Prague' %}
+                        <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Prague">
+                    {% elif destination.name == 'Rio de Janeiro' %}
+                        <img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80" alt="Rio de Janeiro">
+                    {% elif destination.name == 'Rome' %}
+                        <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=800&q=80" alt="Rome">
+                    {% elif destination.name == 'Santiago' %}
+                        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80" alt="Santiago">
+                    {% elif destination.name == 'Seoul' %}
+                        <img src="https://images.unsplash.com/photo-1468852506551-2b7a5e7f2c3b?auto=format&fit=crop&w=800&q=80" alt="Seoul">
+                    {% elif destination.name == 'Singapore' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Singapore">
+                    {% elif destination.name == 'Swiss Alps' %}
+                        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Swiss Alps">
+                    {% elif destination.name == 'Sydney' %}
+                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Sydney">
+                    {% elif destination.name == 'Tokyo' %}
+                        <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80" alt="Tokyo">
+                    {% elif destination.name == 'Vienna' %}
+                        <img src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=800&q=80" alt="Vienna">
+                                {% else %}
+                        <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="Destination">
+                                {% endif %}
+                    <h3>{{ destination.name }}</h3>
+                    <p>{{ destination.description }}</p>
+                    <span>{{ format_price(destination.price) }}</span>
+                    <a href="/destination/{{ destination.id }}">View Details</a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-results">
+                <div class="no-results-content">
+                    <i class="fas fa-search"></i>
+                    <h3>No destinations found</h3>
+                    <p>Try adjusting your search criteria or browse all destinations</p>
+                    <a href="{{ url_for('travel') }}" class="btn btn-primary">View All Destinations</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+/* Advanced Search Styles */
+.travel-page {
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.search-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.search-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.search-hero p {
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.advanced-search-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.search-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.search-input, .search-select {
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus, .search-select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.price-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.price-input {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+}
+
+.search-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* Results Section */
+.results-section {
+    padding: 4rem 0;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.results-header h2 {
+    font-size: 2rem;
+    color: #333;
+    font-weight: 700;
+}
+
+.sort-options {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sort-options label {
+    font-weight: 600;
+    color: #666;
+}
+
+.sort-options select {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Enhanced Destination Cards */
+.destinations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.destination-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.destination-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+.destination-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.destination-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.destination-card:hover .destination-image img {
+    transform: scale(1.1);
+}
+
+.destination-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    color: white;
+}
+
+.destination-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    align-self: flex-start;
+}
+
+.category-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    align-self: flex-end;
+}
+
+.reviews-count {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    align-self: flex-start;
+}
+
+.quick-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.destination-card:hover .quick-actions {
+    opacity: 1;
+}
+
+.wishlist-btn, .view-btn {
+    background: rgba(255,255,255,0.9);
+    color: #333;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.wishlist-btn:hover, .view-btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.destination-content {
+    padding: 2rem;
+}
+
+.destination-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.destination-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.destination-description {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.destination-features {
+    margin-bottom: 1.5rem;
+}
+
+.feature {
+    display: inline-block;
+    background: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #666;
+    margin-right: 0.5rem;
+}
+
+.destination-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.price {
+    font-weight: bold;
+    color: #667eea;
+    font-size: 1.5rem;
+}
+
+.per-day {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* No Results */
+.no-results {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.no-results-content i {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 2rem;
+}
+
+.no-results-content h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.no-results-content p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .search-hero h1 {
+        font-size: 2rem;
+    }
+    
+    .search-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .search-actions {
+        flex-direction: column;
+    }
+    
+    .results-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .destinations-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .destination-actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+function sortDestinations() {
+    const sortBy = document.getElementById('sort-select').value;
+    const grid = document.getElementById('destinations-grid');
+    const cards = Array.from(grid.children);
+    
+    cards.sort((a, b) => {
+        switch(sortBy) {
+            case 'rating':
+                return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+            case 'price-low':
+                return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+            case 'price-high':
+                return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+            case 'name':
+                return a.dataset.name.localeCompare(b.dataset.name);
+            default:
+                return 0;
+        }
+    });
+    
+    cards.forEach(card => grid.appendChild(card));
+}
+
+function addToWishlist(destinationId) {
+    fetch(`/wishlist/add/${destinationId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Added to wishlist!');
+        } else {
+            alert(data.message || 'Failed to add to wishlist');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to add to wishlist');
+    });
+}
+</script>
+{% endblock %}

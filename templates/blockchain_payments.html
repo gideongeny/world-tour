@@ -1,0 +1,1172 @@
+{% extends "base.html" %}
+
+{% block title %}Blockchain Payments - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section bg-gradient-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Blockchain Payments</h1>
+                    <p class="lead mb-4">Pay with cryptocurrency, use smart contracts for secure bookings, and enjoy decentralized finance benefits. The future of travel payments is here.</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg" id="connectWalletBtn">
+                            <i class="fas fa-wallet me-2"></i>Connect Wallet
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#blockchainHelpModal">
+                            <i class="fas fa-info-circle me-2"></i>Learn More
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="blockchain-animation text-center">
+                        <div class="blockchain-chain">
+                            <div class="block"></div>
+                            <div class="block"></div>
+                            <div class="block"></div>
+                            <div class="block"></div>
+                            <div class="block"></div>
+                        </div>
+                        <p class="text-white-50 mt-3">Decentralized payment technology</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blockchain Payment Interface -->
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-link me-2"></i>Blockchain Payment</h4>
+                        <div class="wallet-status">
+                            <span class="status-indicator" id="walletStatus">Not Connected</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Wallet Connection -->
+                        <div class="wallet-section" id="walletSection">
+                            <div class="wallet-connect">
+                                <div class="wallet-icon">
+                                    <i class="fas fa-wallet fa-3x"></i>
+                                </div>
+                                <h5>Connect Your Wallet</h5>
+                                <p class="text-muted">Connect your cryptocurrency wallet to start making blockchain payments</p>
+                                <div class="wallet-options">
+                                    <button class="wallet-btn" data-wallet="metamask">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/metamask-2728406-2261817.png" alt="MetaMask">
+                                        <span>MetaMask</span>
+                                    </button>
+                                    <button class="wallet-btn" data-wallet="walletconnect">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/walletconnect-3521426-2944869.png" alt="WalletConnect">
+                                        <span>WalletConnect</span>
+                                    </button>
+                                    <button class="wallet-btn" data-wallet="coinbase">
+                                        <img src="https://cdn.iconscout.com/icon/free/png-256/coinbase-3521426-2944869.png" alt="Coinbase">
+                                        <span>Coinbase Wallet</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Interface -->
+                        <div class="payment-interface" id="paymentInterface" style="display: none;">
+                            <div class="payment-details">
+                                <h5>Payment Details</h5>
+                                <div class="payment-summary">
+                                    <div class="summary-item">
+                                        <span>Booking Amount:</span>
+                                        <span id="bookingAmount">$1,250.00</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>Network Fee:</span>
+                                        <span id="networkFee">$2.50</span>
+                                    </div>
+                                    <div class="summary-item total">
+                                        <span>Total:</span>
+                                        <span id="totalAmount">$1,252.50</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cryptocurrency Selection -->
+                            <div class="crypto-selection">
+                                <h6>Select Payment Method</h6>
+                                <div class="crypto-options">
+                                    <div class="crypto-option active" data-crypto="ETH">
+                                        <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="Ethereum">
+                                        <div class="crypto-info">
+                                            <div class="crypto-name">Ethereum (ETH)</div>
+                                            <div class="crypto-balance">Balance: <span id="ethBalance">0.0</span></div>
+                                        </div>
+                                        <div class="crypto-amount" id="ethAmount">0.0 ETH</div>
+                                    </div>
+                                    <div class="crypto-option" data-crypto="USDC">
+                                        <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt="USDC">
+                                        <div class="crypto-info">
+                                            <div class="crypto-name">USD Coin (USDC)</div>
+                                            <div class="crypto-balance">Balance: <span id="usdcBalance">0.0</span></div>
+                                        </div>
+                                        <div class="crypto-amount" id="usdcAmount">0.0 USDC</div>
+                                    </div>
+                                    <div class="crypto-option" data-crypto="BTC">
+                                        <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" alt="Bitcoin">
+                                        <div class="crypto-info">
+                                            <div class="crypto-name">Bitcoin (BTC)</div>
+                                            <div class="crypto-balance">Balance: <span id="btcBalance">0.0</span></div>
+                                        </div>
+                                        <div class="crypto-amount" id="btcAmount">0.0 BTC</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Smart Contract Details -->
+                            <div class="smart-contract-details">
+                                <h6><i class="fas fa-file-contract me-2"></i>Smart Contract Details</h6>
+                                <div class="contract-info">
+                                    <div class="contract-item">
+                                        <span>Contract Address:</span>
+                                        <span class="contract-address" id="contractAddress">0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6</span>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('contractAddress')">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <div class="contract-item">
+                                        <span>Network:</span>
+                                        <span id="networkName">Ethereum Mainnet</span>
+                                    </div>
+                                    <div class="contract-item">
+                                        <span>Gas Price:</span>
+                                        <span id="gasPrice">25 Gwei</span>
+                                    </div>
+                                    <div class="contract-item">
+                                        <span>Estimated Gas:</span>
+                                        <span id="estimatedGas">150,000</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Actions -->
+                            <div class="payment-actions">
+                                <button class="btn btn-primary btn-lg" id="processPaymentBtn">
+                                    <i class="fas fa-credit-card me-2"></i>Process Payment
+                                </button>
+                                <button class="btn btn-outline-secondary" id="viewTransactionBtn">
+                                    <i class="fas fa-external-link-alt me-2"></i>View on Explorer
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Transaction Status -->
+                        <div class="transaction-status" id="transactionStatus" style="display: none;">
+                            <div class="status-card">
+                                <div class="status-icon">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                                <h6>Processing Transaction</h6>
+                                <p>Please wait while we process your blockchain payment...</p>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div class="transaction-hash">
+                                    <span>Transaction Hash:</span>
+                                    <span id="txHash">0x...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Wallet Info -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-wallet me-2"></i>Wallet Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="wallet-info" id="walletInfo" style="display: none;">
+                            <div class="wallet-address">
+                                <span class="label">Address:</span>
+                                <span class="address" id="walletAddress">0x...</span>
+                                <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('walletAddress')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="wallet-balances">
+                                <h6>Balances</h6>
+                                <div class="balance-item">
+                                    <span>ETH:</span>
+                                    <span id="walletEthBalance">0.0</span>
+                                </div>
+                                <div class="balance-item">
+                                    <span>USDC:</span>
+                                    <span id="walletUsdcBalance">0.0</span>
+                                </div>
+                                <div class="balance-item">
+                                    <span>BTC:</span>
+                                    <span id="walletBtcBalance">0.0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wallet-disconnected" id="walletDisconnected">
+                            <p class="text-muted">No wallet connected</p>
+                            <button class="btn btn-primary btn-sm" onclick="connectWallet()">
+                                <i class="fas fa-plug me-2"></i>Connect Wallet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DeFi Features -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>DeFi Features</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="defi-features">
+                            <div class="defi-item">
+                                <div class="defi-icon bg-success">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                                <div class="defi-details">
+                                    <div class="defi-name">Yield Farming</div>
+                                    <div class="defi-description">Earn rewards by staking your tokens</div>
+                                </div>
+                            </div>
+                            <div class="defi-item">
+                                <div class="defi-icon bg-warning">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div class="defi-details">
+                                    <div class="defi-name">Token Swap</div>
+                                    <div class="defi-description">Swap tokens at best rates</div>
+                                </div>
+                            </div>
+                            <div class="defi-item">
+                                <div class="defi-icon bg-primary">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="defi-details">
+                                    <div class="defi-name">Insurance</div>
+                                    <div class="defi-description">Protect your bookings</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Transaction History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="transaction-list">
+                            <div class="transaction-item">
+                                <div class="tx-icon bg-success">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="tx-details">
+                                    <div class="tx-action">Payment Successful</div>
+                                    <div class="tx-amount">0.5 ETH</div>
+                                    <div class="tx-time">2 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="transaction-item">
+                                <div class="tx-icon bg-info">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="tx-details">
+                                    <div class="tx-action">Pending</div>
+                                    <div class="tx-amount">100 USDC</div>
+                                    <div class="tx-time">5 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Data -->
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Market Data</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="market-data">
+                            <div class="market-item">
+                                <div class="market-name">ETH/USD</div>
+                                <div class="market-price" id="ethPrice">$2,450.00</div>
+                                <div class="market-change positive">+2.5%</div>
+                            </div>
+                            <div class="market-item">
+                                <div class="market-name">BTC/USD</div>
+                                <div class="market-price" id="btcPrice">$45,200.00</div>
+                                <div class="market-change negative">-1.2%</div>
+                            </div>
+                            <div class="market-item">
+                                <div class="market-name">USDC/USD</div>
+                                <div class="market-price" id="usdcPrice">$1.00</div>
+                                <div class="market-change neutral">0.0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blockchain Features -->
+    <div class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Blockchain Benefits</h2>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                        <h5>Enhanced Security</h5>
+                        <p class="text-muted">Blockchain technology provides immutable transaction records and enhanced security through cryptography.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-bolt fa-2x"></i>
+                        </div>
+                        <h5>Instant Settlements</h5>
+                        <p class="text-muted">No waiting for bank transfers. Cryptocurrency payments are processed instantly on the blockchain.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-globe fa-2x"></i>
+                        </div>
+                        <h5>Global Access</h5>
+                        <p class="text-muted">No geographical restrictions. Pay from anywhere in the world with cryptocurrency.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-percentage fa-2x"></i>
+                        </div>
+                        <h5>Lower Fees</h5>
+                        <p class="text-muted">Eliminate traditional banking fees and enjoy competitive rates on blockchain transactions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Blockchain Help Modal -->
+<div class="modal fade" id="blockchainHelpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Blockchain Payment Guide</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Getting Started</h6>
+                        <ol>
+                            <li>Install a cryptocurrency wallet (MetaMask recommended)</li>
+                            <li>Add funds to your wallet</li>
+                            <li>Connect your wallet to World Tour</li>
+                            <li>Select your preferred cryptocurrency</li>
+                            <li>Confirm the transaction</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Supported Cryptocurrencies</h6>
+                        <ul>
+                            <li><strong>Ethereum (ETH):</strong> Most popular for DeFi</li>
+                            <li><strong>Bitcoin (BTC):</strong> Digital gold</li>
+                            <li><strong>USD Coin (USDC):</strong> Stable value</li>
+                            <li><strong>More coming soon!</strong></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Security:</strong> All transactions are secured by smart contracts on the Ethereum blockchain. Your funds are safe and transactions are transparent.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.blockchain-chain {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.block {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    position: relative;
+    animation: blockPulse 2s ease-in-out infinite;
+}
+
+.block:nth-child(2) { animation-delay: 0.2s; }
+.block:nth-child(3) { animation-delay: 0.4s; }
+.block:nth-child(4) { animation-delay: 0.6s; }
+.block:nth-child(5) { animation-delay: 0.8s; }
+
+.block::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 2px;
+    background: #667eea;
+}
+
+.block:last-child::after {
+    display: none;
+}
+
+@keyframes blockPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.wallet-connect {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.wallet-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 20px;
+}
+
+.wallet-options {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.wallet-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.wallet-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.wallet-btn img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.wallet-btn span {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.payment-details {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.payment-summary {
+    margin-top: 15px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item.total {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #667eea;
+}
+
+.crypto-selection {
+    margin-bottom: 20px;
+}
+
+.crypto-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.crypto-option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.crypto-option.active {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.crypto-option:hover {
+    border-color: #667eea;
+    transform: translateX(5px);
+}
+
+.crypto-option img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.crypto-info {
+    flex: 1;
+}
+
+.crypto-name {
+    font-weight: 600;
+    color: #495057;
+}
+
+.crypto-balance {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.crypto-amount {
+    font-weight: 600;
+    color: #667eea;
+}
+
+.smart-contract-details {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.contract-info {
+    margin-top: 15px;
+}
+
+.contract-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.contract-item:last-child {
+    border-bottom: none;
+}
+
+.contract-address {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #667eea;
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.payment-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.transaction-status {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.status-card {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.status-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+}
+
+.transaction-hash {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.wallet-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.wallet-address {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.address {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #667eea;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wallet-balances {
+    margin-top: 15px;
+}
+
+.balance-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.balance-item:last-child {
+    border-bottom: none;
+}
+
+.defi-features {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.defi-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.defi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.defi-details {
+    flex: 1;
+}
+
+.defi-name {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.defi-description {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.transaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.tx-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.tx-details {
+    flex: 1;
+}
+
+.tx-action {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.tx-amount {
+    font-size: 0.8rem;
+    color: #667eea;
+    font-weight: 500;
+}
+
+.tx-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.market-data {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.market-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.market-name {
+    font-weight: 600;
+    color: #495057;
+}
+
+.market-price {
+    font-weight: 600;
+    color: #667eea;
+}
+
+.market-change {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.market-change.positive {
+    background: #d4edda;
+    color: #155724;
+}
+
+.market-change.negative {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.market-change.neutral {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-icon:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .wallet-options {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .wallet-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .crypto-option {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .payment-actions {
+        flex-direction: column;
+    }
+    
+    .payment-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+class BlockchainPayments {
+    constructor() {
+        this.isConnected = false;
+        this.selectedCrypto = 'ETH';
+        this.walletAddress = '';
+        this.balances = {
+            ETH: 0,
+            USDC: 0,
+            BTC: 0
+        };
+        this.prices = {
+            ETH: 2450,
+            BTC: 45200,
+            USDC: 1
+        };
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.updatePrices();
+        this.startPriceUpdates();
+    }
+
+    bindEvents() {
+        // Wallet connection
+        document.getElementById('connectWalletBtn').addEventListener('click', () => {
+            this.connectWallet();
+        });
+
+        document.querySelectorAll('.wallet-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.connectSpecificWallet(btn.dataset.wallet);
+            });
+        });
+
+        // Crypto selection
+        document.querySelectorAll('.crypto-option').forEach(option => {
+            option.addEventListener('click', () => {
+                this.selectCrypto(option.dataset.crypto);
+            });
+        });
+
+        // Payment processing
+        document.getElementById('processPaymentBtn').addEventListener('click', () => {
+            this.processPayment();
+        });
+
+        document.getElementById('viewTransactionBtn').addEventListener('click', () => {
+            this.viewTransaction();
+        });
+    }
+
+    connectWallet() {
+        // Simulate wallet connection
+        this.isConnected = true;
+        this.walletAddress = '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6';
+        this.balances = {
+            ETH: 2.5,
+            USDC: 1500,
+            BTC: 0.05
+        };
+
+        this.updateUI();
+        this.showSuccessMessage('Wallet connected successfully!');
+    }
+
+    connectSpecificWallet(walletType) {
+        this.showSuccessMessage(`Connecting to ${walletType}...`);
+        
+        // Simulate connection delay
+        setTimeout(() => {
+            this.connectWallet();
+        }, 1000);
+    }
+
+    selectCrypto(crypto) {
+        this.selectedCrypto = crypto;
+        
+        // Update UI
+        document.querySelectorAll('.crypto-option').forEach(option => {
+            option.classList.remove('active');
+        });
+        document.querySelector(`[data-crypto="${crypto}"]`).classList.add('active');
+        
+        // Update amounts
+        this.updateCryptoAmounts();
+    }
+
+    updateCryptoAmounts() {
+        const totalUSD = 1252.50;
+        const price = this.prices[this.selectedCrypto];
+        const amount = totalUSD / price;
+        
+        document.getElementById(`${this.selectedCrypto.toLowerCase()}Amount`).textContent = 
+            `${amount.toFixed(6)} ${this.selectedCrypto}`;
+    }
+
+    processPayment() {
+        if (!this.isConnected) {
+            alert('Please connect your wallet first.');
+            return;
+        }
+
+        // Show transaction status
+        document.getElementById('paymentInterface').style.display = 'none';
+        document.getElementById('transactionStatus').style.display = 'block';
+
+        // Simulate transaction processing
+        this.simulateTransaction();
+    }
+
+    simulateTransaction() {
+        const progressBar = document.querySelector('.progress-bar');
+        const txHash = document.getElementById('txHash');
+        
+        // Generate random transaction hash
+        const hash = '0x' + Math.random().toString(16).substr(2, 64);
+        txHash.textContent = hash;
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 20;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                this.completeTransaction();
+            }
+            
+            progressBar.style.width = progress + '%';
+        }, 500);
+    }
+
+    completeTransaction() {
+        const statusIcon = document.querySelector('.status-icon i');
+        const statusTitle = document.querySelector('.status-card h6');
+        const statusDesc = document.querySelector('.status-card p');
+        
+        statusIcon.className = 'fas fa-check';
+        statusTitle.textContent = 'Transaction Successful!';
+        statusDesc.textContent = 'Your payment has been processed successfully on the blockchain.';
+        
+        // Add to transaction history
+        this.addTransactionHistory();
+        
+        // Show success message
+        setTimeout(() => {
+            this.showSuccessMessage('Payment completed successfully!');
+            this.resetInterface();
+        }, 2000);
+    }
+
+    addTransactionHistory() {
+        const historyContainer = document.querySelector('.transaction-list');
+        const newTransaction = document.createElement('div');
+        newTransaction.className = 'transaction-item';
+        newTransaction.innerHTML = `
+            <div class="tx-icon bg-success">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="tx-details">
+                <div class="tx-action">Payment Successful</div>
+                <div class="tx-amount">${this.getCryptoAmount()} ${this.selectedCrypto}</div>
+                <div class="tx-time">Just now</div>
+            </div>
+        `;
+        
+        historyContainer.insertBefore(newTransaction, historyContainer.firstChild);
+    }
+
+    getCryptoAmount() {
+        const totalUSD = 1252.50;
+        const price = this.prices[this.selectedCrypto];
+        return (totalUSD / price).toFixed(6);
+    }
+
+    viewTransaction() {
+        const txHash = document.getElementById('txHash').textContent;
+        const explorerUrl = `https://etherscan.io/tx/${txHash}`;
+        window.open(explorerUrl, '_blank');
+    }
+
+    updateUI() {
+        // Update wallet status
+        document.getElementById('walletStatus').textContent = 'Connected';
+        document.getElementById('walletStatus').className = 'status-indicator connected';
+        
+        // Show wallet info
+        document.getElementById('walletDisconnected').style.display = 'none';
+        document.getElementById('walletInfo').style.display = 'block';
+        
+        // Update wallet address
+        document.getElementById('walletAddress').textContent = this.walletAddress;
+        
+        // Update balances
+        document.getElementById('walletEthBalance').textContent = this.balances.ETH;
+        document.getElementById('walletUsdcBalance').textContent = this.balances.USDC;
+        document.getElementById('walletBtcBalance').textContent = this.balances.BTC;
+        
+        // Update crypto option balances
+        document.getElementById('ethBalance').textContent = this.balances.ETH;
+        document.getElementById('usdcBalance').textContent = this.balances.USDC;
+        document.getElementById('btcBalance').textContent = this.balances.BTC;
+        
+        // Show payment interface
+        document.getElementById('walletSection').style.display = 'none';
+        document.getElementById('paymentInterface').style.display = 'block';
+        
+        // Update crypto amounts
+        this.updateCryptoAmounts();
+    }
+
+    updatePrices() {
+        // Simulate price updates
+        this.prices.ETH = 2450 + (Math.random() - 0.5) * 100;
+        this.prices.BTC = 45200 + (Math.random() - 0.5) * 2000;
+        
+        document.getElementById('ethPrice').textContent = `$${this.prices.ETH.toFixed(2)}`;
+        document.getElementById('btcPrice').textContent = `$${this.prices.BTC.toFixed(2)}`;
+        
+        if (this.isConnected) {
+            this.updateCryptoAmounts();
+        }
+    }
+
+    startPriceUpdates() {
+        setInterval(() => {
+            this.updatePrices();
+        }, 30000); // Update every 30 seconds
+    }
+
+    resetInterface() {
+        document.getElementById('transactionStatus').style.display = 'none';
+        document.getElementById('paymentInterface').style.display = 'block';
+    }
+
+    showSuccessMessage(message) {
+        // Create a temporary success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success alert-dismissible fade show';
+        successDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.querySelector('.card-body').insertBefore(successDiv, document.querySelector('.card-body').firstChild);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            successDiv.remove();
+        }, 3000);
+    }
+}
+
+// Global function for wallet connection
+function connectWallet() {
+    if (window.blockchainPayments) {
+        window.blockchainPayments.connectWallet();
+    }
+}
+
+// Global function for copying to clipboard
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    const text = element.textContent;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        // Show temporary success indicator
+        const originalText = element.textContent;
+        element.textContent = 'Copied!';
+        element.style.color = '#28a745';
+        
+        setTimeout(() => {
+            element.textContent = originalText;
+            element.style.color = '';
+        }, 1000);
+    });
+}
+
+// Initialize blockchain payments when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.blockchainPayments = new BlockchainPayments();
+});
+</script>
+{% endblock %} 

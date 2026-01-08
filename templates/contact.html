@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - World Tour{% endblock %}
+
+{% block content %}
+<div class="contact-page">
+    <div class="contact-header">
+        <h1>Contact Us</h1>
+        <p>We're here to help with your travel plans</p>
+    </div>
+
+    <div class="contact-content">
+        <div class="contact-info">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Email Us</h3>
+                <p><a href="mailto:gideongeng@gmail.com">gideongeng@gmail.com</a></p>
+                <p>We typically respond within 24 hours</p>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <h3>Call Us</h3>
+                <p><a href="tel:+254720317626">+254 720 317 626</a></p>
+                <p>Available 24/7 for urgent matters</p>
+            </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>Visit Us</h3>
+                <p>Microsoft Kenya</p>
+                <p>Westlands, Nairobi, Kenya</p>
+            </div>
+        </div>
+
+        <div class="personal-contact-section">
+            <h2>Direct Contact</h2>
+            <div class="personal-contact-card">
+                <div class="contact-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>Gideon Ngeno</h3>
+                <p><strong>Founder & Travel Expert</strong></p>
+                <div class="contact-details">
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:gideongeng@gmail.com">gideongeng@gmail.com</a></p>
+                    <p><i class="fas fa-phone"></i> <a href="tel:+254720317626">+254 720 317 626</a></p>
+                </div>
+                <p class="contact-note">Feel free to reach out directly for personalized travel planning and support!</p>
+            </div>
+        </div>
+
+        <div class="contact-form-section">
+            <h2>Send us a Message</h2>
+            <form method="POST" class="contact-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <select id="subject" name="subject">
+                        <option value="general">General Inquiry</option>
+                        <option value="booking">Booking Question</option>
+                        <option value="support">Technical Support</option>
+                        <option value="feedback">Feedback</option>
+                        <option value="personal">Personal Travel Planning</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="6" required placeholder="Tell us how we can help you..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-large">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h3>How do I book a trip?</h3>
+                <p>Browse our destinations, select your preferred dates and number of guests, then complete the booking process. You'll need to create an account first.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>What's included in my booking?</h3>
+                <p>All bookings include accommodation, transportation, guided tours, and 24/7 support. Some packages may include meals and activities.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>Can I cancel my booking?</h3>
+                <p>Yes, you can cancel your booking up to 24 hours before departure for a full refund. Some restrictions may apply.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>Do you offer travel insurance?</h3>
+                <p>Yes, we recommend purchasing travel insurance for all international trips. You can add it during the booking process.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+.contact-form input, .contact-form textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1.5px solid #e2e8f0;
+    background: #fff;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: border-color 0.2s;
+}
+.contact-form input:focus, .contact-form textarea:focus {
+    border-color: #667eea;
+    outline: none;
+}
+.contact-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+</style>

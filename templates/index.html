@@ -1,0 +1,495 @@
+{% extends "base.html" %}
+
+{% block title %}World Tour - Discover Amazing Destinations | Best Travel Agency{% endblock %}
+
+{% block meta_description %}World Tour - Your Ultimate Travel Companion. Discover amazing destinations worldwide, book flights, hotels, and travel packages. Best prices, 24/7 support, and unforgettable experiences. From luxury to budget travel.{% endblock %}
+
+{% block meta_keywords %}travel agency, vacation packages, world tour, travel booking, luxury travel, budget travel, adventure tours, holiday packages, flights, hotels{% endblock %}
+
+{% block og_title %}World Tour - Discover Amazing Destinations{% endblock %}
+
+{% block og_description %}Your Ultimate Travel Companion. Discover amazing destinations worldwide, book flights, hotels, and travel packages. Best prices, 24/7 support.{% endblock %}
+
+{% block twitter_title %}World Tour - Discover Amazing Destinations{% endblock %}
+
+{% block twitter_description %}Your Ultimate Travel Companion. Discover amazing destinations worldwide, book flights, hotels, and travel packages.{% endblock %}
+
+{% block extra_head %}
+<!-- Homepage structured data -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "World Tour",
+    "description": "Your Ultimate Travel Companion. Discover amazing destinations worldwide.",
+    "url": "{{ request.url_root }}",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ request.url_root }}travel?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+        "@type": "TravelAgency",
+        "name": "World Tour",
+        "url": "{{ request.url_root }}",
+        "telephone": "+254 720 317 626",
+        "email": "gideongeng@gmail.com"
+    }
+}
+</script>
+
+<!-- Featured destinations structured data -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Featured Destinations",
+    "description": "Handpicked destinations for unforgettable experiences",
+    "url": "{{ request.url_root }}travel",
+    "numberOfItems": {{ featured_destinations|length }},
+    "itemListElement": [
+        {% for destination in featured_destinations %}
+        {
+            "@type": "ListItem",
+            "position": {{ loop.index }},
+            "item": {
+                "@type": "TouristDestination",
+                "name": "{{ destination.name }}, {{ destination.country }}",
+                "description": "{{ destination.description[:100] }}...",
+                "image": "{{ url_for('static', filename=destination.image_url.split('/')[-1], _external=True) }}",
+                "url": "{{ url_for('destination_detail', destination_id=destination.id, _external=True) }}",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "{{ destination.price }}",
+                    "priceCurrency": "USD",
+                    "availability": "{% if destination.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+                }
+            }
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero">
+    <div class="hero-content">
+        <h1>{{ t('discover_amazing') }}</h1>
+        <p>{{ t('explore_world') }}</p>
+        <div class="hero-buttons">
+            <div class="dropdown pro-dropdown">
+                <button class="btn btn-primary btn-large dropdown-toggle" type="button" id="heroDestinationsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-map-marker-alt"></i> {{ t('destinations') }}
+                </button>
+                <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="heroDestinationsDropdown">
+                    <li><a class="dropdown-item" href="{{ url_for('travel') }}"><i class="fas fa-globe"></i> {{ t('all_destinations') }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ url_for('travel', category='luxury') }}"><i class="fas fa-crown"></i> {{ t('luxury_destinations') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('travel', category='budget') }}"><i class="fas fa-dollar-sign"></i> {{ t('budget_destinations') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('travel', category='adventure') }}"><i class="fas fa-mountain"></i> {{ t('adventure_destinations') }}</a></li>
+                </ul>
+            </div>
+            <div class="dropdown pro-dropdown">
+                <button class="btn btn-outline btn-large dropdown-toggle" type="button" id="heroOffersDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-tags"></i> {{ t('special_offers') }}
+                </button>
+                <ul class="dropdown-menu shadow animated fadeIn" aria-labelledby="heroOffersDropdown">
+                    <li><a class="dropdown-item" href="{{ url_for('offers') }}"><i class="fas fa-percentage"></i> {{ t('all_special_offers') }}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=flash"><i class="fas fa-bolt"></i> {{ t('flash_deals') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=seasonal"><i class="fas fa-calendar"></i> {{ t('seasonal_offers') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('offers') }}?type=last_minute"><i class="fas fa-clock"></i> {{ t('last_minute_deals') }}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="hero-overlay"></div>
+</div>
+
+<!-- Search Section -->
+<div class="search-section">
+    <div class="container">
+        <form method="GET" action="{{ url_for('travel') }}" class="search-form">
+            <input type="text" name="search" placeholder="Where do you want to go?" class="search-input" aria-label="Search destinations">
+            <select name="category" class="search-select" aria-label="Select travel category">
+                <option value="">All Categories</option>
+                <option value="luxury">Luxury</option>
+                <option value="budget">Budget</option>
+                <option value="adventure">Adventure</option>
+            </select>
+            <input type="number" name="min_price" placeholder="Min Price" class="search-input" aria-label="Minimum price">
+            <input type="number" name="max_price" placeholder="Max Price" class="search-input" aria-label="Maximum price">
+            <button type="submit" class="btn btn-primary">{{ t('search') }}</button>
+        </form>
+    </div>
+</div>
+
+<!-- Featured Destinations -->
+<div class="featured-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>{{ t('featured_destinations') }}</h2>
+            <p>Handpicked destinations for unforgettable experiences</p>
+        </div>
+        
+        <div class="destinations-grid">
+            {% for destination in featured_destinations %}
+            <div class="destination-card">
+                <div class="destination-image">
+                    <picture>
+                        <source srcset="/static/{{ destination.name|lower|replace(' ', '_') }}.webp" type="image/webp">
+                        <img src="/static/{{ destination.name|lower|replace(' ', '_') }}.jpg" alt="{{ destination.name }}" class="destination-image" />
+                    </picture>
+                    <div class="destination-overlay">
+                        <div class="destination-rating">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <span>{{ "%.1f"|format(destination.rating) }}</span>
+                        </div>
+                        <div class="category-badge">{{ destination.category|title }}</div>
+                    </div>
+                </div>
+                <div class="destination-content">
+                    <h3><a href="{{ url_for('destination_detail', destination_id=destination.id) }}">{{ destination.name }}, {{ destination.country }}</a></h3>
+                    <div class="destination-meta">
+                        <div class="rating">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <span>{{ "%.1f"|format(destination.rating) }} ({{ destination.reviews_count }} reviews)</span>
+                        </div>
+                        <div class="duration">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            <span>{{ destination.duration }} days</span>
+                        </div>
+                    </div>
+                    <p class="destination-description">{{ destination.description[:120] }}...</p>
+                    <div class="destination-footer">
+                        <div class="price">
+                            <span class="price-label">From</span>
+                            <span class="price-amount">${{ format_price(destination.price) }}</span>
+                            <span class="price-unit">per person</span>
+                        </div>
+                        <div class="destination-actions">
+                            <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="btn btn-outline btn-sm">{{ t('view_details') }}</a>
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('book_destination', destination_id=destination.id) }}" class="btn btn-primary btn-sm">{{ t('book_now') }}</a>
+                            {% else %}
+                                <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">{{ t('book_now') }}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="section-footer">
+            <a href="{{ url_for('travel') }}" class="btn btn-outline btn-large">View All Destinations</a>
+        </div>
+    </div>
+</div>
+
+<!-- Categories Section -->
+<div class="categories-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Explore by Category</h2>
+            <p>Find your perfect travel style</p>
+        </div>
+        
+        <div class="categories-grid">
+            <div class="category-card">
+                <img src="{{ url_for('static', filename='luxury.jpg') }}" alt="Luxury Travel">
+                <div class="category-content">
+                    <h3>Luxury Travel</h3>
+                    <p>Premium experiences for discerning travelers</p>
+                    <a href="{{ url_for('travel', category='luxury') }}" class="btn btn-outline">Explore Luxury</a>
+                </div>
+            </div>
+            
+            <div class="category-card">
+                <img src="{{ url_for('static', filename='budget.jpg') }}" alt="Budget Travel">
+                <div class="category-content">
+                    <h3>Budget Travel</h3>
+                    <p>Amazing experiences at affordable prices</p>
+                    <a href="{{ url_for('travel', category='budget') }}" class="btn btn-outline">Explore Budget</a>
+                </div>
+            </div>
+            
+            <div class="category-card">
+                <img src="{{ url_for('static', filename='adventure.jpg') }}" alt="Adventure Travel">
+                <div class="category-content">
+                    <h3>Adventure Travel</h3>
+                    <p>Thrilling experiences for adrenaline seekers</p>
+                    <a href="{{ url_for('travel', category='adventure') }}" class="btn btn-outline">Explore Adventure</a>
+                </div>
+            </div>
+            
+            <div class="category-card">
+                <img src="{{ url_for('static', filename='beach.jpg') }}" alt="Beach Getaways">
+                <div class="category-content">
+                    <h3>Beach Getaways</h3>
+                    <p>Relaxing beach destinations worldwide</p>
+                    <a href="{{ url_for('travel', category='beach') }}" class="btn btn-outline">Explore Beaches</a>
+                </div>
+            </div>
+            
+            <div class="category-card">
+                <img src="{{ url_for('static', filename='cultural.jpg') }}" alt="Cultural Experiences">
+                <div class="category-content">
+                    <h3>Cultural Experiences</h3>
+                    <p>Immerse yourself in local traditions</p>
+                    <a href="{{ url_for('travel', category='cultural') }}" class="btn btn-outline">Explore Culture</a>
+                </div>
+            </div>
+            
+            <div class="category-card">
+                <img src="{{ url_for('static', filename='modern.jpg') }}" alt="Modern Cities">
+                <div class="category-content">
+                    <h3>Modern Cities</h3>
+                    <p>Urban adventures in vibrant metropolises</p>
+                    <a href="{{ url_for('travel', category='modern') }}" class="btn btn-outline">Explore Cities</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Destinations -->
+<div class="popular-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Most Popular Destinations</h2>
+            <p>Trending destinations loved by our travelers</p>
+        </div>
+        
+        <div class="destinations-grid">
+            {% for destination in popular_destinations %}
+            <div class="destination-card">
+                <div class="destination-image">
+                    <picture>
+                        <source srcset="{{ destination.image_url.replace('.jpg', '.webp') }}" type="image/webp">
+                    <img src="{{ destination.image_url }}" alt="{{ destination.name }}, {{ destination.country }} - Popular travel destination" loading="lazy">
+                    </picture>
+                    <div class="destination-overlay">
+                        <div class="destination-rating">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <span>{{ "%.1f"|format(destination.rating) }}</span>
+                        </div>
+                        <div class="category-badge">{{ destination.category|title }}</div>
+                    </div>
+                </div>
+                <div class="destination-content">
+                    <h3><a href="{{ url_for('destination_detail', destination_id=destination.id) }}">{{ destination.name }}, {{ destination.country }}</a></h3>
+                    <div class="destination-meta">
+                        <div class="rating">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <span>{{ "%.1f"|format(destination.rating) }} ({{ destination.reviews_count }} reviews)</span>
+                        </div>
+                        <div class="duration">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            <span>{{ destination.duration }} days</span>
+                        </div>
+                    </div>
+                    <p class="destination-description">{{ destination.description[:120] }}...</p>
+                    <div class="destination-footer">
+                        <div class="price">
+                            <span class="price-label">From</span>
+                            <span class="price-amount">${{ format_price(destination.price) }}</span>
+                            <span class="price-unit">per person</span>
+                        </div>
+                        <div class="destination-actions">
+                            <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="btn btn-outline btn-sm">{{ t('view_details') }}</a>
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('book_destination', destination_id=destination.id) }}" class="btn btn-primary btn-sm">{{ t('book_now') }}</a>
+                            {% else %}
+                                <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">{{ t('book_now') }}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Latest Additions -->
+<div class="latest-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Latest Additions</h2>
+            <p>Fresh destinations added to our collection</p>
+        </div>
+        
+        <div class="destinations-grid">
+            {% for destination in latest_destinations %}
+            <div class="destination-card new-badge">
+                <div class="destination-image">
+                    <picture>
+                        <source srcset="{{ destination.image_url.replace('.jpg', '.webp') }}" type="image/webp">
+                    <img src="{{ destination.image_url }}" alt="{{ destination.name }}, {{ destination.country }} - New travel destination" loading="lazy">
+                    </picture>
+                    <div class="destination-overlay">
+                        <div class="new-badge">NEW</div>
+                        <div class="category-badge">{{ destination.category|title }}</div>
+                    </div>
+                </div>
+                <div class="destination-content">
+                    <h3><a href="{{ url_for('destination_detail', destination_id=destination.id) }}">{{ destination.name }}, {{ destination.country }}</a></h3>
+                    <div class="destination-meta">
+                        <div class="rating">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <span>{{ "%.1f"|format(destination.rating) }} ({{ destination.reviews_count }} reviews)</span>
+                        </div>
+                        <div class="duration">
+                            <i class="fas fa-clock" aria-hidden="true"></i>
+                            <span>{{ destination.duration }} days</span>
+                        </div>
+                    </div>
+                    <p class="destination-description">{{ destination.description[:120] }}...</p>
+                    <div class="destination-footer">
+                        <div class="price">
+                            <span class="price-label">From</span>
+                            <span class="price-amount">${{ format_price(destination.price) }}</span>
+                            <span class="price-unit">per person</span>
+                        </div>
+                        <div class="destination-actions">
+                            <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="btn btn-outline btn-sm">{{ t('view_details') }}</a>
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('book_destination', destination_id=destination.id) }}" class="btn btn-primary btn-sm">{{ t('book_now') }}</a>
+                            {% else %}
+                                <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">{{ t('book_now') }}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Why Choose World Tour -->
+<div class="features-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Why Choose World Tour?</h2>
+            <p>We make your travel dreams come true with exceptional service</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-globe-americas" aria-hidden="true"></i>
+                </div>
+                <h3>Global Destinations</h3>
+                <p>Explore handpicked destinations from around the world, carefully selected for their beauty and cultural significance.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                </div>
+                <h3>Safe & Secure</h3>
+                <p>Your safety is our priority. All our trips include comprehensive travel insurance and 24/7 support.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-tags" aria-hidden="true"></i>
+                </div>
+                <h3>Best Prices</h3>
+                <p>Get the best value for your money with our competitive pricing and exclusive deals.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset" aria-hidden="true"></i>
+                </div>
+                <h3>24/7 Support</h3>
+                <p>Our travel experts are available round the clock to assist you with any questions or concerns.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-friends" aria-hidden="true"></i>
+                </div>
+                <h3>Personalized Experience</h3>
+                <p>Every trip is tailored to your preferences, ensuring a unique and memorable experience.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-map-marked-alt" aria-hidden="true"></i>
+                </div>
+                <h3>Expert Guides</h3>
+                <p>Travel with experienced local guides who know the best spots and hidden gems.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Newsletter Section -->
+<div class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-content">
+            <h2>{{ t('newsletter_signup') }}</h2>
+            <p>{{ t('get_best_deals') }}</p>
+            <form method="POST" action="{{ url_for('subscribe_newsletter') }}" class="newsletter-form">
+                <input type="email" name="email" placeholder="{{ t('email_placeholder') }}" required aria-label="Email address for newsletter">
+                <button type="submit" class="btn btn-primary">{{ t('subscribe') }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Section -->
+<div class="contact-section">
+    <div class="container">
+        <div class="contact-content">
+            <h2>Get in Touch</h2>
+            <p>Ready to start your next adventure? Contact us directly!</p>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>Gideon Ngeno</h3>
+                        <p><strong>Founder & Travel Expert</strong></p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>Email</h3>
+                        <p><a href="mailto:gideongeng@gmail.com">gideongeng@gmail.com</a></p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone" aria-hidden="true"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>Phone</h3>
+                        <p><a href="tel:+254720317626">+254 720 317 626</a></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-actions">
+                <a href="{{ url_for('contact') }}" class="btn btn-outline">Contact Us</a>
+                <a href="mailto:gideongeng@gmail.com" class="btn btn-primary">Send Email</a>
+            </div>
+            
+            <p class="contact-note"><em>Personal travel planning and support available!</em></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

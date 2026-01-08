@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Book Flight - {{ flight.flight_number }}{% endblock %}
+{% block content %}
+<div class="container book-flight-page">
+    <h1>Book Flight: {{ flight.flight_number }}</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="flight-summary">
+                <h3>Flight Details</h3>
+                <p><strong>Airline:</strong> {{ flight.airline }}</p>
+                <p><strong>From:</strong> {{ flight.origin }}</p>
+                <p><strong>To:</strong> {{ flight.destination }}</p>
+                <p><strong>Departure:</strong> {{ flight.departure_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Arrival:</strong> {{ flight.arrival_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Price per passenger:</strong> ${{ flight.price }}</p>
+                <p><strong>Available seats:</strong> {{ flight.seats_available }}</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <form method="post" class="booking-form">
+                <div class="form-group">
+                    <label for="passengers">Number of Passengers</label>
+                    <select name="passengers" id="passengers" class="form-control" required>
+                        {% for i in range(1, min(flight.seats_available + 1, 10)) %}
+                        <option value="{{ i }}">{{ i }} passenger{% if i > 1 %}s{% endif %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="price-summary">
+                    <h4>Price Summary</h4>
+                    <p>Price per passenger: ${{ flight.price }}</p>
+                    <p>Total: <span id="total-price">${{ flight.price }}</span></p>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
+                <a href="{{ url_for('flight_detail', flight_id=flight.id) }}" class="btn btn-outline-secondary ml-2">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('passengers').addEventListener('change', function() {
+    const passengers = parseInt(this.value);
+    const pricePerPassenger = {{ flight.price }};
+    const total = passengers * pricePerPassenger;
+    document.getElementById('total-price').textContent = '$' + total;
+});
+</script>
+{% endblock %} 

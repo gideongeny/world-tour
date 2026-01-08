@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block title %}Advanced Search - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row">
+        <!-- Advanced Search Filters Sidebar -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Advanced Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('search') }}" id="searchForm">
+                        <!-- Search Query -->
+                        <div class="mb-3">
+                            <label for="q" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="q" name="q" value="{{ query }}" placeholder="Destination, country, or description...">
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">All Categories</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="mb-3">
+                            <label class="form-label">Price Range (USD)</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="price_min" name="price_min" value="{{ price_min or '' }}" placeholder="Min">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="price_max" name="price_max" value="{{ price_max or '' }}" placeholder="Max">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Duration Range -->
+                        <div class="mb-3">
+                            <label class="form-label">Duration (Days)</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="duration_min" name="duration_min" value="{{ duration_min or '' }}" placeholder="Min">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control" id="duration_max" name="duration_max" value="{{ duration_max or '' }}" placeholder="Max">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rating Filter -->
+                        <div class="mb-3">
+                            <label for="rating_min" class="form-label">Minimum Rating</label>
+                            <select class="form-select" id="rating_min" name="rating_min">
+                                <option value="">Any Rating</option>
+                                <option value="4.5" {% if rating_min == 4.5 %}selected{% endif %}>4.5+ Stars</option>
+                                <option value="4.0" {% if rating_min == 4.0 %}selected{% endif %}>4.0+ Stars</option>
+                                <option value="3.5" {% if rating_min == 3.5 %}selected{% endif %}>3.5+ Stars</option>
+                                <option value="3.0" {% if rating_min == 3.0 %}selected{% endif %}>3.0+ Stars</option>
+                            </select>
+                        </div>
+
+                        <!-- Country Filter -->
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Country</label>
+                            <select class="form-select" id="country" name="country">
+                                <option value="">All Countries</option>
+                                {% for c in countries %}
+                                <option value="{{ c }}" {% if country == c %}selected{% endif %}>{{ c }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Climate Filter -->
+                        <div class="mb-3">
+                            <label for="climate" class="form-label">Climate</label>
+                            <select class="form-select" id="climate" name="climate">
+                                <option value="">All Climates</option>
+                                {% for cl in climates %}
+                                <option value="{{ cl }}" {% if climate == cl %}selected{% endif %}>{{ cl|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Sort Options -->
+                        <div class="mb-3">
+                            <label for="sort_by" class="form-label">Sort By</label>
+                            <select class="form-select" id="sort_by" name="sort_by">
+                                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                                <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price</option>
+                                <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating</option>
+                                <option value="duration" {% if sort_by == 'duration' %}selected{% endif %}>Duration</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sort_order" class="form-label">Sort Order</label>
+                            <select class="form-select" id="sort_order" name="sort_order">
+                                <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+                                <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+                            </select>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">
+                                <i class="fas fa-times me-2"></i>Clear Filters
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <div class="col-lg-9">
+            <!-- Search Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">
+                        {% if query %}
+                            Search Results for "{{ query }}"
+                        {% else %}
+                            All Destinations
+                        {% endif %}
+                    </h2>
+                    <p class="text-muted mb-0">
+                        {{ destinations|length }} destination{{ 's' if destinations|length != 1 else '' }} found
+                    </p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="toggleView('grid')">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="toggleView('list')">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Filters -->
+            {% if query or category or price_min or price_max or duration_min or duration_max or rating_min or country or climate %}
+            <div class="mb-4">
+                <h6 class="mb-2">Active Filters:</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    {% if query %}
+                    <span class="badge bg-primary">Search: {{ query }}</span>
+                    {% endif %}
+                    {% if category %}
+                    <span class="badge bg-info">Category: {{ category }}</span>
+                    {% endif %}
+                    {% if price_min or price_max %}
+                    <span class="badge bg-success">Price: ${{ price_min or '0' }} - ${{ price_max or '∞' }}</span>
+                    {% endif %}
+                    {% if duration_min or duration_max %}
+                    <span class="badge bg-warning">Duration: {{ duration_min or '0' }} - {{ duration_max or '∞' }} days</span>
+                    {% endif %}
+                    {% if rating_min %}
+                    <span class="badge bg-danger">{{ rating_min }}+ Stars</span>
+                    {% endif %}
+                    {% if country %}
+                    <span class="badge bg-secondary">Country: {{ country }}</span>
+                    {% endif %}
+                    {% if climate %}
+                    <span class="badge bg-dark">Climate: {{ climate }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Results Grid -->
+            <div id="resultsGrid" class="row g-4">
+                {% for destination in destinations %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm hover-lift">
+                        <div class="position-relative">
+                            <img src="{{ destination.image_url }}" class="card-img-top" alt="{{ destination.name }}" style="height: 200px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-success">{{ destination.rating|round(1) }} <i class="fas fa-star"></i></span>
+                            </div>
+                            {% if destination.category %}
+                            <div class="position-absolute top-0 start-0 m-2">
+                                <span class="badge bg-primary">{{ destination.category|title }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ destination.name }}</h5>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-map-marker-alt me-1"></i>{{ destination.country }}
+                            </p>
+                            <p class="card-text flex-grow-1">{{ destination.description[:100] }}{% if destination.description|length > 100 %}...{% endif %}</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="h5 text-primary mb-0">{{ format_price(destination.price) }}</span>
+                                <span class="text-muted">{{ destination.duration }} days</span>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('destination_detail', destination_id=destination.id) }}" class="btn btn-outline-primary flex-fill">
+                                    <i class="fas fa-eye me-1"></i>View
+                                </a>
+                                <a href="{{ url_for('book_destination', destination_id=destination.id) }}" class="btn btn-success flex-fill">
+                                    <i class="fas fa-bookmark me-1"></i>Book
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- No Results -->
+            {% if destinations|length == 0 %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No destinations found</h4>
+                <p class="text-muted">Try adjusting your search criteria or browse all destinations.</p>
+                <a href="{{ url_for('travel') }}" class="btn btn-primary">
+                    <i class="fas fa-globe me-2"></i>Browse All Destinations
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Pricing Modal -->
+<div class="modal fade" id="pricingModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Real-time Pricing</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="pricingContent">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// View toggle functionality
+function toggleView(view) {
+    const grid = document.getElementById('resultsGrid');
+    if (view === 'list') {
+        grid.className = 'row g-3';
+        grid.querySelectorAll('.col-md-6').forEach(col => {
+            col.className = 'col-12';
+        });
+    } else {
+        grid.className = 'row g-4';
+        grid.querySelectorAll('.col-12').forEach(col => {
+            col.className = 'col-md-6 col-lg-4';
+        });
+    }
+}
+
+// Clear all filters
+function clearFilters() {
+    document.getElementById('searchForm').reset();
+    window.location.href = "{{ url_for('search') }}";
+}
+
+// Real-time pricing functionality
+function getRealTimePricing(destinationId, travelDate, guests = 1) {
+    fetch(`/api/pricing/${destinationId}?date=${travelDate}&guests=${guests}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('pricingContent').innerHTML = `
+                    <div class="text-center">
+                        <h4>Real-time Price: ${data.price}</h4>
+                        <p class="text-muted">Based on demand and availability</p>
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Travel Date:</strong><br>
+                                ${travelDate}
+                            </div>
+                            <div class="col-6">
+                                <strong>Guests:</strong><br>
+                                ${guests}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                new bootstrap.Modal(document.getElementById('pricingModal')).show();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching pricing:', error);
+        });
+}
+
+// Auto-submit form on filter change
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('searchForm');
+    const inputs = form.querySelectorAll('select, input[type="number"]');
+    
+    inputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Don't auto-submit for search input
+            if (input.id !== 'q') {
+                form.submit();
+            }
+        });
+    });
+});
+
+// Search suggestions
+document.getElementById('q').addEventListener('input', function() {
+    const query = this.value;
+    if (query.length > 2) {
+        // Implement search suggestions here
+        console.log('Searching for:', query);
+    }
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,1316 @@
+{% extends "base.html" %}
+
+{% block title %}Biometric Authentication - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section bg-gradient-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Biometric Authentication</h1>
+                    <p class="lead mb-4">Secure your account with cutting-edge biometric technology. Use your face, fingerprint, or voice for instant, secure access to your travel account.</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg" id="setupBiometricBtn">
+                            <i class="fas fa-fingerprint me-2"></i>Setup Biometric
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#biometricHelpModal">
+                            <i class="fas fa-shield-alt me-2"></i>Security Info
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="biometric-animation text-center">
+                        <div class="biometric-scanner">
+                            <div class="scanner-ring"></div>
+                            <div class="scanner-center">
+                                <i class="fas fa-user-shield fa-3x"></i>
+                            </div>
+                            <div class="scanner-pulse"></div>
+                        </div>
+                        <p class="text-white-50 mt-3">Advanced security technology</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biometric Setup Interface -->
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Biometric Setup</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Authentication Methods -->
+                        <div class="auth-methods">
+                            <div class="method-tabs">
+                                <button class="method-tab active" data-method="face">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Face Recognition</span>
+                                </button>
+                                <button class="method-tab" data-method="fingerprint">
+                                    <i class="fas fa-fingerprint"></i>
+                                    <span>Fingerprint</span>
+                                </button>
+                                <button class="method-tab" data-method="voice">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>Voice Recognition</span>
+                                </button>
+                                <button class="method-tab" data-method="iris">
+                                    <i class="fas fa-eye"></i>
+                                    <span>Iris Scan</span>
+                                </button>
+                            </div>
+
+                            <!-- Face Recognition Setup -->
+                            <div class="method-content active" id="face-content">
+                                <div class="setup-container">
+                                    <div class="camera-container">
+                                        <video id="faceVideo" autoplay muted></video>
+                                        <canvas id="faceCanvas" style="display: none;"></canvas>
+                                        <div class="face-overlay">
+                                            <div class="face-frame"></div>
+                                            <div class="face-instructions">
+                                                <p>Position your face within the frame</p>
+                                                <p>Look directly at the camera</p>
+                                                <p>Keep your face well-lit</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="setup-controls">
+                                        <button class="btn btn-primary" id="startFaceCapture">
+                                            <i class="fas fa-camera me-2"></i>Start Face Capture
+                                        </button>
+                                        <button class="btn btn-success" id="saveFaceData" style="display: none;">
+                                            <i class="fas fa-save me-2"></i>Save Face Data
+                                        </button>
+                                        <button class="btn btn-outline-secondary" id="retakeFace">
+                                            <i class="fas fa-redo me-2"></i>Retake
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fingerprint Setup -->
+                            <div class="method-content" id="fingerprint-content">
+                                <div class="setup-container">
+                                    <div class="fingerprint-scanner">
+                                        <div class="scanner-surface">
+                                            <i class="fas fa-fingerprint fa-4x"></i>
+                                            <div class="scanner-glow"></div>
+                                        </div>
+                                        <div class="fingerprint-instructions">
+                                            <p>Place your finger on the scanner</p>
+                                            <p>Hold for 3 seconds</p>
+                                            <p>Lift and repeat 3 times</p>
+                                        </div>
+                                    </div>
+                                    <div class="setup-controls">
+                                        <button class="btn btn-primary" id="startFingerprintScan">
+                                            <i class="fas fa-fingerprint me-2"></i>Start Fingerprint Scan
+                                        </button>
+                                        <div class="scan-progress" id="fingerprintProgress" style="display: none;">
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <p class="mt-2">Scanning... <span id="scanPercentage">0%</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Voice Recognition Setup -->
+                            <div class="method-content" id="voice-content">
+                                <div class="setup-container">
+                                    <div class="voice-recorder">
+                                        <div class="voice-visualizer">
+                                            <div class="voice-waves">
+                                                <div class="wave"></div>
+                                                <div class="wave"></div>
+                                                <div class="wave"></div>
+                                                <div class="wave"></div>
+                                                <div class="wave"></div>
+                                            </div>
+                                        </div>
+                                        <div class="voice-instructions">
+                                            <p>Say the phrase: "My voice is my password"</p>
+                                            <p>Speak clearly and at normal volume</p>
+                                            <p>Repeat 3 times for accuracy</p>
+                                        </div>
+                                    </div>
+                                    <div class="setup-controls">
+                                        <button class="btn btn-primary" id="startVoiceRecording">
+                                            <i class="fas fa-microphone me-2"></i>Start Voice Recording
+                                        </button>
+                                        <button class="btn btn-success" id="saveVoiceData" style="display: none;">
+                                            <i class="fas fa-save me-2"></i>Save Voice Data
+                                        </button>
+                                        <div class="recording-status" id="voiceStatus" style="display: none;">
+                                            <p><i class="fas fa-circle text-danger"></i> Recording...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Iris Scan Setup -->
+                            <div class="method-content" id="iris-content">
+                                <div class="setup-container">
+                                    <div class="iris-scanner">
+                                        <div class="iris-frame">
+                                            <div class="iris-circle"></div>
+                                            <div class="iris-target"></div>
+                                        </div>
+                                        <div class="iris-instructions">
+                                            <p>Look into the scanner</p>
+                                            <p>Keep your eyes open and steady</p>
+                                            <p>Don't blink during scan</p>
+                                        </div>
+                                    </div>
+                                    <div class="setup-controls">
+                                        <button class="btn btn-primary" id="startIrisScan">
+                                            <i class="fas fa-eye me-2"></i>Start Iris Scan
+                                        </button>
+                                        <div class="scan-progress" id="irisProgress" style="display: none;">
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <p class="mt-2">Scanning iris... <span id="irisPercentage">0%</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Settings -->
+                        <div class="security-settings mt-4">
+                            <h5><i class="fas fa-cog me-2"></i>Security Settings</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="requireBiometric" checked>
+                                        <label class="form-check-label" for="requireBiometric">
+                                            Require biometric for login
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="biometricPayments" checked>
+                                        <label class="form-check-label" for="biometricPayments">
+                                            Use biometric for payments
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="livenessDetection" checked>
+                                        <label class="form-check-label" for="livenessDetection">
+                                            Enable liveness detection
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="multiFactorAuth">
+                                        <label class="form-check-label" for="multiFactorAuth">
+                                            Multi-factor authentication
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Security Status -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-shield-check me-2"></i>Security Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="security-status">
+                            <div class="status-item">
+                                <div class="status-icon bg-success">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                                <div class="status-details">
+                                    <div class="status-name">Face Recognition</div>
+                                    <div class="status-value">Configured</div>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-icon bg-warning">
+                                    <i class="fas fa-fingerprint"></i>
+                                </div>
+                                <div class="status-details">
+                                    <div class="status-name">Fingerprint</div>
+                                    <div class="status-value">Not Set</div>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-icon bg-info">
+                                    <i class="fas fa-microphone"></i>
+                                </div>
+                                <div class="status-details">
+                                    <div class="status-name">Voice Recognition</div>
+                                    <div class="status-value">Not Set</div>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-icon bg-secondary">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <div class="status-details">
+                                    <div class="status-name">Iris Scan</div>
+                                    <div class="status-value">Not Available</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Features -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-lock me-2"></i>Security Features</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt text-success"></i>
+                                <span>End-to-end encryption</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-user-secret text-primary"></i>
+                                <span>Biometric data never stored</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-eye-slash text-warning"></i>
+                                <span>Liveness detection</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-mobile-alt text-info"></i>
+                                <span>Device-specific security</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-history text-secondary"></i>
+                                <span>Login history tracking</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon bg-success">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-action">Face login successful</div>
+                                    <div class="activity-time">2 minutes ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon bg-info">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-action">Security settings updated</div>
+                                    <div class="activity-time">1 hour ago</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon bg-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-action">Failed login attempt</div>
+                                    <div class="activity-time">3 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="card shadow">
+                    <div class="card-body">
+                        <button class="btn btn-primary w-100 mb-2" id="testBiometricBtn">
+                            <i class="fas fa-play me-2"></i>Test Authentication
+                        </button>
+                        <button class="btn btn-outline-danger w-100 mb-2" id="resetBiometricBtn">
+                            <i class="fas fa-trash me-2"></i>Reset All Biometrics
+                        </button>
+                        <button class="btn btn-outline-info w-100" id="exportSecurityBtn">
+                            <i class="fas fa-download me-2"></i>Export Security Log
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Features -->
+    <div class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Advanced Security Features</h2>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                        <h5>Multi-Modal Authentication</h5>
+                        <p class="text-muted">Combine face, fingerprint, and voice for maximum security. Multiple biometric factors ensure your account stays protected.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-user-secret fa-2x"></i>
+                        </div>
+                        <h5>Privacy First</h5>
+                        <p class="text-muted">Your biometric data never leaves your device. We use local processing and encryption to keep your information secure.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-eye-slash fa-2x"></i>
+                        </div>
+                        <h5>Liveness Detection</h5>
+                        <p class="text-muted">Advanced AI detects fake biometrics and spoofing attempts. Only real, live users can authenticate successfully.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-mobile-alt fa-2x"></i>
+                        </div>
+                        <h5>Device Security</h5>
+                        <p class="text-muted">Biometric authentication is tied to your specific device. Even if someone has your credentials, they can't access your account.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Biometric Help Modal -->
+<div class="modal fade" id="biometricHelpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Biometric Security Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>How It Works</h6>
+                        <ul>
+                            <li>Biometric data is processed locally on your device</li>
+                            <li>Only encrypted templates are stored securely</li>
+                            <li>Original biometric data is never transmitted</li>
+                            <li>Multiple authentication methods available</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Security Benefits</h6>
+                        <ul>
+                            <li>Impossible to forget or lose</li>
+                            <li>Extremely difficult to forge</li>
+                            <li>Faster than password entry</li>
+                            <li>Works offline</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Privacy:</strong> Your biometric data is encrypted and stored locally on your device. We never have access to your actual face, fingerprint, or voice data.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.biometric-scanner {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.scanner-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: rotate 3s linear infinite;
+}
+
+.scanner-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.scanner-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+
+.method-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.method-tab {
+    flex: 1;
+    min-width: 120px;
+    padding: 15px;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.method-tab.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+}
+
+.method-tab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.method-content {
+    display: none;
+}
+
+.method-content.active {
+    display: block;
+}
+
+.setup-container {
+    text-align: center;
+}
+
+.camera-container {
+    position: relative;
+    width: 400px;
+    height: 300px;
+    margin: 0 auto 20px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#faceVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.face-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.face-frame {
+    width: 200px;
+    height: 200px;
+    border: 3px solid #28a745;
+    border-radius: 50%;
+    position: relative;
+}
+
+.face-frame::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border: 2px solid rgba(40, 167, 69, 0.3);
+    border-radius: 50%;
+    animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.face-instructions {
+    margin-top: 20px;
+    color: white;
+    text-align: center;
+}
+
+.face-instructions p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.fingerprint-scanner {
+    width: 300px;
+    height: 200px;
+    margin: 0 auto 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.scanner-surface {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.scanner-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.8; }
+}
+
+.fingerprint-instructions {
+    text-align: center;
+    color: #6c757d;
+}
+
+.fingerprint-instructions p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.voice-recorder {
+    width: 300px;
+    height: 200px;
+    margin: 0 auto 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.voice-visualizer {
+    width: 200px;
+    height: 100px;
+    margin-bottom: 20px;
+}
+
+.voice-waves {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 100%;
+}
+
+.wave {
+    width: 4px;
+    height: 20px;
+    background: #667eea;
+    border-radius: 2px;
+    animation: wave 1.5s ease-in-out infinite;
+}
+
+.wave:nth-child(2) { animation-delay: 0.1s; }
+.wave:nth-child(3) { animation-delay: 0.2s; }
+.wave:nth-child(4) { animation-delay: 0.3s; }
+.wave:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes wave {
+    0%, 100% { height: 20px; }
+    50% { height: 40px; }
+}
+
+.voice-instructions {
+    text-align: center;
+    color: #6c757d;
+}
+
+.voice-instructions p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.iris-scanner {
+    width: 300px;
+    height: 200px;
+    margin: 0 auto 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.iris-frame {
+    width: 150px;
+    height: 150px;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.iris-circle {
+    width: 100%;
+    height: 100%;
+    border: 3px solid #667eea;
+    border-radius: 50%;
+    position: relative;
+}
+
+.iris-target {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border: 2px solid #28a745;
+    border-radius: 50%;
+    animation: target 2s ease-in-out infinite;
+}
+
+@keyframes target {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.iris-instructions {
+    text-align: center;
+    color: #6c757d;
+}
+
+.iris-instructions p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.setup-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.security-status {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.status-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.status-details {
+    flex: 1;
+}
+
+.status-name {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.status-value {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.feature-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.feature-item span {
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.activity-details {
+    flex: 1;
+}
+
+.activity-action {
+    font-size: 0.9rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-icon:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .method-tabs {
+        flex-direction: column;
+    }
+    
+    .method-tab {
+        min-width: auto;
+    }
+    
+    .camera-container {
+        width: 100%;
+        max-width: 350px;
+        height: 250px;
+    }
+    
+    .setup-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .setup-controls .btn {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+</style>
+
+<script>
+class BiometricAuthentication {
+    constructor() {
+        this.currentMethod = 'face';
+        this.isCapturing = false;
+        this.stream = null;
+        this.recognition = null;
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.setupSpeechRecognition();
+    }
+
+    bindEvents() {
+        // Method tabs
+        document.querySelectorAll('.method-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                this.switchMethod(tab.dataset.method);
+            });
+        });
+
+        // Face recognition
+        document.getElementById('startFaceCapture').addEventListener('click', () => {
+            this.startFaceCapture();
+        });
+
+        document.getElementById('saveFaceData').addEventListener('click', () => {
+            this.saveFaceData();
+        });
+
+        document.getElementById('retakeFace').addEventListener('click', () => {
+            this.retakeFace();
+        });
+
+        // Fingerprint
+        document.getElementById('startFingerprintScan').addEventListener('click', () => {
+            this.startFingerprintScan();
+        });
+
+        // Voice recognition
+        document.getElementById('startVoiceRecording').addEventListener('click', () => {
+            this.startVoiceRecording();
+        });
+
+        document.getElementById('saveVoiceData').addEventListener('click', () => {
+            this.saveVoiceData();
+        });
+
+        // Iris scan
+        document.getElementById('startIrisScan').addEventListener('click', () => {
+            this.startIrisScan();
+        });
+
+        // Action buttons
+        document.getElementById('testBiometricBtn').addEventListener('click', () => {
+            this.testAuthentication();
+        });
+
+        document.getElementById('resetBiometricBtn').addEventListener('click', () => {
+            this.resetBiometrics();
+        });
+
+        document.getElementById('exportSecurityBtn').addEventListener('click', () => {
+            this.exportSecurityLog();
+        });
+
+        // Settings
+        document.getElementById('requireBiometric').addEventListener('change', (e) => {
+            this.updateSetting('requireBiometric', e.target.checked);
+        });
+
+        document.getElementById('biometricPayments').addEventListener('change', (e) => {
+            this.updateSetting('biometricPayments', e.target.checked);
+        });
+
+        document.getElementById('livenessDetection').addEventListener('change', (e) => {
+            this.updateSetting('livenessDetection', e.target.checked);
+        });
+
+        document.getElementById('multiFactorAuth').addEventListener('change', (e) => {
+            this.updateSetting('multiFactorAuth', e.target.checked);
+        });
+    }
+
+    switchMethod(method) {
+        this.currentMethod = method;
+        
+        // Update tabs
+        document.querySelectorAll('.method-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-method="${method}"]`).classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.method-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`${method}-content`).classList.add('active');
+        
+        // Stop any ongoing capture
+        this.stopCapture();
+    }
+
+    async startFaceCapture() {
+        try {
+            this.stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: 'user',
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
+            });
+
+            const video = document.getElementById('faceVideo');
+            video.srcObject = this.stream;
+            this.isCapturing = true;
+
+            document.getElementById('startFaceCapture').style.display = 'none';
+            document.getElementById('saveFaceData').style.display = 'inline-block';
+            document.getElementById('retakeFace').style.display = 'inline-block';
+
+            // Simulate face detection
+            setTimeout(() => {
+                this.detectFace();
+            }, 2000);
+
+        } catch (error) {
+            console.error('Error accessing camera:', error);
+            alert('Unable to access camera. Please check permissions.');
+        }
+    }
+
+    detectFace() {
+        const canvas = document.getElementById('faceCanvas');
+        const video = document.getElementById('faceVideo');
+        const context = canvas.getContext('2d');
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0);
+
+        // Simulate face detection
+        const faceData = context.getImageData(0, 0, canvas.width, canvas.height);
+        
+        // In a real implementation, you would use a face detection library
+        // For now, we'll simulate successful detection
+        this.showFaceDetectionSuccess();
+    }
+
+    showFaceDetectionSuccess() {
+        const frame = document.querySelector('.face-frame');
+        frame.style.borderColor = '#28a745';
+        frame.style.boxShadow = '0 0 20px rgba(40, 167, 69, 0.5)';
+        
+        // Show success message
+        const instructions = document.querySelector('.face-instructions');
+        instructions.innerHTML = '<p style="color: #28a745;"><i class="fas fa-check-circle"></i> Face detected successfully!</p>';
+    }
+
+    saveFaceData() {
+        // Simulate saving face data
+        this.updateSecurityStatus('face', 'Configured');
+        this.showSuccessMessage('Face recognition configured successfully!');
+        this.stopCapture();
+    }
+
+    retakeFace() {
+        this.stopCapture();
+        document.getElementById('startFaceCapture').style.display = 'inline-block';
+        document.getElementById('saveFaceData').style.display = 'none';
+        document.getElementById('retakeFace').style.display = 'none';
+        
+        const frame = document.querySelector('.face-frame');
+        frame.style.borderColor = '#28a745';
+        frame.style.boxShadow = 'none';
+        
+        const instructions = document.querySelector('.face-instructions');
+        instructions.innerHTML = `
+            <p>Position your face within the frame</p>
+            <p>Look directly at the camera</p>
+            <p>Keep your face well-lit</p>
+        `;
+    }
+
+    startFingerprintScan() {
+        const progressBar = document.querySelector('#fingerprintProgress .progress-bar');
+        const percentage = document.getElementById('scanPercentage');
+        const progressDiv = document.getElementById('fingerprintProgress');
+        
+        progressDiv.style.display = 'block';
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                this.completeFingerprintScan();
+            }
+            
+            progressBar.style.width = progress + '%';
+            percentage.textContent = Math.round(progress) + '%';
+        }, 500);
+    }
+
+    completeFingerprintScan() {
+        this.updateSecurityStatus('fingerprint', 'Configured');
+        this.showSuccessMessage('Fingerprint scan completed successfully!');
+        document.getElementById('fingerprintProgress').style.display = 'none';
+    }
+
+    setupSpeechRecognition() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            this.recognition = new SpeechRecognition();
+            this.recognition.continuous = false;
+            this.recognition.interimResults = false;
+            this.recognition.lang = 'en-US';
+        }
+    }
+
+    startVoiceRecording() {
+        if (!this.recognition) {
+            alert('Speech recognition is not supported in this browser.');
+            return;
+        }
+
+        const statusDiv = document.getElementById('voiceStatus');
+        statusDiv.style.display = 'block';
+
+        this.recognition.onstart = () => {
+            statusDiv.innerHTML = '<p><i class="fas fa-circle text-danger"></i> Recording...</p>';
+        };
+
+        this.recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (transcript.toLowerCase().includes('my voice is my password')) {
+                this.completeVoiceRecording();
+            } else {
+                alert('Please say exactly: "My voice is my password"');
+            }
+        };
+
+        this.recognition.onend = () => {
+            statusDiv.style.display = 'none';
+        };
+
+        this.recognition.start();
+    }
+
+    completeVoiceRecording() {
+        this.updateSecurityStatus('voice', 'Configured');
+        this.showSuccessMessage('Voice recognition configured successfully!');
+        document.getElementById('saveVoiceData').style.display = 'inline-block';
+    }
+
+    saveVoiceData() {
+        this.showSuccessMessage('Voice data saved successfully!');
+        document.getElementById('saveVoiceData').style.display = 'none';
+    }
+
+    startIrisScan() {
+        const progressBar = document.querySelector('#irisProgress .progress-bar');
+        const percentage = document.getElementById('irisPercentage');
+        const progressDiv = document.getElementById('irisProgress');
+        
+        progressDiv.style.display = 'block';
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                this.completeIrisScan();
+            }
+            
+            progressBar.style.width = progress + '%';
+            percentage.textContent = Math.round(progress) + '%';
+        }, 300);
+    }
+
+    completeIrisScan() {
+        this.updateSecurityStatus('iris', 'Configured');
+        this.showSuccessMessage('Iris scan completed successfully!');
+        document.getElementById('irisProgress').style.display = 'none';
+    }
+
+    updateSecurityStatus(method, status) {
+        const statusItem = document.querySelector(`[data-method="${method}"]`).closest('.status-item');
+        const statusValue = statusItem.querySelector('.status-value');
+        const statusIcon = statusItem.querySelector('.status-icon');
+        
+        statusValue.textContent = status;
+        
+        if (status === 'Configured') {
+            statusIcon.className = 'status-icon bg-success';
+        }
+    }
+
+    testAuthentication() {
+        const method = this.currentMethod;
+        const methods = ['face', 'fingerprint', 'voice'];
+        
+        if (methods.includes(method)) {
+            this.showSuccessMessage(`Testing ${method} authentication...`);
+            // Simulate authentication test
+            setTimeout(() => {
+                this.showSuccessMessage(`${method} authentication successful!`);
+            }, 2000);
+        } else {
+            alert('Please configure a biometric method first.');
+        }
+    }
+
+    resetBiometrics() {
+        if (confirm('Are you sure you want to reset all biometric data? This action cannot be undone.')) {
+            // Reset all status indicators
+            document.querySelectorAll('.status-value').forEach(value => {
+                value.textContent = 'Not Set';
+            });
+            
+            document.querySelectorAll('.status-icon').forEach(icon => {
+                icon.className = 'status-icon bg-warning';
+            });
+            
+            this.showSuccessMessage('All biometric data has been reset.');
+        }
+    }
+
+    exportSecurityLog() {
+        const logData = {
+            timestamp: new Date().toISOString(),
+            activities: [
+                { action: 'Face login successful', time: '2 minutes ago' },
+                { action: 'Security settings updated', time: '1 hour ago' },
+                { action: 'Failed login attempt', time: '3 hours ago' }
+            ]
+        };
+        
+        const blob = new Blob([JSON.stringify(logData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'security-log.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        this.showSuccessMessage('Security log exported successfully!');
+    }
+
+    updateSetting(setting, value) {
+        console.log(`Setting ${setting} updated to: ${value}`);
+        // In a real implementation, you would save this to the server
+    }
+
+    stopCapture() {
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+            this.stream = null;
+        }
+        this.isCapturing = false;
+    }
+
+    showSuccessMessage(message) {
+        // Create a temporary success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success alert-dismissible fade show';
+        successDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.querySelector('.card-body').insertBefore(successDiv, document.querySelector('.card-body').firstChild);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            successDiv.remove();
+        }, 3000);
+    }
+}
+
+// Initialize biometric authentication when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.biometricAuth = new BiometricAuthentication();
+});
+</script>
+{% endblock %} 

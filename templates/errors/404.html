@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found - World Tour{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="container">
+        <div class="error-content">
+            <div class="error-icon">
+                <i class="fas fa-map-marked-alt"></i>
+            </div>
+            <h1>404 - Page Not Found</h1>
+            <p>Oops! It looks like you've wandered off the beaten path.</p>
+            <p>The page you're looking for doesn't exist or has been moved.</p>
+            
+            <div class="error-actions">
+                <a href="{{ url_for('home') }}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Go Home
+                </a>
+                <a href="{{ url_for('travel') }}" class="btn btn-outline">
+                    <i class="fas fa-globe"></i> Explore Destinations
+                </a>
+            </div>
+            
+            <div class="error-help">
+                <h3>Need Help?</h3>
+                <p>Try these popular pages:</p>
+                <ul>
+                    <li><a href="{{ url_for('travel') }}">Destinations</a></li>
+                    <li><a href="{{ url_for('flights') }}">Flights</a></li>
+                    <li><a href="{{ url_for('hotels') }}">Hotels</a></li>
+                    <li><a href="{{ url_for('packages') }}">Travel Packages</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

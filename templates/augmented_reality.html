@@ -1,0 +1,1166 @@
+{% extends "base.html" %}
+
+{% block title %}Augmented Reality Travel - World Tour{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section bg-gradient-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Augmented Reality Travel</h1>
+                    <p class="lead mb-4">Overlay digital information on the real world. Get directions, discover nearby attractions, and access real-time travel information through AR.</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg" id="startARBtn">
+                            <i class="fas fa-camera me-2"></i>Start AR Experience
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" data-bs-toggle="modal" data-bs-target="#arHelpModal">
+                            <i class="fas fa-info-circle me-2"></i>AR Guide
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ar-animation text-center">
+                        <div class="ar-overlay">
+                            <div class="ar-element"></div>
+                            <div class="ar-element"></div>
+                            <div class="ar-element"></div>
+                            <div class="ar-element"></div>
+                        </div>
+                        <p class="text-white-50 mt-3">Digital overlay technology</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR Experience Interface -->
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="fas fa-camera me-2"></i>AR Travel Experience</h4>
+                        <div class="ar-controls">
+                            <button class="btn btn-sm btn-outline-light" id="cameraBtn">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-light" id="locationBtn">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-light" id="infoBtn">
+                                <i class="fas fa-info"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- AR Camera View -->
+                        <div class="ar-camera-view" id="arCameraView">
+                            <div class="camera-feed" id="cameraFeed">
+                                <!-- Camera feed will be displayed here -->
+                                <div class="camera-placeholder">
+                                    <i class="fas fa-camera fa-3x"></i>
+                                    <p>Camera feed will appear here</p>
+                                    <button class="btn btn-primary" id="enableCameraBtn">
+                                        <i class="fas fa-camera me-2"></i>Enable Camera
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- AR Overlays -->
+                            <div class="ar-overlays" id="arOverlays">
+                                <!-- AR elements will be dynamically added here -->
+                            </div>
+
+                            <!-- AR Navigation -->
+                            <div class="ar-navigation" id="arNavigation">
+                                <div class="nav-arrow" id="navArrow">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <div class="nav-distance" id="navDistance">
+                                    150m ahead
+                                </div>
+                            </div>
+
+                            <!-- AR Info Cards -->
+                            <div class="ar-info-cards" id="arInfoCards">
+                                <!-- Info cards will be dynamically added -->
+                            </div>
+
+                            <!-- AR Controls -->
+                            <div class="ar-controls-overlay">
+                                <div class="control-group">
+                                    <button class="control-btn" id="toggleARBtn">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="control-btn" id="captureBtn">
+                                        <i class="fas fa-camera"></i>
+                                    </button>
+                                    <button class="control-btn" id="shareBtn">
+                                        <i class="fas fa-share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- AR Features -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-magic me-2"></i>AR Features</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="ar-features">
+                            <div class="feature-item">
+                                <div class="feature-icon bg-primary">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="feature-details">
+                                    <div class="feature-name">AR Navigation</div>
+                                    <div class="feature-description">Real-time directions overlay</div>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon bg-warning">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="feature-details">
+                                    <div class="feature-name">Info Overlays</div>
+                                    <div class="feature-description">Points of interest information</div>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon bg-info">
+                                    <i class="fas fa-language"></i>
+                                </div>
+                                <div class="feature-details">
+                                    <div class="feature-name">Translation</div>
+                                    <div class="feature-description">Real-time text translation</div>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon bg-danger">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="feature-details">
+                                    <div class="feature-name">Reviews</div>
+                                    <div class="feature-description">User ratings and reviews</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nearby Places -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-location-arrow me-2"></i>Nearby Places</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="nearby-places" id="nearbyPlaces">
+                            <div class="place-item">
+                                <div class="place-icon bg-primary">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                <div class="place-details">
+                                    <div class="place-name">Le Petit Bistro</div>
+                                    <div class="place-type">Restaurant</div>
+                                    <div class="place-distance">50m away</div>
+                                    <div class="place-rating">
+                                        <i class="fas fa-star"></i>
+                                        <span>4.5</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">View AR</button>
+                            </div>
+                            <div class="place-item">
+                                <div class="place-icon bg-success">
+                                    <i class="fas fa-hotel"></i>
+                                </div>
+                                <div class="place-details">
+                                    <div class="place-name">Grand Hotel</div>
+                                    <div class="place-type">Hotel</div>
+                                    <div class="place-distance">200m away</div>
+                                    <div class="place-rating">
+                                        <i class="fas fa-star"></i>
+                                        <span>4.8</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">View AR</button>
+                            </div>
+                            <div class="place-item">
+                                <div class="place-icon bg-warning">
+                                    <i class="fas fa-landmark"></i>
+                                </div>
+                                <div class="place-details">
+                                    <div class="place-name">City Museum</div>
+                                    <div class="place-type">Museum</div>
+                                    <div class="place-distance">300m away</div>
+                                    <div class="place-rating">
+                                        <i class="fas fa-star"></i>
+                                        <span>4.6</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">View AR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AR Settings -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-cog me-2"></i>AR Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="ar-settings">
+                            <div class="setting-item">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="arNavigationToggle" checked>
+                                    AR Navigation
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="arInfoToggle" checked>
+                                    Info Overlays
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="arTranslationToggle">
+                                    Translation
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="arReviewsToggle" checked>
+                                    Reviews
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" id="arNotificationsToggle" checked>
+                                    Notifications
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AR Statistics -->
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>AR Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="ar-stats">
+                            <div class="stat-item">
+                                <div class="stat-number" id="arSessions">847</div>
+                                <div class="stat-label">AR Sessions</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="arPlaces">156</div>
+                                <div class="stat-label">Places Discovered</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="arPhotos">234</div>
+                                <div class="stat-label">AR Photos</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="arTime">45.2</div>
+                                <div class="stat-label">Avg. Time (min)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AR Technology -->
+    <div class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">AR Technology Benefits</h2>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-map-marker-alt fa-2x"></i>
+                        </div>
+                        <h5>Real-time Navigation</h5>
+                        <p class="text-muted">Get turn-by-turn directions overlaid on the real world. Never get lost in a new city again.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-info-circle fa-2x"></i>
+                        </div>
+                        <h5>Instant Information</h5>
+                        <p class="text-muted">Point your camera at landmarks, restaurants, or attractions to get instant information and reviews.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-language fa-2x"></i>
+                        </div>
+                        <h5>Live Translation</h5>
+                        <p class="text-muted">Translate signs, menus, and text in real-time. Break down language barriers instantly.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-camera fa-2x"></i>
+                        </div>
+                        <h5>AR Photography</h5>
+                        <p class="text-muted">Capture photos with AR overlays and information. Share your discoveries with friends.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AR Help Modal -->
+<div class="modal fade" id="arHelpModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">AR Experience Guide</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Getting Started</h6>
+                        <ol>
+                            <li>Enable camera permissions</li>
+                            <li>Point camera at surroundings</li>
+                            <li>Look for AR overlays</li>
+                            <li>Tap on elements for info</li>
+                            <li>Use navigation features</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>AR Features</h6>
+                        <ul>
+                            <li><strong>Navigation:</strong> Real-time directions</li>
+                            <li><strong>Info Cards:</strong> Points of interest details</li>
+                            <li><strong>Translation:</strong> Live text translation</li>
+                            <li><strong>Reviews:</strong> User ratings and comments</li>
+                            <li><strong>Photos:</strong> AR-enhanced photography</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Privacy:</strong> AR features only access your camera when needed. Location data is used only for navigation and nearby place discovery.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.ar-overlay {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.ar-element {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: rgba(102, 126, 234, 0.8);
+    border: 2px solid white;
+    border-radius: 50%;
+    animation: arFloat 3s ease-in-out infinite;
+}
+
+.ar-element:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+.ar-element:nth-child(2) { top: 20%; right: 20%; animation-delay: 0.5s; }
+.ar-element:nth-child(3) { bottom: 20%; left: 20%; animation-delay: 1s; }
+.ar-element:nth-child(4) { bottom: 20%; right: 20%; animation-delay: 1.5s; }
+
+@keyframes arFloat {
+    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.8; }
+    50% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+}
+
+.ar-camera-view {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.camera-feed {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+}
+
+.camera-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+.camera-placeholder i {
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.camera-placeholder p {
+    margin-bottom: 20px;
+    opacity: 0.7;
+}
+
+.ar-overlays {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.ar-element-overlay {
+    position: absolute;
+    background: rgba(102, 126, 234, 0.9);
+    border: 2px solid white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    pointer-events: all;
+    cursor: pointer;
+    animation: arPulse 2s infinite;
+    backdrop-filter: blur(5px);
+}
+
+.ar-element-overlay:hover {
+    background: rgba(102, 126, 234, 1);
+    transform: scale(1.05);
+}
+
+@keyframes arPulse {
+    0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+}
+
+.ar-navigation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 10;
+}
+
+.nav-arrow {
+    width: 60px;
+    height: 60px;
+    background: rgba(40, 167, 69, 0.9);
+    border: 3px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 auto 10px;
+    animation: navPulse 2s infinite;
+}
+
+@keyframes navPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.nav-distance {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.ar-info-cards {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+.ar-info-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.info-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.info-card-title {
+    font-weight: 600;
+    color: #495057;
+    font-size: 1rem;
+}
+
+.info-card-close {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.info-card-content {
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.ar-controls-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.control-group {
+    display: flex;
+    gap: 15px;
+}
+
+.control-btn {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    font-size: 1.2rem;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.control-btn.active {
+    background: rgba(102, 126, 234, 0.8);
+    border-color: white;
+}
+
+.ar-features {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.feature-details {
+    flex: 1;
+}
+
+.feature-name {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.feature-description {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.nearby-places {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.place-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.place-item:hover {
+    transform: translateX(5px);
+}
+
+.place-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.place-details {
+    flex: 1;
+}
+
+.place-name {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.place-type {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin: 2px 0;
+}
+
+.place-distance {
+    font-size: 0.8rem;
+    color: #28a745;
+    font-weight: 500;
+}
+
+.place-rating {
+    font-size: 0.8rem;
+    color: #ffc107;
+}
+
+.place-rating i {
+    margin-right: 2px;
+}
+
+.ar-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.setting-item .form-check-input {
+    margin-right: 10px;
+}
+
+.setting-item .form-check-label {
+    font-size: 0.9rem;
+    color: #495057;
+    cursor: pointer;
+}
+
+.ar-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.feature-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-icon:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .ar-camera-view {
+        height: 300px;
+    }
+    
+    .ar-controls-overlay {
+        bottom: 10px;
+    }
+    
+    .control-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+    
+    .ar-info-cards {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+    }
+    
+    .place-item {
+        padding: 8px;
+    }
+    
+    .place-icon {
+        width: 35px;
+        height: 35px;
+    }
+}
+</style>
+
+<script>
+class AugmentedRealityExperience {
+    constructor() {
+        this.isARActive = false;
+        this.isCameraEnabled = false;
+        this.currentLocation = null;
+        this.nearbyPlaces = [];
+        this.arElements = [];
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.loadNearbyPlaces();
+        this.setupARElements();
+    }
+
+    bindEvents() {
+        // AR controls
+        document.getElementById('startARBtn').addEventListener('click', () => {
+            this.startARExperience();
+        });
+
+        document.getElementById('enableCameraBtn').addEventListener('click', () => {
+            this.enableCamera();
+        });
+
+        document.getElementById('cameraBtn').addEventListener('click', () => {
+            this.toggleCamera();
+        });
+
+        document.getElementById('locationBtn').addEventListener('click', () => {
+            this.getCurrentLocation();
+        });
+
+        document.getElementById('infoBtn').addEventListener('click', () => {
+            this.toggleInfoOverlay();
+        });
+
+        // AR overlay controls
+        document.getElementById('toggleARBtn').addEventListener('click', () => {
+            this.toggleAR();
+        });
+
+        document.getElementById('captureBtn').addEventListener('click', () => {
+            this.captureARPhoto();
+        });
+
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            this.shareARExperience();
+        });
+
+        // Settings toggles
+        document.getElementById('arNavigationToggle').addEventListener('change', (e) => {
+            this.toggleFeature('navigation', e.target.checked);
+        });
+
+        document.getElementById('arInfoToggle').addEventListener('change', (e) => {
+            this.toggleFeature('info', e.target.checked);
+        });
+
+        document.getElementById('arTranslationToggle').addEventListener('change', (e) => {
+            this.toggleFeature('translation', e.target.checked);
+        });
+
+        document.getElementById('arReviewsToggle').addEventListener('change', (e) => {
+            this.toggleFeature('reviews', e.target.checked);
+        });
+
+        document.getElementById('arNotificationsToggle').addEventListener('change', (e) => {
+            this.toggleFeature('notifications', e.target.checked);
+        });
+
+        // Nearby place buttons
+        document.querySelectorAll('.place-item .btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.viewPlaceAR(e.target.closest('.place-item'));
+            });
+        });
+    }
+
+    startARExperience() {
+        this.showSuccessMessage('Starting AR experience...');
+        this.isARActive = true;
+        this.enableCamera();
+        this.getCurrentLocation();
+    }
+
+    enableCamera() {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    const cameraFeed = document.getElementById('cameraFeed');
+                    const video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.autoplay = true;
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    video.style.objectFit = 'cover';
+                    
+                    cameraFeed.innerHTML = '';
+                    cameraFeed.appendChild(video);
+                    
+                    this.isCameraEnabled = true;
+                    this.showSuccessMessage('Camera enabled successfully!');
+                })
+                .catch(error => {
+                    console.error('Error accessing camera:', error);
+                    this.showSuccessMessage('Camera access denied. Using demo mode.');
+                    this.loadDemoCamera();
+                });
+        } else {
+            this.showSuccessMessage('Camera not supported. Using demo mode.');
+            this.loadDemoCamera();
+        }
+    }
+
+    loadDemoCamera() {
+        const cameraFeed = document.getElementById('cameraFeed');
+        cameraFeed.style.background = 'linear-gradient(45deg, #1a1a1a, #2a2a2a)';
+        cameraFeed.innerHTML = `
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
+                <i class="fas fa-camera fa-3x" style="margin-bottom: 20px; opacity: 0.5;"></i>
+                <p style="opacity: 0.7;">Demo Camera Feed</p>
+                <p style="font-size: 0.8rem; opacity: 0.6;">AR overlays will appear here</p>
+            </div>
+        `;
+    }
+
+    toggleCamera() {
+        if (this.isCameraEnabled) {
+            this.disableCamera();
+        } else {
+            this.enableCamera();
+        }
+    }
+
+    disableCamera() {
+        const cameraFeed = document.getElementById('cameraFeed');
+        cameraFeed.innerHTML = `
+            <div class="camera-placeholder">
+                <i class="fas fa-camera fa-3x"></i>
+                <p>Camera disabled</p>
+                <button class="btn btn-primary" id="enableCameraBtn">
+                    <i class="fas fa-camera me-2"></i>Enable Camera
+                </button>
+            </div>
+        `;
+        this.isCameraEnabled = false;
+        this.showSuccessMessage('Camera disabled');
+    }
+
+    getCurrentLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    this.currentLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    this.showSuccessMessage('Location detected!');
+                    this.updateNearbyPlaces();
+                    this.showNavigation();
+                },
+                error => {
+                    console.error('Error getting location:', error);
+                    this.showSuccessMessage('Location access denied. Using demo location.');
+                    this.currentLocation = { lat: 48.8566, lng: 2.3522 }; // Paris
+                    this.updateNearbyPlaces();
+                    this.showNavigation();
+                }
+            );
+        } else {
+            this.showSuccessMessage('Geolocation not supported. Using demo location.');
+            this.currentLocation = { lat: 48.8566, lng: 2.3522 }; // Paris
+            this.updateNearbyPlaces();
+            this.showNavigation();
+        }
+    }
+
+    loadNearbyPlaces() {
+        this.nearbyPlaces = [
+            {
+                id: 1,
+                name: 'Le Petit Bistro',
+                type: 'Restaurant',
+                distance: 50,
+                rating: 4.5,
+                icon: 'fas fa-utensils',
+                color: 'bg-primary',
+                description: 'Authentic French cuisine in a cozy atmosphere'
+            },
+            {
+                id: 2,
+                name: 'Grand Hotel',
+                type: 'Hotel',
+                distance: 200,
+                rating: 4.8,
+                icon: 'fas fa-hotel',
+                color: 'bg-success',
+                description: 'Luxury accommodation with stunning city views'
+            },
+            {
+                id: 3,
+                name: 'City Museum',
+                type: 'Museum',
+                distance: 300,
+                rating: 4.6,
+                icon: 'fas fa-landmark',
+                color: 'bg-warning',
+                description: 'Historical artifacts and cultural exhibits'
+            }
+        ];
+    }
+
+    updateNearbyPlaces() {
+        // Update distance calculations based on current location
+        this.nearbyPlaces.forEach(place => {
+            // Simulate distance updates
+            place.distance = Math.floor(Math.random() * 500) + 50;
+        });
+    }
+
+    setupARElements() {
+        this.arElements = [
+            { x: 20, y: 30, name: 'Restaurant', type: 'food' },
+            { x: 70, y: 40, name: 'Hotel', type: 'accommodation' },
+            { x: 50, y: 70, name: 'Museum', type: 'culture' },
+            { x: 80, y: 20, name: 'Cafe', type: 'food' }
+        ];
+    }
+
+    showARElements() {
+        const overlays = document.getElementById('arOverlays');
+        overlays.innerHTML = '';
+
+        this.arElements.forEach(element => {
+            const overlay = document.createElement('div');
+            overlay.className = 'ar-element-overlay';
+            overlay.style.left = `${element.x}%`;
+            overlay.style.top = `${element.y}%`;
+            overlay.textContent = element.name;
+            
+            overlay.addEventListener('click', () => {
+                this.showARInfo(element);
+            });
+
+            overlays.appendChild(overlay);
+        });
+    }
+
+    showARInfo(element) {
+        const infoCards = document.getElementById('arInfoCards');
+        const infoCard = document.createElement('div');
+        infoCard.className = 'ar-info-card';
+        infoCard.innerHTML = `
+            <div class="info-card-header">
+                <div class="info-card-title">${element.name}</div>
+                <button class="info-card-close" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="info-card-content">
+                This is a ${element.type} establishment. Tap to learn more about services, reviews, and directions.
+            </div>
+        `;
+        
+        infoCards.appendChild(infoCard);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (infoCard.parentElement) {
+                infoCard.remove();
+            }
+        }, 5000);
+    }
+
+    showNavigation() {
+        const navigation = document.getElementById('arNavigation');
+        navigation.style.display = 'block';
+        
+        // Simulate navigation updates
+        setInterval(() => {
+            const distance = Math.floor(Math.random() * 200) + 50;
+            document.getElementById('navDistance').textContent = `${distance}m ahead`;
+        }, 3000);
+    }
+
+    toggleAR() {
+        this.isARActive = !this.isARActive;
+        const btn = document.getElementById('toggleARBtn');
+        
+        if (this.isARActive) {
+            btn.classList.add('active');
+            this.showARElements();
+            this.showSuccessMessage('AR overlays enabled');
+        } else {
+            btn.classList.remove('active');
+            document.getElementById('arOverlays').innerHTML = '';
+            this.showSuccessMessage('AR overlays disabled');
+        }
+    }
+
+    toggleInfoOverlay() {
+        const infoCards = document.getElementById('arInfoCards');
+        if (infoCards.children.length > 0) {
+            infoCards.innerHTML = '';
+            this.showSuccessMessage('Info overlays cleared');
+        } else {
+            this.showARInfo({ name: 'Demo Location', type: 'attraction' });
+        }
+    }
+
+    captureARPhoto() {
+        this.showSuccessMessage('AR photo captured!');
+        // In a real implementation, this would capture the current view with AR overlays
+    }
+
+    shareARExperience() {
+        this.showSuccessMessage('Sharing AR experience...');
+        // In a real implementation, this would share the AR experience
+    }
+
+    viewPlaceAR(placeItem) {
+        const placeName = placeItem.querySelector('.place-name').textContent;
+        this.showARInfo({ name: placeName, type: 'attraction' });
+        this.showSuccessMessage(`Viewing AR for ${placeName}`);
+    }
+
+    toggleFeature(feature, enabled) {
+        this.showSuccessMessage(`${feature} ${enabled ? 'enabled' : 'disabled'}`);
+        // In a real implementation, this would toggle specific AR features
+    }
+
+    showSuccessMessage(message) {
+        // Create a temporary success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        successDiv.style.top = '20px';
+        successDiv.style.right = '20px';
+        successDiv.style.zIndex = '9999';
+        successDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(successDiv);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            successDiv.remove();
+        }, 3000);
+    }
+}
+
+// Initialize AR experience when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.arExperience = new AugmentedRealityExperience();
+});
+</script>
+{% endblock %} 
+</script>
+{% endblock %} 

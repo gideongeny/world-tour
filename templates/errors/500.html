@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - World Tour{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="container">
+        <div class="error-content">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1>500 - Server Error</h1>
+            <p>Something went wrong on our end. We're working to fix it!</p>
+            <p>Please try again in a few moments.</p>
+            
+            <div class="error-actions">
+                <a href="{{ url_for('home') }}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Go Home
+                </a>
+                <button onclick="window.location.reload()" class="btn btn-outline">
+                    <i class="fas fa-redo"></i> Try Again
+                </button>
+            </div>
+            
+            <div class="error-help">
+                <h3>Still having trouble?</h3>
+                <p>If the problem persists, please contact our support team:</p>
+                <ul>
+                    <li><a href="mailto:gideongeng@gmail.com">Email Support</a></li>
+                    <li><a href="tel:+254720317626">Call +254 720 317 626</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact Form</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

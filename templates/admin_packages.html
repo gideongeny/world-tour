@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Manage Package Deals{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-header">
+        <h1>Manage Package Deals</h1>
+        <a href="{{ url_for('add_package') }}" class="btn btn-primary">Add New Package</a>
+    </div>
+
+    <div class="admin-content">
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Flight</th>
+                        <th>Hotel</th>
+                        <th>Activities</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for package in packages %}
+                    <tr>
+                        <td>{{ package.name }}</td>
+                        <td>${{ "%.2f"|format(package.price) }}</td>
+                        <td>{{ package.flight.airline if package.flight else 'N/A' }}</td>
+                        <td>{{ package.hotel.name if package.hotel else 'N/A' }}</td>
+                        <td>{{ package.activities[:50] }}...</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline">Edit</a>
+                            <a href="#" class="btn btn-sm btn-secondary">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

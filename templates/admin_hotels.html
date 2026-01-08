@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Manage Hotels{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-header">
+        <h1>Manage Hotels</h1>
+        <a href="{{ url_for('add_hotel') }}" class="btn btn-primary">Add New Hotel</a>
+    </div>
+
+    <div class="admin-content">
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Rating</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hotel in hotels %}
+                    <tr>
+                        <td>{{ hotel.name }}</td>
+                        <td>{{ hotel.location }}</td>
+                        <td>{{ "%.1f"|format(hotel.rating) }} ⭐</td>
+                        <td>{{ hotel.description[:50] }}...</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline">Edit</a>
+                            <a href="#" class="btn btn-sm btn-secondary">Delete</a>
+                            <a href="#" class="btn btn-sm btn-primary">Manage Rooms</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

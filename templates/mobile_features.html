@@ -1,0 +1,950 @@
+{% extends "base.html" %}
+
+{% block title %}Mobile Features - World Tour App | World Tour{% endblock %}
+
+{% block meta_description %}Experience World Tour on mobile with boarding passes, push notifications, offline maps, and location-based services. Download our mobile app for the ultimate travel experience.{% endblock %}
+
+{% block content %}
+<div class="mobile-features-page">
+    <div class="features-header">
+        <h1><i class="fas fa-mobile-alt"></i> Mobile Features</h1>
+        <p>Take World Tour with you everywhere with our powerful mobile app</p>
+    </div>
+
+    <!-- Mobile App Download -->
+    <div class="app-download-section">
+        <div class="app-info">
+            <div class="app-icon">
+                <i class="fas fa-plane"></i>
+            </div>
+            <div class="app-details">
+                <h2>World Tour Mobile App</h2>
+                <p>Download our app for the ultimate travel experience</p>
+                <div class="download-buttons">
+                    <a href="#" class="download-btn app-store">
+                        <i class="fab fa-apple"></i>
+                        <span>
+                            <small>Download on the</small>
+                            App Store
+                        </span>
+                    </a>
+                    <a href="#" class="download-btn google-play">
+                        <i class="fab fa-google-play"></i>
+                        <span>
+                            <small>Get it on</small>
+                            Google Play
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="features-grid">
+        <!-- Boarding Passes -->
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-qrcode"></i>
+            </div>
+            <h3>Digital Boarding Passes</h3>
+            <p>Generate QR code boarding passes instantly. No more paper tickets or long queues at the airport.</p>
+            <div class="feature-demo">
+                <div class="boarding-pass-demo">
+                    <div class="pass-header">
+                        <h4>BOARDING PASS</h4>
+                        <div class="airline-logo">WT</div>
+                    </div>
+                    <div class="pass-content">
+                        <div class="passenger-info">
+                            <span class="label">Passenger:</span>
+                            <span class="value">John Doe</span>
+                        </div>
+                        <div class="flight-info">
+                            <span class="label">Flight:</span>
+                            <span class="value">WT123</span>
+                        </div>
+                        <div class="seat-info">
+                            <span class="label">Seat:</span>
+                            <span class="value">12A</span>
+                        </div>
+                        <div class="gate-info">
+                            <span class="label">Gate:</span>
+                            <span class="value">A12</span>
+                        </div>
+                    </div>
+                    <div class="qr-code">
+                        <div class="qr-placeholder">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="generateDemoBoardingPass()">
+                Generate Demo Pass
+            </button>
+        </div>
+
+        <!-- Push Notifications -->
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-bell"></i>
+            </div>
+            <h3>Smart Push Notifications</h3>
+            <p>Stay updated with flight status, gate changes, price drops, and exclusive deals in real-time.</p>
+            <div class="feature-demo">
+                <div class="notification-demo">
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h4>Flight Update</h4>
+                            <p>Flight WT123 is now boarding at Gate A12</p>
+                            <span class="notification-time">2 min ago</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-tag"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h4>Price Drop Alert</h4>
+                            <p>Paris trip price dropped by $200!</p>
+                            <span class="notification-time">1 hour ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="testPushNotification()">
+                Test Notification
+            </button>
+        </div>
+
+        <!-- Offline Maps -->
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-map"></i>
+            </div>
+            <h3>Offline Maps & Navigation</h3>
+            <p>Download maps for offline use. Navigate without internet connection and save on data roaming.</p>
+            <div class="feature-demo">
+                <div class="offline-maps-demo">
+                    <div class="map-download-item">
+                        <div class="map-info">
+                            <h4>Paris, France</h4>
+                            <p>45 MB • Downloaded</p>
+                        </div>
+                        <div class="download-status">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="map-download-item">
+                        <div class="map-info">
+                            <h4>Tokyo, Japan</h4>
+                            <p>52 MB • Downloading...</p>
+                        </div>
+                        <div class="download-status">
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="downloadDemoMap()">
+                Download Demo Map
+            </button>
+        </div>
+
+        <!-- Location Services -->
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-location-arrow"></i>
+            </div>
+            <h3>Location-Based Services</h3>
+            <p>Get personalized recommendations based on your location. Find nearby attractions, restaurants, and services.</p>
+            <div class="feature-demo">
+                <div class="location-services-demo">
+                    <div class="location-header">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Nearby in Paris</span>
+                    </div>
+                    <div class="nearby-items">
+                        <div class="nearby-item">
+                            <div class="item-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="item-info">
+                                <h4>Le Petit Bistrot</h4>
+                                <p>0.2 km away • French Cuisine</p>
+                            </div>
+                        </div>
+                        <div class="nearby-item">
+                            <div class="item-icon">
+                                <i class="fas fa-landmark"></i>
+                            </div>
+                            <div class="item-info">
+                                <h4>Eiffel Tower</h4>
+                                <p>0.8 km away • Tourist Attraction</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="getNearbyPlaces()">
+                Find Nearby Places
+            </button>
+        </div>
+
+        <!-- Voice Search -->
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-microphone"></i>
+            </div>
+            <h3>Voice Search & Commands</h3>
+            <p>Search for flights, hotels, and destinations using voice commands. Hands-free travel planning.</p>
+            <div class="feature-demo">
+                <div class="voice-search-demo">
+                    <div class="voice-input">
+                        <div class="voice-wave">
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                        </div>
+                        <p>"Find flights to Paris next week"</p>
+                    </div>
+                    <div class="voice-result">
+                        <i class="fas fa-search"></i>
+                        <span>Searching for flights to Paris...</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="startVoiceSearch()">
+                <i class="fas fa-microphone"></i> Start Voice Search
+            </button>
+        </div>
+
+        <!-- Augmented Reality -->
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-cube"></i>
+            </div>
+            <h3>Augmented Reality Tours</h3>
+            <p>Experience destinations in AR before you visit. Point your camera at landmarks for instant information.</p>
+            <div class="feature-demo">
+                <div class="ar-demo">
+                    <div class="ar-viewport">
+                        <div class="ar-overlay">
+                            <div class="ar-info-card">
+                                <h4>Eiffel Tower</h4>
+                                <p>Built in 1889 • 324m tall</p>
+                                <div class="ar-actions">
+                                    <button class="ar-btn">Book Tour</button>
+                                    <button class="ar-btn">Learn More</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="startARDemo()">
+                Start AR Experience
+            </button>
+        </div>
+    </div>
+
+    <!-- App Features List -->
+    <div class="app-features-list">
+        <h3>Complete Feature List</h3>
+        <div class="features-columns">
+            <div class="feature-column">
+                <h4>Travel Management</h4>
+                <ul>
+                    <li><i class="fas fa-check"></i> Digital boarding passes</li>
+                    <li><i class="fas fa-check"></i> Flight tracking</li>
+                    <li><i class="fas fa-check"></i> Hotel check-in</li>
+                    <li><i class="fas fa-check"></i> Itinerary management</li>
+                    <li><i class="fas fa-check"></i> Travel documents storage</li>
+                </ul>
+            </div>
+            <div class="feature-column">
+                <h4>Smart Features</h4>
+                <ul>
+                    <li><i class="fas fa-check"></i> Push notifications</li>
+                    <li><i class="fas fa-check"></i> Voice search</li>
+                    <li><i class="fas fa-check"></i> Offline maps</li>
+                    <li><i class="fas fa-check"></i> Location services</li>
+                    <li><i class="fas fa-check"></i> AR experiences</li>
+                </ul>
+            </div>
+            <div class="feature-column">
+                <h4>Booking & Payments</h4>
+                <ul>
+                    <li><i class="fas fa-check"></i> Mobile booking</li>
+                    <li><i class="fas fa-check"></i> Secure payments</li>
+                    <li><i class="fas fa-check"></i> Price alerts</li>
+                    <li><i class="fas fa-check"></i> Loyalty points</li>
+                    <li><i class="fas fa-check"></i> Digital wallet</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.mobile-features-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.features-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.features-header h1 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.features-header h1 i {
+    color: #667eea;
+    margin-right: 0.5rem;
+}
+
+.app-download-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 3rem;
+}
+
+.app-info {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.app-icon {
+    font-size: 4rem;
+    opacity: 0.9;
+}
+
+.app-details h2 {
+    margin: 0 0 1rem 0;
+    font-size: 2rem;
+}
+
+.app-details p {
+    margin: 0 0 2rem 0;
+    opacity: 0.9;
+}
+
+.download-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.download-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+}
+
+.download-btn span {
+    display: flex;
+    flex-direction: column;
+}
+
+.download-btn small {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1.5rem auto;
+}
+
+.feature-card h3 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.feature-demo {
+    margin-bottom: 2rem;
+}
+
+/* Boarding Pass Demo */
+.boarding-pass-demo {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.pass-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.pass-header h4 {
+    margin: 0;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.airline-logo {
+    background: #667eea;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.pass-content {
+    margin-bottom: 1rem;
+}
+
+.pass-content > div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.label {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.value {
+    font-weight: 600;
+    color: #333;
+}
+
+.qr-code {
+    text-align: center;
+}
+
+.qr-placeholder {
+    width: 80px;
+    height: 80px;
+    background: white;
+    border: 2px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: #999;
+    font-size: 2rem;
+}
+
+/* Notification Demo */
+.notification-demo {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.notification-item {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.notification-content h4 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.notification-content p {
+    margin: 0 0 0.5rem 0;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.notification-time {
+    font-size: 0.7rem;
+    color: #999;
+}
+
+/* Offline Maps Demo */
+.offline-maps-demo {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.map-download-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.map-info h4 {
+    margin: 0 0 0.25rem 0;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.map-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.download-status {
+    color: #28a745;
+}
+
+.progress-bar {
+    width: 60px;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: #667eea;
+    transition: width 0.3s ease;
+}
+
+/* Location Services Demo */
+.location-services-demo {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.location-header {
+    background: #667eea;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nearby-items {
+    background: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+    padding: 1rem;
+}
+
+.nearby-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.nearby-item:last-child {
+    border-bottom: none;
+}
+
+.item-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #667eea;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.item-info h4 {
+    margin: 0 0 0.25rem 0;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.item-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+/* Voice Search Demo */
+.voice-search-demo {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.voice-input {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.voice-wave {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    gap: 2px;
+    height: 40px;
+    margin-bottom: 1rem;
+}
+
+.wave-bar {
+    width: 4px;
+    background: #667eea;
+    border-radius: 2px;
+    animation: wave 1s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { animation-delay: 0.3s; }
+.wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes wave {
+    0%, 100% { height: 10px; }
+    50% { height: 30px; }
+}
+
+.voice-input p {
+    margin: 0;
+    color: #333;
+    font-style: italic;
+}
+
+.voice-result {
+    background: #e9ecef;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+}
+
+/* AR Demo */
+.ar-demo {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.ar-viewport {
+    background: #000;
+    height: 200px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ar-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 1rem;
+}
+
+.ar-info-card h4 {
+    margin: 0 0 0.5rem 0;
+}
+
+.ar-info-card p {
+    margin: 0 0 1rem 0;
+    opacity: 0.8;
+}
+
+.ar-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.ar-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* App Features List */
+.app-features-list {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.app-features-list h3 {
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.features-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.feature-column h4 {
+    color: #333;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 0.5rem;
+}
+
+.feature-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-column li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: #666;
+}
+
+.feature-column li i {
+    color: #28a745;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .app-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .download-buttons {
+        justify-content: center;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .features-columns {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize mobile features
+    initializeMobileFeatures();
+});
+
+function initializeMobileFeatures() {
+    // Add click handlers for demo features
+    console.log('Mobile features initialized');
+}
+
+function generateDemoBoardingPass() {
+    const qrPlaceholder = document.querySelector('.qr-placeholder');
+    qrPlaceholder.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    
+    setTimeout(() => {
+        qrPlaceholder.innerHTML = '<i class="fas fa-qrcode"></i>';
+        showNotification('Demo boarding pass generated!', 'success');
+    }, 2000);
+}
+
+function testPushNotification() {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('World Tour', {
+            body: 'Test notification from World Tour app!',
+            icon: '/static/icons/icon-192x192.png'
+        });
+    } else {
+        showNotification('Push notifications not available in demo mode', 'info');
+    }
+}
+
+function downloadDemoMap() {
+    const progressBar = document.querySelector('.progress');
+    let progress = 0;
+    
+    const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            showNotification('Demo map downloaded successfully!', 'success');
+        }
+    }, 200);
+}
+
+function getNearbyPlaces() {
+    showNotification('Finding nearby places...', 'info');
+    
+    setTimeout(() => {
+        showNotification('Found 15 places near you!', 'success');
+    }, 2000);
+}
+
+function startVoiceSearch() {
+    const voiceInput = document.querySelector('.voice-input p');
+    const originalText = voiceInput.textContent;
+    
+    voiceInput.textContent = 'Listening...';
+    voiceInput.style.color = '#667eea';
+    
+    setTimeout(() => {
+        voiceInput.textContent = '"Find flights to Tokyo"';
+        voiceInput.style.color = '#333';
+        
+        setTimeout(() => {
+            voiceInput.textContent = originalText;
+            showNotification('Voice search completed!', 'success');
+        }, 2000);
+    }, 2000);
+}
+
+function startARDemo() {
+    showNotification('AR experience started! Point your camera at landmarks.', 'info');
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1'};
+        color: ${type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#0c5460'};
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        z-index: 1000;
+        max-width: 300px;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+
+// Request notification permission
+if ('Notification' in window) {
+    Notification.requestPermission();
+}
+</script>
+{% endblock %} 

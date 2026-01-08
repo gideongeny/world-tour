@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Flights{% endblock %}
+{% block content %}
+<div class="container flights-page">
+    <h1>Search Flights</h1>
+    
+    <!-- Advanced Search Form -->
+    <div class="search-panel mb-4">
+        <form method="get" class="row">
+            <div class="col-md-3">
+                <input type="text" name="origin" value="{{ origin }}" placeholder="From" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="destination" value="{{ destination }}" placeholder="To" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="date" value="{{ date }}" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Search Flights</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Flight Results -->
+    <div class="flight-results">
+        {% if flights %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Flight</th>
+                    <th>Airline</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                    <th>Price</th>
+                    <th>Seats</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for flight in flights %}
+                <tr>
+                    <td>{{ flight.flight_number }}</td>
+                    <td>{{ flight.airline }}</td>
+                    <td>{{ flight.origin }}</td>
+                    <td>{{ flight.destination }}</td>
+                    <td>{{ flight.departure_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ flight.arrival_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>${{ flight.price }}</td>
+                    <td>{{ flight.seats_available }}</td>
+                    <td>
+                        {% if flight.seats_available > 0 %}
+                        <a href="{{ airline_booking_url(flight.airline, flight.destination) }}" class="btn btn-primary" target="_blank">Book on Airline</a>
+                        {% else %}
+                        <span class="text-danger">Sold Out</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">No flights found matching your criteria.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
