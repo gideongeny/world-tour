@@ -1,17 +1,23 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User } from 'lucide-react';
+import { LogIn } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 
-function Login() {
+export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { login } = useUser();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError('');
+        setLoading(true);
+
         try {
-            const res = await fetch('https://world-tour-backend.vercel.app/auth/login', {
+            const res = await fetch('/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -19,13 +25,16 @@ function Login() {
             const data = await res.json();
 
             if (res.ok && data.success) {
-                // Success
+                login({ username, email: data.user?.email || '' });
                 navigate('/');
             } else {
-                setError(data.error || 'Login failed');
+                setError(data.error || 'Invalid credentials');
             }
         } catch (err) {
-            setError('Something went wrong. Please try again.');
+            console.error('Login error:', err);
+            setError('Network error. Please check your connection and try again.');
+        } finally {
+            setLoading(false);
         }
     };
 

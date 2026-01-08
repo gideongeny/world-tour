@@ -27,7 +27,7 @@ function AIAssistant() {
         setIsTyping(true);
 
         // Mock API call or real one
-        fetch('https://world-tour-backend.vercel.app/booking/ai/chat', {
+        fetch('/ai/api/chat', {
             // Endpoint path validation needed later, assumes /booking/ai/chat or similar. 
             // Based on blueprints/ai/routes.py it's likely /ai/chat if registered properly.
             // Let's assume /ai/chat at root + blueprint prefix.
@@ -71,8 +71,8 @@ function AIAssistant() {
                                 {msg.role === 'user' ? <User className="w-5 h-5 text-slate-600" /> : <Bot className="w-5 h-5" />}
                             </div>
                             <div className={`max-w-[80%] p-4 rounded-2xl ${msg.role === 'user'
-                                    ? 'bg-white shadow-sm text-slate-800 rounded-tr-none'
-                                    : 'bg-primary/10 text-slate-800 dark:text-white rounded-tl-none border border-primary/10'
+                                ? 'bg-white shadow-sm text-slate-800 rounded-tr-none'
+                                : 'bg-primary/10 text-slate-800 dark:text-white rounded-tl-none border border-primary/10'
                                 }`}>
                                 {msg.content}
                             </div>

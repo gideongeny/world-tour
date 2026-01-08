@@ -1,32 +1,43 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 
-function Signup() {
+export default function Signup() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { login } = useUser();
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError('');
+        setLoading(true);
+
         try {
-            const res = await fetch('https://world-tour-backend.vercel.app/auth/register', {
+            const res = await fetch('/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password })
             });
+
             const data = await res.json();
 
             if (res.ok && data.success) {
-                // Success
+                // Auto-login after successful signup
+                login({ username, email });
                 navigate('/');
             } else {
-                setError(data.error || 'Registration failed');
+                setError(data.error || 'Registration failed. Please try again.');
             }
         } catch (err) {
-            setError('Something went wrong. Please try again.');
+            console.error('Signup error:', err);
+            setError('Network error. Please check your connection and try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -78,13 +89,20 @@ function Signup() {
                             placeholder="Create a password"
                         />
                     </div>
-                    <button className="w-full bg-secondary text-white py-4 rounded-xl font-black shadow-lg shadow-secondary/30 hover:bg-secondary/90 transition-all">
-                        Sign Up
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-bold shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {loading ? 'Creating Account...' : 'Create Account'}
                     </button>
                 </form>
 
-                <p className="text-center mt-8 text-slate-500 font-medium">
-                    Already have an account? <Link to="/login" className="text-secondary font-bold hover:underline">Sign In</Link>
+                <p className="text-center text-slate-500 mt-6">
+                    Already have an account?{' '}
+                    <Link to="/login" className="text-primary font-bold hover:underline">
+                        Login here
+                    </Link>
                 </p>
             </div>
         </div>

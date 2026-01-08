@@ -4,10 +4,8 @@ import json
 
 class AIEngine:
     def __init__(self):
-    def __init__(self):
         # Use env var or fall back to provided specific key
         self.api_key = os.environ.get('GOOGLE_API_KEY', 'AIzaSyAQOFn1SVkbrQDJn7VeRMs5vAV1mYErImM')
-        self.model = "gemini-1.5-flash"
         self.model = "gemini-1.5-flash"
         self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
 
@@ -29,7 +27,10 @@ class AIEngine:
             response = requests.post(self.api_url, json=payload, timeout=10)
             response.raise_for_status()
             data = response.json()
-            return data['candidates'][0]['content']['parts'][0]['text']
+            # Handle potential safety ratings blocking content
+            if 'candidates' in data and data['candidates']:
+                return data['candidates'][0]['content']['parts'][0]['text']
+            return "I couldn't generate a response. Please try asking differently."
         except Exception as e:
             return f"I encountered an error while processing your request: {str(e)}"
 

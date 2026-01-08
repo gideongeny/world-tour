@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
 import type { FC } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
+import { LogOut, User } from 'lucide-react';
+import CurrencySelector from './CurrencySelector';
 
 const Nav: FC = () => {
     const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user, logout, isAuthenticated } = useUser();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -15,6 +20,11 @@ const Nav: FC = () => {
     }, []);
 
     const isActive = (path: string) => location.pathname === path ? 'text-primary' : 'hover:text-primary';
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     return (
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 py-4 ${scrolled ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-xl py-3' : 'bg-transparent'
@@ -32,12 +42,32 @@ const Nav: FC = () => {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <Link to="/login" className="px-6 py-2.5 rounded-full font-bold border-2 border-primary/20 hover:border-primary transition-all text-center">
-                        Login
-                    </Link>
-                    <Link to="/signup" className="px-6 py-2.5 rounded-full font-bold bg-primary text-white shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all active:scale-95 text-center">
-                        Sign Up
-                    </Link>
+                    <CurrencySelector />
+
+                    {isAuthenticated ? (
+                        <>
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-bold">
+                                <User className="w-4 h-4" />
+                                <span>{user?.username}</span>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="px-4 py-2.5 rounded-full font-bold border-2 border-red-500/20 hover:border-red-500 text-red-600 dark:text-red-400 transition-all flex items-center gap-2"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login" className="px-6 py-2.5 rounded-full font-bold border-2 border-primary/20 hover:border-primary transition-all text-center">
+                                Login
+                            </Link>
+                            <Link to="/signup" className="px-6 py-2.5 rounded-full font-bold bg-primary text-white shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all active:scale-95 text-center">
+                                Sign Up
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>

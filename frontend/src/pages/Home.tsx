@@ -18,7 +18,7 @@ function Home() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('https://world-tour-backend.vercel.app/booking/destinations?format=json')
+        fetch('/booking/destinations?format=json')
             .then((res: Response) => res.json())
             .then((data: Destination[]) => {
                 setDestinations(data);

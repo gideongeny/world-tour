@@ -13,6 +13,8 @@ export default defineConfig({
       '/ai': 'http://localhost:5000',
       '/finance': 'http://localhost:5000',
       '/admin': 'http://localhost:5000',
+      '/api': 'http://localhost:5000',
+      '/seed': 'http://localhost:5000',
     }
   }
 })
