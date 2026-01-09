@@ -14,6 +14,9 @@ import Terms from './pages/Terms';
 import Cookies from './pages/Cookies';
 import Contact from './pages/Contact';
 import Checkout from './pages/Checkout';
+import Pricing from './pages/Pricing';
+import SubscriptionSuccess from './pages/SubscriptionSuccess';
+
 
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
@@ -41,6 +44,8 @@ function AppContent() {
               <Route path="/cookies" element={<Cookies />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/subscription/success" element={<SubscriptionSuccess />} />
             </Routes>
 
             <footer className="py-12 px-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 mt-auto">
