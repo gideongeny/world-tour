@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
 import DestinationCard from '../components/DestinationCard'
 import Map from '../components/Map'
