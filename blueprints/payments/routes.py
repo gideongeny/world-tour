@@ -5,8 +5,11 @@ from flask import Blueprint, request, jsonify, redirect
 from flask_login import login_required, current_user
 from services.stripe_service import StripeService
 from models.subscription import Subscription
+from new_models import User
 from extensions import db
 from datetime import datetime
+import stripe
+import os
 
 payments_bp = Blueprint('payments', __name__, url_prefix='/api/payments')
 
