@@ -66,7 +66,7 @@ function Home() {
                     <div className="flex justify-between items-end mb-8">
                         <div>
                             <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">{t('home.destinations.title')}</h2>
-                            <p className="text-slate-500 dark:text-slate-400">{t('hero.subtitle')}</p>
+                            <p className="text-slate-500 dark:text-slate-400">{t('home.destinations.subtitle')}</p>
                         </div>
                         <Link to="/hotels" className="text-primary font-bold hover:underline">{t('common.view_all')}</Link>
                     </div>
@@ -107,7 +107,7 @@ function Home() {
                 <section id="map" className="mb-20">
                     <div className="mb-8">
                         <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">{t('home.map.title')}</h2>
-                        <p className="text-slate-500 dark:text-slate-400">{t('hero.subtitle')}</p>
+                        <p className="text-slate-500 dark:text-slate-400">{t('home.map.subtitle')}</p>
                     </div>
                     <Map markers={mapMarkers} center={[20, 10]} zoom={2} />
                 </section>
@@ -119,7 +119,7 @@ function Home() {
                     </div>
                     <div className="relative z-20 max-w-2xl mx-auto">
                         <h2 className="text-5xl font-black mb-6 drop-shadow-lg font-serif">{t('home.cta.title')}</h2>
-                        <p className="text-xl mb-10 text-white/90">{t('hero.subtitle')}</p>
+                        <p className="text-xl mb-10 text-white/90">{t('home.cta.subtitle')}</p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link to="/hotels" className="px-10 py-4 bg-white text-slate-900 rounded-2xl font-black shadow-2xl hover:bg-slate-50 transition-colors inline-block">
                                 {t('common.get_started')}

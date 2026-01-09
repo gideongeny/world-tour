@@ -5,17 +5,14 @@ class RedirectService:
     @staticmethod
     def get_booking_url(destination, checkin=None, checkout=None):
         """
-        Generates a Google Hotels search URL.
+        Generates a Booking.com search URL.
         """
-        base_url = "https://www.google.com/travel/hotels"
-        params = f"?q={destination}"
+        base_url = "https://www.booking.com/searchresults.html"
+        params = f"?ss={destination}"
         if checkin and checkout:
-            # Google formatted date dates can be tricky in query params, usually standard q string works enough
-            # But for specific dates, Google uses a codified params string often.
-            # Keeping it simple with Query for now as requested "linked with google".
-            pass
+            params += f"&checkin={checkin}&checkout={checkout}"
             
-        return f"{base_url}?{urllib.parse.urlencode(params)}"
+        return f"{base_url}{params}"
 
     @staticmethod
     def get_skyscanner_url(origin, destination, date):

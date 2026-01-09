@@ -41,7 +41,7 @@ const HotelCard = ({ hotel, onBook }: { hotel: Hotel, onBook: (h: Hotel) => void
                 </div>
 
                 <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 mb-4">
-                    {hotel.description || "Luxury accommodation with stunning views and world-class amenities."}
+                    {hotel.description || t('hotels.card.description')}
                 </p>
 
                 <div className="flex gap-3 mb-6">
@@ -53,13 +53,13 @@ const HotelCard = ({ hotel, onBook }: { hotel: Hotel, onBook: (h: Hotel) => void
                 <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
                     <div>
                         <span className="text-lg font-black text-primary">{formatPrice(hotel.price)}</span>
-                        <span className="text-slate-400 text-sm">/night</span>
+                        <span className="text-slate-400 text-sm">{t('hotels.card.per_night')}</span>
                     </div>
                     <button
                         onClick={() => onBook(hotel)}
                         className="px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors"
                     >
-                        Book Now
+                        {t('btn.book_now')}
                     </button>
                 </div>
             </div>
@@ -145,7 +145,7 @@ function Hotels() {
         <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
             <div className="mb-12 text-center">
                 <h1 className="text-5xl font-black mb-4 tracking-tight">{t('hotels.hero.title')}</h1>
-                <p className="text-xl text-slate-500 max-w-2xl mx-auto">{t('hero.subtitle')}</p>
+                <p className="text-xl text-slate-500 max-w-2xl mx-auto">{t('hotels.hero.subtitle')}</p>
             </div>
 
             <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl max-w-5xl mx-auto -mt-6 mb-16 flex gap-4 overflow-hidden border border-slate-100 dark:border-slate-700">
@@ -163,7 +163,7 @@ function Hotels() {
                 <div className="bg-slate-200 w-px my-1"></div>
                 <div className="flex-1 px-4 py-2">
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{t('hotels.search.dates')}</label>
-                    <input type="text" placeholder={t('hotels.search.dates')} className="w-full bg-transparent font-bold outline-none text-slate-800 dark:text-white" />
+                    <input type="text" placeholder={t('hotels.search.dates_placeholder')} className="w-full bg-transparent font-bold outline-none text-slate-800 dark:text-white" />
                 </div>
                 <div className="bg-slate-200 w-px my-1"></div>
                 <div className="px-4 py-2">
@@ -202,21 +202,21 @@ function Hotels() {
                         ))
                     ) : externalUrl ? (
                         <div className="col-span-full flex flex-col items-center justify-center text-center p-12 bg-white dark:bg-slate-800 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700">
-                            <h3 className="text-2xl font-bold mb-4">No direct partners found for "{searchQuery}"</h3>
-                            <p className="text-slate-500 mb-8 max-w-md">However, we found excellent options via our trusted partner network.</p>
+                            <h3 className="text-2xl font-bold mb-4">{t('hotels.fallback.title')} "{searchQuery}"</h3>
+                            <p className="text-slate-500 mb-8 max-w-md">{t('hotels.fallback.subtitle')}</p>
                             <a
                                 href={externalUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="px-8 py-4 bg-primary text-white rounded-xl font-bold shadow-xl hover:scale-105 transition-transform flex items-center gap-2"
                             >
-                                View Hotels on Google
+                                {t('hotels.fallback.button')}
                                 <Globe className="w-5 h-5" />
                             </a>
                         </div>
                     ) : (
                         <div className="col-span-full text-center py-12 text-slate-500">
-                            Try searching for "Paris", "Bali", or "Dubai"
+                            {t('hotels.empty.message')}
                         </div>
                     )}
                 </div>
