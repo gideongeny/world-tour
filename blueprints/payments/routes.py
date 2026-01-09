@@ -44,6 +44,29 @@ def create_subscription():
     
     return jsonify({'checkout_url': checkout_url, 'session_id': session_id}), 200
 
+@payments_bp.route('/create-paypal-payment', methods=['POST'])
+@login_required
+def create_paypal_payment():
+    """Create a PayPal payment (simpler alternative to Stripe)"""
+    from services.paypal_service import PayPalService
+    
+    data = request.get_json()
+    amount = data.get('amount')
+    plan_name = data.get('plan')
+    
+    # Create PayPal payment
+    approval_url, order_id = PayPalService.create_payment(
+        amount=amount,
+        description=f"{plan_name} - World Tour Plus",
+        return_url='http://localhost:5173/subscription/success',
+        cancel_url='http://localhost:5173/pricing'
+    )
+    
+    if not approval_url:
+        return jsonify({'error': 'PayPal not configured. Add PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET to .env'}), 500
+    
+    return jsonify({'approval_url': approval_url, 'order_id': order_id}), 200
+
 @payments_bp.route('/cancel-subscription', methods=['POST'])
 @login_required
 def cancel_subscription():

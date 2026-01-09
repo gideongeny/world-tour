@@ -70,12 +70,14 @@ const Pricing: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('/api/payments/create-subscription', {
+            const response = await fetch('/api/payments/create-paypal-payment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
                 body: JSON.stringify({
-                    plan: plan.interval === 'month' ? 'monthly' : 'yearly'
+                    amount: plan.price,
+                    plan: plan.name,
+                    interval: plan.interval
                 })
             });
 
@@ -88,16 +90,17 @@ const Pricing: React.FC = () => {
 
             const data = await response.json();
 
-            if (data.checkout_url) {
-                window.location.href = data.checkout_url;
+            if (data.approval_url) {
+                // Redirect to PayPal
+                window.location.href = data.approval_url;
             } else if (data.error) {
                 alert(`Error: ${data.error}`);
             } else {
-                alert('Stripe is not configured yet. Please complete the Stripe setup guide first.');
+                alert('PayPal is not configured yet. Please add your PayPal credentials to .env');
             }
         } catch (error) {
-            console.error('Subscription error:', error);
-            alert('Unable to connect to payment system. Stripe may not be configured yet.');
+            console.error('Payment error:', error);
+            alert('Unable to connect to payment system. PayPal may not be configured yet.');
         } finally {
             setLoading(false);
         }
