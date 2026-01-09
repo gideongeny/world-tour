@@ -197,16 +197,16 @@ def populate_data():
         
         # Custom high-quality images for hotels
         HOTEL_IMAGES = {
-            'The Ritz Paris': 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Ritz-Paris-Hotel-Exterior.jpg',
-            'Hotel Le Meurice': 'https://upload.wikimedia.org/wikipedia/commons/e/e0/H%C3%B4tel_Meurice_%28Paris%29.jpg',
-            'Ayana Resort': 'https://upload.wikimedia.org/wikipedia/commons/5/52/Ayana_Resort_and_Spa_Bali_-_Ocean_Beach_Pool.jpg', 
-            'Viceroy Bali': 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Viceroy_Bali_Resort_-_Pool.jpg',
-            'Aman Tokyo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/%C5%8Ctemachi_One_Tower.jpg/600px-%C5%8Ctemachi_One_Tower.jpg',
-            'Park Hyatt Tokyo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Shinjuku_Park_Tower_close_up.jpg/600px-Shinjuku_Park_Tower_close_up.jpg',
-            'Burj Al Arab': 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Burj_Al_Arab%2C_Dubai.jpg',
-            'Atlantis The Palm': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Atlantis_The_Palm_view.jpg/800px-Atlantis_The_Palm_view.jpg',
-            'Canaves Oia': 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Canaves_Oia.jpg',
-            'Hotel Hassler Roma': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Hotel_Hassler.JPG/800px-Hotel_Hassler.JPG',
+            'The Ritz Paris': 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80',
+            'Hotel Le Meurice': 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&q=80',
+            'Ayana Resort': 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80', 
+            'Viceroy Bali': 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80',
+            'Aman Tokyo': 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80',
+            'Park Hyatt Tokyo': 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80',
+            'Burj Al Arab': 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80',
+            'Atlantis The Palm': 'https://images.unsplash.com/photo-1512453979798-5ea90b7cadc9?w=800&q=80',
+            'Canaves Oia': 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80',
+            'Hotel Hassler Roma': 'https://images.unsplash.com/photo-1587974928442-77dc3e0dba72?w=800&q=80',
         }
         
         # Add Hotels

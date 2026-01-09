@@ -12,18 +12,14 @@
   --foreground: #1A1816;
 }
 
-.dark {
-  --background: #1A1816;
-  --foreground: #F9F7F2;
-}
-
 .monochrome {
   filter: grayscale(100%);
 }
 
+html,
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: #F9F7F2;
+  color: #1A1816;
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
