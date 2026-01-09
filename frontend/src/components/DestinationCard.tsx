@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import Tilt from 'react-parallax-tilt';
 import Price from './Price';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Heart } from 'lucide-react';
+import { useUser } from '../context/UserContext';
+import { useState } from 'react';
 
 interface Destination {
     id: number;
@@ -17,6 +19,36 @@ interface Destination {
 
 const DestinationCard: React.FC<{ destination: Destination }> = ({ destination }) => {
     const navigate = useNavigate();
+    const { isAuthenticated } = useUser();
+    const [isSaved, setIsSaved] = useState(false);
+
+    const handleSave = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!isAuthenticated) return alert('Please login to save trips!');
+
+        try {
+            const res = await fetch('/api/user/wishlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    type: 'destination',
+                    data: {
+                        id: destination.id,
+                        name: destination.name,
+                        price: destination.price,
+                        image_url: destination.image_url,
+                        country: destination.country
+                    }
+                })
+            });
+            if (res.ok) {
+                setIsSaved(true);
+            }
+        } catch (error) {
+            console.error('Failed to save', error);
+        }
+    };
 
     const handleBook = () => {
         const params = new URLSearchParams({
@@ -54,6 +86,12 @@ const DestinationCard: React.FC<{ destination: Destination }> = ({ destination }
                         <div className="absolute top-4 right-4 bg-white/90 dark:bg-slate-800/90 px-3 py-1 rounded-full text-sm font-bold shadow-lg backdrop-blur-md">
                             <Price amount={destination.price} />
                         </div>
+                        <button
+                            onClick={handleSave}
+                            className="absolute top-4 left-4 p-2 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-lg backdrop-blur-md hover:scale-110 transition-transform group/heart"
+                        >
+                            <Heart className={`w-5 h-5 ${isSaved ? 'fill-red-500 text-red-500' : 'text-slate-400 group-hover/heart:text-red-500'} transition-colors`} />
+                        </button>
                     </div>
                     <div className="p-6">
                         <div className="flex justify-between items-start mb-2">

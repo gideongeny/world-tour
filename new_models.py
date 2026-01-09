@@ -58,6 +58,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
     bookings = db.relationship('Booking', backref='user', lazy=True)
+    saved_items = db.relationship('SavedItem', backref='user', lazy=True)
 
 class Destination(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -132,4 +133,21 @@ class UserAnalytics(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     event_type = db.Column(db.String(50))
     event_data = db.Column(db.Text) # JSON
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class SavedItem(db.Model):
+    __tablename__ = 'saved_items'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    item_type = db.Column(db.String(50), nullable=False) # 'destination', 'hotel', 'flight'
+    
+    # Linked IDs
+    destination_id = db.Column(db.Integer, db.ForeignKey('destination.id'), nullable=True)
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotel.id'), nullable=True)
+    flight_id = db.Column(db.Integer, db.ForeignKey('flight.id'), nullable=True)
+    
+    # Snapshot Data (JSON)
+    item_data = db.Column(db.Text, nullable=True)
+    external_id = db.Column(db.String(100), nullable=True) # For API items
+    
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

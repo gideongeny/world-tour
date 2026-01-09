@@ -81,12 +81,14 @@ from blueprints.ai.routes import ai_bp
 from blueprints.auth.routes import auth_bp
 from blueprints.affiliate.routes import affiliate_bp
 from blueprints.payments.routes import payments_bp
+from blueprints.user.routes import user_bp
 
 app.register_blueprint(booking_bp, url_prefix='/booking')
 app.register_blueprint(ai_bp, url_prefix='/ai')
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(affiliate_bp)
 app.register_blueprint(payments_bp)
+app.register_blueprint(user_bp)
 
 @app.route('/seed')
 def seed_db():

@@ -8,233 +8,96 @@ A modern, full-stack travel booking application with AI-powered recommendations,
 
 ### 🔐 Authentication System
 - User registration and login
-- Session persistence with localStorage
-- Secure password hashing
-- Visual user status in navigation
+- User Profile Dashboard
+- Saved Trips & Wishlist
 
 ### 💱 Multi-Currency Support
-- **9 Currencies**: USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY, INR
-- Real-time exchange rates from API
-- Automatic price conversion
-- Daily rate updates
-- Persistent currency selection
+- **9 Currencies**: USD, EUR, GBP, KES, ZAR, etc.
+- Real-time exchange rates
 
 ### 🏨 Travel Services
-- **Destinations**: Browse 32+ world-class destinations
-- **Hotels**: Luxury accommodations worldwide
-- **Flights**: International flight bookings
-- **AI Assistant**: Gemini-powered travel recommendations
+- **Destinations**: 32+ world-class locations
+- **Hotels**: Booking.com / Google Hotels integration
+- **Flights**: Scanner/Kayak integration
+- **AI Assistant**: Gemini-powered planning
 
-### 🎨 Modern UI/UX
-- Responsive design (mobile, tablet, desktop)
-- Dark mode support
-- Glassmorphism effects
-- Smooth animations and transitions
-- Image fallbacks for offline support
+### 💰 Monetization
+- **Affiliate System**: Booking.com, Skyscanner, etc.
+- **Premium Subscription**: PayPal / Stripe integration
+- **Ad Network**: Monetag integration
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Python 3.8+
-- Node.js 16+
-- npm or yarn
-
-### Backend Setup
-
-```bash
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Run the Flask server
-python app.py
-```
-
-Server runs on `http://localhost:5000`
-
-### Frontend Setup
-
-```bash
-# Navigate to frontend directory
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-Frontend runs on `http://localhost:5173`
-
-## 📁 Project Structure
-
-```
-world-tour-main/
-├── frontend/                 # React + Vite frontend
-│   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── context/         # React contexts (User, Currency)
-│   │   ├── pages/           # Page components
-│   │   └── App.tsx          # Main app component
-│   └── vite.config.ts       # Vite configuration
-│
-├── blueprints/              # Flask blueprints
-│   ├── auth/               # Authentication routes
-│   ├── booking/            # Booking routes
-│   └── ai/                 # AI assistant routes
-│
-├── services/               # Backend services
-│   ├── ai_engine.py       # Gemini AI integration
-│   ├── currency.py        # Currency conversion
-│   └── weather.py         # Weather API
-│
-├── app.py                 # Flask application
-├── new_models.py          # SQLAlchemy models
-└── requirements.txt       # Python dependencies
-```
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **Framework**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: TailwindCSS
-- **Routing**: React Router v6
-- **Icons**: Lucide React
-- **State**: Context API
+## 🚀 Quick Start (Local)
 
 ### Backend
-- **Framework**: Flask
-- **Database**: SQLite (dev) / PostgreSQL (prod)
-- **ORM**: SQLAlchemy
-- **Authentication**: Flask-Login
-- **AI**: Google Gemini API
-- **Deployment**: Vercel
-
-## 🔑 Environment Variables
-
-### Backend (.env)
-```env
-SECRET_KEY=your-secret-key
-GOOGLE_API_KEY=your-gemini-api-key
-DATABASE_URL=your-database-url
-STRIPE_SECRET_KEY=your-stripe-key
-```
-
-### Frontend (.env)
-```env
-VITE_API_URL=http://localhost:5000
-```
-
-## 📖 API Documentation
-
-### Authentication
-- `POST /auth/register` - Create new account
-- `POST /auth/login` - Login user
-- `GET /auth/logout` - Logout user
-
-### Booking
-- `GET /booking/destinations` - Get all destinations
-- `GET /booking/hotels` - Get all hotels
-- `GET /booking/flights` - Get all flights
-- `POST /booking/book/:id` - Create booking
-
-### Currency
-- `GET /api/currency/rates` - Get exchange rates
-
-### AI
-- `POST /ai/api/chat` - Chat with AI assistant
-
-## 🎯 Usage Examples
-
-### Currency Conversion
-```typescript
-import { useCurrency } from './context/CurrencyContext';
-
-function PriceDisplay() {
-  const { formatPrice } = useCurrency();
-  return <span>{formatPrice(200)}</span>; // Converts to selected currency
-}
-```
-
-### Authentication
-```typescript
-import { useUser } from './context/UserContext';
-
-function Profile() {
-  const { user, isAuthenticated, logout } = useUser();
-  
-  if (!isAuthenticated) return <Login />;
-  
-  return (
-    <div>
-      <h1>Welcome, {user.username}!</h1>
-      <button onClick={logout}>Logout</button>
-    </div>
-  );
-}
-```
-
-## 🧪 Testing
-
 ```bash
-# Run backend tests
-python -m pytest
+# Install dependencies
+pip install -r requirements.txt
 
-# Run frontend tests
-cd frontend
-npm test
-```
-
-## 📦 Deployment
-
-### Vercel (Recommended)
-
-1. **Backend**: Deploy to Vercel Serverless Functions
-2. **Frontend**: Deploy to Vercel Static Hosting
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-```
-
-### Manual Deployment
-
-```bash
-# Build frontend
-cd frontend
-npm run build
-
-# Serve with Flask
+# Run server (http://localhost:5000)
 python app.py
 ```
 
-## 🤝 Contributing
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+# App runs at http://localhost:5173
+```
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
+## 📦 Deployment Guide (Vercel)
 
-## 📝 License
+This project is configured for **Vercel Monorepo Deployment** (Frontend + Backend in one project).
 
-This project is licensed under the MIT License.
+### Step 1: Push to GitHub
+Ensure your code is pushed to your GitHub repository.
 
-## 🙏 Acknowledgments
+### Step 2: Import to Vercel
+1. Go to [Vercel Dashboard](https://vercel.com).
+2. Click **Add New** > **Project**.
+3. Import your `world-tour` repository.
 
-- [Unsplash](https://unsplash.com) - Images
-- [Lucide](https://lucide.dev) - Icons
-- [TailwindCSS](https://tailwindcss.com) - Styling
-- [Google Gemini](https://ai.google.dev) - AI Integration
-- [Exchange Rate API](https://exchangerate-api.com) - Currency Rates
+### Step 3: Configure Project
+- **Framework Preset**: Vite (should auto-detect).
+- **Root Directory**: `./` (Keep default).
+- **Build Command**: `npm run build` (in frontend).
+- **Output Directory**: `frontend/dist`.
 
-## 📧 Contact
+> **Note**: The included `vercel.json` handles the routing between Frontend and Backend automatically!
 
-For questions or support, please open an issue on GitHub.
+### Step 4: Environment Variables (Critical!)
+Add these in Vercel **Settings > Environment Variables**:
+
+**Application:**
+- `FLASK_ENV`: `production`
+- `SECRET_KEY`: (Generate a random string)
+- `FRONTEND_URL`: `https://your-project-name.vercel.app` (Your production Vercel URL)
+
+**Database (Neon/Postgres):**
+- `DATABASE_URL`: `postgres://user:password@host/dbname?sslmode=require`
+*(If using Neon, it provides this connection string)*
+
+**Monetization Keys:**
+- `PAYPAL_CLIENT_ID`: (From PayPal Developer)
+- `PAYPAL_CLIENT_SECRET`: (From PayPal Developer)
+- `PAYPAL_MODE`: `live` (or `sandbox`)
+- `STRIPE_SECRET_KEY`: (Optional)
+- `STRIPE_PUBLISHABLE_KEY`: (Optional)
+
+**Affiliate IDs:**
+- `BOOKING_COM_AFFILIATE_ID`
+- `SKYSCANNER_AFFILIATE_ID`
+
+**AI:**
+- `GOOGLE_API_KEY`: (Gemini API Key)
+
+### Step 5: Deploy
+Click **Deploy**. Vercel will build the frontend and set up the serverless backend.
+
+### ⚠️ Common Issues
+- **"Backend Not Connected"**: Ensure you added `FRONTEND_URL` and `DATABASE_URL`.
+- **"Database Error"**: Verify your Neon connection string.
+- **"CORS Error"**: This template uses relative paths (`/api/...`), so CORS is usually not an issue if deployed as a single project.
 
 ---
 

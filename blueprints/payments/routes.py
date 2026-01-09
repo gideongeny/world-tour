@@ -58,11 +58,12 @@ def create_paypal_payment():
         print(f"DEBUG: Creating PayPal payment for {amount} {plan_name}")
 
         # Create PayPal payment
+        frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
         approval_url, order_id = PayPalService.create_payment(
             amount=amount,
             description=f"{plan_name} - World Tour Plus",
-            return_url=f'http://localhost:5173/subscription/success?plan={plan_name}',
-            cancel_url='http://localhost:5173/pricing'
+            return_url=f'{frontend_url}/subscription/success?plan={plan_name}',
+            cancel_url=f'{frontend_url}/pricing'
         )
         
         if not approval_url:

@@ -149,10 +149,10 @@ const Nav: FC = () => {
 
                     {isAuthenticated ? (
                         <>
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-bold">
+                            <Link to="/profile" className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-bold hover:bg-primary/20 transition-all">
                                 <UserIcon className="w-4 h-4" />
                                 <span>{user?.username}</span>
-                            </div>
+                            </Link>
                             <button
                                 onClick={handleLogout}
                                 className="px-4 py-2.5 rounded-full font-bold border-2 border-red-500/20 hover:border-red-500 text-red-600 dark:text-red-400 transition-all flex items-center gap-2"

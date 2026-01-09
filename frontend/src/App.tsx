@@ -16,6 +16,7 @@ import Contact from './pages/Contact';
 import Checkout from './pages/Checkout';
 import Pricing from './pages/Pricing';
 import SubscriptionSuccess from './pages/SubscriptionSuccess';
+import Profile from './pages/Profile';
 import TravelCards from './pages/TravelCards';
 
 
@@ -46,6 +47,7 @@ function AppContent() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/subscription/success" element={<SubscriptionSuccess />} />
               <Route path="/travel-cards" element={<TravelCards />} />
             </Routes>
