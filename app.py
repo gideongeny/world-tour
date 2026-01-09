@@ -74,10 +74,12 @@ with app.app_context():
 from blueprints.booking.routes import booking_bp
 from blueprints.ai.routes import ai_bp
 from blueprints.auth.routes import auth_bp
+from blueprints.affiliate.routes import affiliate_bp
 
 app.register_blueprint(booking_bp, url_prefix='/booking')
 app.register_blueprint(ai_bp, url_prefix='/ai')
 app.register_blueprint(auth_bp, url_prefix='/auth')
+app.register_blueprint(affiliate_bp)
 
 @app.route('/seed')
 def seed_db():
