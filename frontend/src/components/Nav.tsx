@@ -1,18 +1,26 @@
-import { useState, useEffect } from 'react';
-import type { FC } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
-import { Palette, LogOut, User as UserIcon } from 'lucide-react';
+import { Palette, LogOut, User as UserIcon, Globe, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import CurrencySelector from './CurrencySelector';
 
 const Nav: FC = () => {
     const [scrolled, setScrolled] = useState(false);
     const [monochrome, setMonochrome] = useState(false);
+    const [langOpen, setLangOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const { user, logout, isAuthenticated } = useUser();
     const { language, setLanguage, t } = useLanguage();
+
+    const languages = [
+        { code: 'en', flag: '🇬🇧', label: 'English' },
+        { code: 'fr', flag: '🇫🇷', label: 'Français' },
+        { code: 'es', flag: '🇪🇸', label: 'Español' },
+        { code: 'zh', flag: '🇨🇳', label: '中文' },
+        { code: 'ar', flag: '🇸🇦', label: 'العربية' },
+        { code: 'sw', flag: '🇰🇪', label: 'Kiswahili' },
+    ] as const;
+
+    const currentLang = languages.find(l => l.code === language) || languages[0];
 
     useEffect(() => {
         const handleScroll = () => {
@@ -59,14 +67,37 @@ const Nav: FC = () => {
                         <Palette className="w-5 h-5" />
                     </button>
 
-                    {/* Language Selector */}
-                    <div className="flex gap-2 bg-white/50 backdrop-blur-sm p-1 rounded-full border border-slate-200 overflow-x-auto max-w-[200px] scrollbar-hide">
-                        <button onClick={() => setLanguage('en')} className={`text-xl p-1 rounded-full transition-transform ${language === 'en' ? 'scale-125 shadow-md bg-white' : 'opacity-50 hover:opacity-100'}`} title="English">🇬🇧</button>
-                        <button onClick={() => setLanguage('fr')} className={`text-xl p-1 rounded-full transition-transform ${language === 'fr' ? 'scale-125 shadow-md bg-white' : 'opacity-50 hover:opacity-100'}`} title="Français">🇫🇷</button>
-                        <button onClick={() => setLanguage('es')} className={`text-xl p-1 rounded-full transition-transform ${language === 'es' ? 'scale-125 shadow-md bg-white' : 'opacity-50 hover:opacity-100'}`} title="Español">🇪🇸</button>
-                        <button onClick={() => setLanguage('zh')} className={`text-xl p-1 rounded-full transition-transform ${language === 'zh' ? 'scale-125 shadow-md bg-white' : 'opacity-50 hover:opacity-100'}`} title="中文">🇨🇳</button>
-                        <button onClick={() => setLanguage('ar')} className={`text-xl p-1 rounded-full transition-transform ${language === 'ar' ? 'scale-125 shadow-md bg-white' : 'opacity-50 hover:opacity-100'}`} title="العربية">🇸🇦</button>
-                        <button onClick={() => setLanguage('sw')} className={`text-xl p-1 rounded-full transition-transform ${language === 'sw' ? 'scale-125 shadow-md bg-white' : 'opacity-50 hover:opacity-100'}`} title="Kiswahili">🇰🇪</button>
+                    {/* Pro Language Dropdown */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setLangOpen(!langOpen)}
+                            className="flex items-center gap-2 bg-white/50 backdrop-blur-sm px-3 py-2 rounded-full border border-slate-200 hover:bg-white transition-all font-medium text-sm min-w-[100px]"
+                        >
+                            <span className="text-lg">{currentLang.flag}</span>
+                            <span>{currentLang.code.toUpperCase()}</span>
+                            <ChevronDown className={`w-3 h-3 transition-transform ${langOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {langOpen && (
+                            <>
+                                <div className="fixed inset-0 z-10" onClick={() => setLangOpen(false)} />
+                                <div className="absolute top-full right-0 mt-2 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-800 p-2 min-w-[160px] flex flex-col gap-1 z-20 animate-in fade-in slide-in-from-top-2">
+                                    {languages.map((l) => (
+                                        <button
+                                            key={l.code}
+                                            onClick={() => {
+                                                setLanguage(l.code as any);
+                                                setLangOpen(false);
+                                            }}
+                                            className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm font-medium ${language === l.code ? 'text-primary bg-primary/5' : 'text-slate-600 dark:text-slate-300'}`}
+                                        >
+                                            <span className="text-lg">{l.flag}</span>
+                                            <span>{l.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     <CurrencySelector />

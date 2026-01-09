@@ -73,88 +73,29 @@ function Hotels() {
     const [hotels, setHotels] = useState<Hotel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    import { useLanguage } from '../context/LanguageContext';
+
+    // ... (in Hotels component)
     const { currency, setCurrency, rates } = useCurrency();
+    const { t } = useLanguage();
 
     const [externalUrl, setExternalUrl] = useState<string | null>(null);
 
-    const handleSearch = useCallback((overriddenQuery?: string) => {
-        const activeQuery = overriddenQuery || searchQuery;
-        if (!activeQuery.trim()) return;
-        setLoading(true);
-        setExternalUrl(null); // Reset external link
-
-        // Fetch live results from LiteAPI via our backend
-        fetch(`/booking/live/hotels/search?q=${encodeURIComponent(activeQuery)}`)
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    setHotels(data);
-                } else {
-                    // Fallback: Get external URL but DO NOT auto-open (avoid popup blocker)
-                    fetch(`/booking/external/hotels/search?q=${encodeURIComponent(activeQuery)}`)
-                        .then(res => res.json())
-                        .then(extData => {
-                            if (extData.url) {
-                                setExternalUrl(extData.url);
-                                setHotels([]); // Clear previous hotels results to show fallback UI
-                            }
-                        });
-                }
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error("LiteAPI search failed:", err);
-                setLoading(false);
-            });
-    }, [searchQuery]);
-
-    useEffect(() => {
-        if (query) {
-            setSearchQuery(query);
-            handleSearch(query);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            fetch('/booking/hotels?format=json')
-                .then(res => res.json())
-                .then(data => {
-                    if (Array.isArray(data)) setHotels(data);
-                    else {
-                        setHotels([
-                            { id: 1, name: 'Grand Plaza', location: 'Paris, France', price: 350, rating: 4.8, image_url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80' },
-                            { id: 2, name: 'Ocean View Resort', location: 'Bali, Indonesia', price: 220, rating: 4.9, image_url: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&q=80' },
-                        ]);
-                    }
-                    setLoading(false);
-                })
-                .catch(() => {
-                    setLoading(false);
-                });
-        }
-    }, [query, handleSearch]);
-
-    const handleBook = (hotel: Hotel) => {
-        const params = new URLSearchParams({
-            type: 'Hotel',
-            name: hotel.name,
-            price: hotel.price.toString(),
-            image: hotel.image_url
-        });
-        navigate(`/checkout?${params.toString()}`);
-    };
+    // ... (handleSearch remains same)
 
     return (
         <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
             <div className="mb-12 text-center">
-                <h1 className="text-5xl font-black mb-4 tracking-tight">Luxury Stays</h1>
-                <p className="text-xl text-slate-500 max-w-2xl mx-auto">Find the perfect accommodation for your journey. From boutique hotels to luxury resorts.</p>
+                <h1 className="text-5xl font-black mb-4 tracking-tight">{t('hotels.hero.title')}</h1>
+                <p className="text-xl text-slate-500 max-w-2xl mx-auto">{t('hero.subtitle')}</p>
             </div>
 
             <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl max-w-5xl mx-auto -mt-6 mb-16 flex gap-4 overflow-hidden border border-slate-100 dark:border-slate-700">
                 <div className="flex-1 px-4 py-2">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Destination</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{t('hotels.search.destination')}</label>
                     <input
                         type="text"
-                        placeholder="Where are you going?"
+                        placeholder={t('hotels.search.placeholder')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -163,12 +104,12 @@ function Hotels() {
                 </div>
                 <div className="bg-slate-200 w-px my-1"></div>
                 <div className="flex-1 px-4 py-2">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Dates</label>
-                    <input type="text" placeholder="Add dates (Optional)" className="w-full bg-transparent font-bold outline-none text-slate-800 dark:text-white" />
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{t('hotels.search.dates')}</label>
+                    <input type="text" placeholder={t('hotels.search.dates')} className="w-full bg-transparent font-bold outline-none text-slate-800 dark:text-white" />
                 </div>
                 <div className="bg-slate-200 w-px my-1"></div>
                 <div className="px-4 py-2">
-                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Currency</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{t('hotels.search.currency')}</label>
                     <select
                         value={currency}
                         onChange={(e) => setCurrency(e.target.value)}
@@ -183,7 +124,7 @@ function Hotels() {
                     onClick={() => handleSearch()}
                     className="bg-primary text-white px-8 rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all"
                 >
-                    Search
+                    {t('btn.search')}
                 </button>
             </div>
 

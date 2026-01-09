@@ -6,6 +6,7 @@ import Monetag from '../components/Monetag'
 import DestinationCard from '../components/DestinationCard'
 import Map from '../components/Map'
 import PageTransition from '../components/PageTransition'
+import { useLanguage } from '../context/LanguageContext'
 
 interface Destination {
     id: number;
@@ -22,6 +23,7 @@ interface Destination {
 function Home() {
     const [destinations, setDestinations] = useState<Destination[]>([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useLanguage();
 
     useEffect(() => {
         fetch('/booking/destinations?format=json')
@@ -63,10 +65,10 @@ function Home() {
                 <section id="destinations" className="mb-20">
                     <div className="flex justify-between items-end mb-8">
                         <div>
-                            <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">World Class Destinations</h2>
-                            <p className="text-slate-500 dark:text-slate-400">Hand-picked by our experts for your next adventure</p>
+                            <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">{t('home.destinations.title')}</h2>
+                            <p className="text-slate-500 dark:text-slate-400">{t('hero.subtitle')}</p>
                         </div>
-                        <Link to="/hotels" className="text-primary font-bold hover:underline">View All</Link>
+                        <Link to="/hotels" className="text-primary font-bold hover:underline">{t('common.view_all')}</Link>
                     </div>
 
                     {loading ? (
@@ -104,8 +106,8 @@ function Home() {
 
                 <section id="map" className="mb-20">
                     <div className="mb-8">
-                        <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">Explore the Map</h2>
-                        <p className="text-slate-500 dark:text-slate-400">Visualise your next journey across the globe</p>
+                        <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">{t('home.map.title')}</h2>
+                        <p className="text-slate-500 dark:text-slate-400">{t('hero.subtitle')}</p>
                     </div>
                     <Map markers={mapMarkers} center={[20, 10]} zoom={2} />
                 </section>
@@ -116,14 +118,14 @@ function Home() {
                         <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80" className="w-full h-full object-cover" alt="CTA" />
                     </div>
                     <div className="relative z-20 max-w-2xl mx-auto">
-                        <h2 className="text-5xl font-black mb-6 drop-shadow-lg font-serif">Ready for your next adventure?</h2>
-                        <p className="text-xl mb-10 text-white/90">Join 50k+ happy travelers and start booking your dream trip today.</p>
+                        <h2 className="text-5xl font-black mb-6 drop-shadow-lg font-serif">{t('home.cta.title')}</h2>
+                        <p className="text-xl mb-10 text-white/90">{t('hero.subtitle')}</p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link to="/hotels" className="px-10 py-4 bg-white text-slate-900 rounded-2xl font-black shadow-2xl hover:bg-slate-50 transition-colors inline-block">
-                                Get Started
+                                {t('common.get_started')}
                             </Link>
                             <Link to="/contact" className="px-10 py-4 bg-white/20 backdrop-blur-md rounded-2xl font-black border border-white/30 hover:bg-white/30 transition-colors inline-block">
-                                Contact Sales
+                                {t('common.contact_sales')}
                             </Link>
                         </div>
                     </div>
