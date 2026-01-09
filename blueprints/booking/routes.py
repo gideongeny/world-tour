@@ -17,7 +17,9 @@ def destinations():
             'image_url': d.image_url,
             'price': d.price,
             'rating': 5,
-            'category': d.category
+            'category': d.category,
+            'latitude': d.latitude,
+            'longitude': d.longitude
         } for d in all_destinations])
     return render_template('travel.html', destinations=all_destinations)
 

@@ -63,8 +63,7 @@ class HotelbedsService:
             if data.get('hotels') and data['hotels'].get('hotels'):
                 results = []
                 for h in data['hotels']['hotels']:
-                    # Dynamic fallback based on hotel code to avoid all looking the same
-                    code_seed = sum(ord(c) for c in h.get('code', 'Hotel'))
+                    # Improved fallback list
                     fallbacks = [
                         'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb',
                         'https://images.unsplash.com/photo-1571896349842-33c89424de2d',
@@ -72,9 +71,12 @@ class HotelbedsService:
                         'https://images.unsplash.com/photo-1582719478250-c89cae4df85b',
                         'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4',
                         'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6',
-                        'https://images.unsplash.com/photo-1551882547-ff43c63e1c2a'
+                        'https://images.unsplash.com/photo-1551882547-ff43c63e1c2a',
+                        'https://images.unsplash.com/photo-1445019980597-93fa8acb246c',
+                        'https://images.unsplash.com/photo-1521783988139-89397d761dce',
+                        'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2'
                     ]
-                    image_url = fallbacks[code_seed % len(fallbacks)]
+                    image_url = fallbacks[abs(hash(h.get('name', 'Hotel'))) % len(fallbacks)] + "?auto=format&fit=crop&q=80"
 
                     results.append({
                         'id': h.get('code'),

@@ -43,7 +43,9 @@ class CurrencyService:
                 'CAD': 1.25,
                 'CHF': 0.92,
                 'CNY': 6.45,
-                'INR': 74.5
+                'INR': 74.5,
+                'KES': 130.0,
+                'ZAR': 18.5
             }
     
     def convert(self, amount, from_currency='USD', to_currency='USD'):

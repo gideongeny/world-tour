@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
+import Monetag from '../components/Monetag'
 import DestinationCard from '../components/DestinationCard'
 import Map from '../components/Map'
 
@@ -12,6 +13,8 @@ interface Destination {
     price: number;
     rating: number;
     category: string;
+    latitude: number;
+    longitude: number;
 }
 
 function Home() {
@@ -43,8 +46,8 @@ function Home() {
     }, []);
 
     const mapMarkers = destinations.map(d => ({
-        lat: (d as any).latitude || 0,
-        lng: (d as any).longitude || 0,
+        lat: d.latitude || 0,
+        lng: d.longitude || 0,
         title: d.name,
         description: `Starting from $${d.price}`
     }));
@@ -52,6 +55,7 @@ function Home() {
     return (
         <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
             <Hero />
+            <Monetag />
 
             <section id="destinations" className="mb-20">
                 <div className="flex justify-between items-end mb-8">
@@ -59,7 +63,7 @@ function Home() {
                         <h2 className="text-4xl font-black mb-2 tracking-tight">World Class Destinations</h2>
                         <p className="text-slate-500 dark:text-slate-400">Hand-picked by our experts for your next adventure</p>
                     </div>
-                    <button className="text-primary font-bold hover:underline">View All</button>
+                    <Link to="/hotels" className="text-primary font-bold hover:underline">View All</Link>
                 </div>
 
                 {loading ? (

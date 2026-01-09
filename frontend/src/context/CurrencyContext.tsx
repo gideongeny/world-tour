@@ -20,7 +20,9 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
     CAD: 'C$',
     CHF: 'CHF',
     CNY: '¥',
-    INR: '₹'
+    INR: '₹',
+    KES: 'KSh',
+    ZAR: 'R'
 };
 
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
@@ -61,7 +63,9 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
                 CAD: 1.25,
                 CHF: 0.92,
                 CNY: 6.45,
-                INR: 74.5
+                INR: 74.5,
+                KES: 130.0,
+                ZAR: 18.5
             });
         }
     };

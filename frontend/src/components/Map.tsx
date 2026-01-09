@@ -38,11 +38,24 @@ const Map: FC<MapProps> = ({
         map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
 
         markers.forEach(marker => {
-            new maplibregl.Marker({ color: "#667eea" })
+            const popupContent = `
+                <div class="p-3 min-w-[200px] font-sans">
+                    <h3 class="text-sm font-black text-slate-900 mb-1">${marker.title}</h3>
+                    <p class="text-xs text-slate-500 mb-3">${marker.description || ''}</p>
+                    <a href="/hotels?q=${encodeURIComponent(marker.title)}" 
+                       class="block w-full text-center py-2 px-3 bg-primary text-white text-[10px] font-bold rounded-lg shadow-lg hover:bg-primary/90 transition-all no-underline">
+                       Explore Stays
+                    </a>
+                </div>
+            `;
+
+            new maplibregl.Marker({ color: "#3B82F6" })
                 .setLngLat([marker.lng, marker.lat])
-                .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(
-                    `<h3>${marker.title}</h3><p>${marker.description || ''}</p>`
-                ))
+                .setPopup(new maplibregl.Popup({
+                    offset: 35,
+                    maxWidth: '220px',
+                    className: 'custom-map-popup'
+                }).setHTML(popupContent))
                 .addTo(map.current!);
         });
 

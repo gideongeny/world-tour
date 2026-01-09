@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import Nav from './components/Nav';
+import MonetagManager from './components/MonetagManager';
 import Home from './pages/Home';
 import Hotels from './pages/Hotels';
 import Flights from './pages/Flights';
@@ -18,6 +19,7 @@ function App() {
   return (
     <UserProvider>
       <CurrencyProvider>
+        <MonetagManager />
         <Router>
           <div className="min-h-screen bg-background text-slate-900 dark:text-white font-sans selection:bg-primary/20">
             <Nav />
