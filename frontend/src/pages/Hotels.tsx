@@ -16,6 +16,7 @@ interface Hotel {
 
 const HotelCard = ({ hotel, onBook }: { hotel: Hotel, onBook: (h: Hotel) => void }) => {
     const { formatPrice } = useCurrency();
+    const { t } = useLanguage();
     return (
         <div className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
             <div className="relative h-64 overflow-hidden">
