@@ -23,8 +23,12 @@ const Monetag: FC = () => {
                   The user can place their Monetag zone div here.
                   Example: <div id="monetag-zone-12345"></div> 
                 */}
-                <div className="w-[728px] h-[90px] flex items-center justify-center">
-                    <span className="text-sm text-slate-500">Premium Travel Deals</span>
+                <div className="w-[728px] h-[90px] overflow-hidden rounded-lg">
+                    <img
+                        src="/premium-ad.png"
+                        alt="Premium Travel Deals"
+                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700 cursor-pointer"
+                    />
                 </div>
             </div>
         </div>

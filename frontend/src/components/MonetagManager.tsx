@@ -26,28 +26,37 @@ const MonetagManager: FC = () => {
             }
         };
 
+        // Check frequency capping to reduce annoyance
+        const LAST_SHOWN_KEY = 'monetag_last_impression';
+        const COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hour cooldown - STRICT
+
+        const lastShown = localStorage.getItem(LAST_SHOWN_KEY);
+        const now = Date.now();
+
+        if (lastShown && (now - parseInt(lastShown)) < COOLDOWN_MS) {
+            console.log('Ad injection skipped due to frequency capping (Strict Mode)');
+            return;
+        }
+
         // Delay global script injection to prevent initial page load lag and navigation locking
         const timer = setTimeout(() => {
-            // 1. Zone 10436620
-            injectSelfAppendingScript('10436620', 'https://al5sm.com/tag.min.js');
+            // Update timestamp immediately
+            localStorage.setItem(LAST_SHOWN_KEY, now.toString());
 
-            // 2. Zone 10436621
-            injectScript('https://3nbf4.com/act/files/tag.min.js?z=10436621', undefined, true);
+            // Randomly select ONLY ONE ad format to show per session to avoid spam
+            // This is the "Pro" way to monetize without annoying users
+            const adStrategies = [
+                () => injectSelfAppendingScript('10436620', 'https://al5sm.com/tag.min.js'),
+                () => injectScript('https://3nbf4.com/act/files/tag.min.js?z=10436621', undefined, true),
+                () => injectScript('https://quge5.com/88/tag.min.js', { zone: '200188', cfasync: 'false' }),
+                () => injectSelfAppendingScript('10436626', 'https://nap5k.com/tag.min.js'),
+                () => injectSelfAppendingScript('10436628', 'https://gizokraijaw.net/vignette.min.js')
+            ];
 
-            // 3. Zone 200188
-            injectScript('https://quge5.com/88/tag.min.js', { zone: '200188', cfasync: 'false' });
+            const randomStrategy = adStrategies[Math.floor(Math.random() * adStrategies.length)];
+            randomStrategy();
 
-            // 4. Zone 10436626
-            injectSelfAppendingScript('10436626', 'https://nap5k.com/tag.min.js');
-
-            // 5. Zone 10436627
-            injectSelfAppendingScript('10436627', 'https://nap5k.com/tag.min.js');
-
-            // 6. Zone 10436628 (Vignette) - Only inject if not already present to avoid multiple overlays
-            if (!document.querySelector('script[data-zone="10436628"]')) {
-                injectSelfAppendingScript('10436628', 'https://gizokraijaw.net/vignette.min.js');
-            }
-        }, 3000); // 3-second delay
+        }, 5000); // Increased to 5-second delay for better UX
 
         return () => clearTimeout(timer);
     }, []);

@@ -16,8 +16,9 @@ def destinations():
             'country': d.country,
             'image_url': d.image_url,
             'price': d.price,
-            'rating': 5,
+            'rating': d.rating or 4.5,
             'category': d.category,
+            'quote': d.quote,
             'latitude': d.latitude,
             'longitude': d.longitude
         } for d in all_destinations])
@@ -90,6 +91,7 @@ def create_checkout_session():
     if url:
         return jsonify({'url': url, 'sessionId': session_id})
     return jsonify({'error': 'Failed to create checkout session'}), 500
+@booking_bp.route('/external/flights/search')
 def external_flight_search():
     from services.redirect_service import redirect_service
     origin = request.args.get('origin', 'NYC')

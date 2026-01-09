@@ -9,17 +9,24 @@ export default {
         extend: {
             colors: {
                 primary: {
-                    DEFAULT: '#667eea',
-                    dark: '#5a67d8',
+                    DEFAULT: '#EA863A', // Magical Kenya Jaffa
+                    dark: '#D97529',
                 },
                 secondary: {
-                    DEFAULT: '#764ba2',
-                    dark: '#667eea',
+                    DEFAULT: '#2F5233', // Acacia Green
+                    dark: '#1E3822',
+                },
+                accent: {
+                    DEFAULT: '#CE1126', // Maasai Red
                 },
                 background: {
-                    DEFAULT: '#ffffff',
-                    dark: '#0f172a',
+                    DEFAULT: '#F9F7F2', // Warm Savannah
+                    dark: '#1A1816',
                 },
+            },
+            fontFamily: {
+                sans: ['Inter', 'sans-serif'],
+                serif: ['Playfair Display', 'serif'],
             },
             borderRadius: {
                 'xl': '1rem',

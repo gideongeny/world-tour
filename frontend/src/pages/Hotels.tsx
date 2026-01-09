@@ -75,10 +75,13 @@ function Hotels() {
     const [searchQuery, setSearchQuery] = useState('');
     const { currency, setCurrency, rates } = useCurrency();
 
+    const [externalUrl, setExternalUrl] = useState<string | null>(null);
+
     const handleSearch = useCallback((overriddenQuery?: string) => {
         const activeQuery = overriddenQuery || searchQuery;
         if (!activeQuery.trim()) return;
         setLoading(true);
+        setExternalUrl(null); // Reset external link
 
         // Fetch live results from LiteAPI via our backend
         fetch(`/booking/live/hotels/search?q=${encodeURIComponent(activeQuery)}`)
@@ -87,11 +90,14 @@ function Hotels() {
                 if (Array.isArray(data) && data.length > 0) {
                     setHotels(data);
                 } else {
-                    // Fallback to Booking.com redirect if no live results
+                    // Fallback: Get external URL but DO NOT auto-open (avoid popup blocker)
                     fetch(`/booking/external/hotels/search?q=${encodeURIComponent(activeQuery)}`)
                         .then(res => res.json())
                         .then(extData => {
-                            if (extData.url) window.open(extData.url, '_blank');
+                            if (extData.url) {
+                                setExternalUrl(extData.url);
+                                setHotels([]); // Clear previous hotels results to show fallback UI
+                            }
                         });
                 }
                 setLoading(false);
@@ -114,8 +120,8 @@ function Hotels() {
                     if (Array.isArray(data)) setHotels(data);
                     else {
                         setHotels([
-                            { id: 1, name: 'Grand Plaza', location: 'Paris, France', price: 350, rating: 4.8, image_url: 'https://images.unsplash.com/photo-1543967354-28b7ca51658e?auto=format&fit=crop&q=80' },
-                            { id: 2, name: 'Ocean View Resort', location: 'Bali, Indonesia', price: 220, rating: 4.9, image_url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80' },
+                            { id: 1, name: 'Grand Plaza', location: 'Paris, France', price: 350, rating: 4.8, image_url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80' },
+                            { id: 2, name: 'Ocean View Resort', location: 'Bali, Indonesia', price: 220, rating: 4.9, image_url: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&q=80' },
                         ]);
                     }
                     setLoading(false);
@@ -187,13 +193,33 @@ function Hotels() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {hotels.map(h => (
-                        <HotelCard
-                            key={h.id}
-                            hotel={h}
-                            onBook={handleBook}
-                        />
-                    ))}
+                    {hotels.length > 0 ? (
+                        hotels.map(h => (
+                            <HotelCard
+                                key={h.id}
+                                hotel={h}
+                                onBook={handleBook}
+                            />
+                        ))
+                    ) : externalUrl ? (
+                        <div className="col-span-full flex flex-col items-center justify-center text-center p-12 bg-white dark:bg-slate-800 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700">
+                            <h3 className="text-2xl font-bold mb-4">No direct partners found for "{searchQuery}"</h3>
+                            <p className="text-slate-500 mb-8 max-w-md">However, we found excellent options via our trusted partner network.</p>
+                            <a
+                                href={externalUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-8 py-4 bg-primary text-white rounded-xl font-bold shadow-xl hover:scale-105 transition-transform flex items-center gap-2"
+                            >
+                                View Hotels on Google
+                                <Globe className="w-5 h-5" />
+                            </a>
+                        </div>
+                    ) : (
+                        <div className="col-span-full text-center py-12 text-slate-500">
+                            Try searching for "Paris", "Bali", or "Dubai"
+                        </div>
+                    )}
                 </div>
             )}
         </div>

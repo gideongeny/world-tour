@@ -1,14 +1,38 @@
 import { FC, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Phone, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const BACKGROUND_IMAGES = [
     "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80", // Tropical
     "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80", // Safari
     "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&q=80", // Santorini
     "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80", // Kyoto
-    "https://images.unsplash.com/photo-1512453979798-5ea90b7cadc9?auto=format&fit=crop&q=80"  // Dubai
+    "https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&q=80"  // Dubai
 ];
+
+const Firefly = ({ delay }: { delay: number }) => (
+    <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{
+            opacity: [0, 1, 0],
+            scale: [0, 1.5, 0],
+            x: [0, Math.random() * 100 - 50, Math.random() * 100 - 50],
+            y: [0, Math.random() * -100 - 50, Math.random() * -100 - 100],
+        }}
+        transition={{
+            duration: 5 + Math.random() * 5,
+            repeat: Infinity,
+            delay: delay,
+            ease: "easeInOut"
+        }}
+        className="absolute w-2 h-2 bg-yellow-400 rounded-full blur-[1px] shadow-[0_0_10px_rgba(250,204,21,0.8)] z-20 pointer-events-none"
+        style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+        }}
+    />
+);
 
 const Hero: FC = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -28,20 +52,33 @@ const Hero: FC = () => {
                     <img
                         key={img}
                         src={img}
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentIndex ? 'opacity-100' : 'opacity-0'
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 animate-ken-burns ${idx === currentIndex ? 'opacity-100' : 'opacity-0'
                             }`}
                         alt="Destinations"
                     />
                 ))}
             </div>
 
+            {/* Fireflies Atmosphere */}
+            {[...Array(20)].map((_, i) => <Firefly key={i} delay={i * 0.5} />)}
+
             <div className="relative z-20 text-center px-6 max-w-4xl">
-                <h1 className="text-6xl md:text-8xl font-black text-white mb-6 drop-shadow-2xl">
-                    Explore the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">World</span>
-                </h1>
-                <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto drop-shadow-lg">
+                <motion.h1
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, type: "spring", bounce: 0.5 }}
+                    className="text-6xl md:text-8xl font-black text-white mb-6 drop-shadow-2xl font-serif"
+                >
+                    Explore the <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">World</span>
+                </motion.h1>
+                <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 1 }}
+                    className="text-xl text-white/90 mb-10 max-w-2xl mx-auto drop-shadow-lg"
+                >
                     Discover hand-picked destinations, personalized itineraries, and elite experiences curated just for you.
-                </p>
+                </motion.p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                     <Link

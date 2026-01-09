@@ -3,15 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --primary: #667eea;
-  --secondary: #764ba2;
-  --background: #ffffff;
-  --foreground: #1e293b;
+  --primary: #EA863A;
+  /* Jaffa Orange */
+  --secondary: #2F5233;
+  /* Acacia Green */
+  --background: #F9F7F2;
+  /* Warm Savannah */
+  --foreground: #1A1816;
 }
 
 .dark {
-  --background: #0f172a;
-  --foreground: #f8fafc;
+  --background: #1A1816;
+  --foreground: #F9F7F2;
+}
+
+.monochrome {
+  filter: grayscale(100%);
 }
 
 body {
@@ -34,4 +41,38 @@ body {
 .dark .glass-card {
   background-color: rgba(15, 23, 42, 0.8);
   border-color: rgba(51, 65, 85, 0.5);
+}
+
+.magical-texture {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* 3D Flip Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Custom JIT safeguard for delay */
+.hover\:delay-\[7000ms\]:hover {
+  transition-delay: 7000ms;
 }

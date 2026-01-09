@@ -3,19 +3,17 @@ from datetime import datetime
 
 class RedirectService:
     @staticmethod
-    def get_booking_url(destination, checkin=None, checkout=None, guests=2, rooms=1):
-        """Generates a search URL for Booking.com"""
-        base_url = "https://www.booking.com/searchresults.html"
-        params = {
-            "ss": destination,
-            "group_adults": guests,
-            "no_rooms": rooms,
-            "aid": "304142" # Generic affiliate ID placeholder
-        }
-        
+    def get_booking_url(destination, checkin=None, checkout=None):
+        """
+        Generates a Google Hotels search URL.
+        """
+        base_url = "https://www.google.com/travel/hotels"
+        params = f"?q={destination}"
         if checkin and checkout:
-            params["checkin"] = checkin
-            params["checkout"] = checkout
+            # Google formatted date dates can be tricky in query params, usually standard q string works enough
+            # But for specific dates, Google uses a codified params string often.
+            # Keeping it simple with Query for now as requested "linked with google".
+            pass
             
         return f"{base_url}?{urllib.parse.urlencode(params)}"
 

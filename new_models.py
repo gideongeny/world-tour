@@ -64,8 +64,10 @@ class Destination(db.Model):
     name = db.Column(db.String(100), nullable=False)
     country = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
+    quote = db.Column(db.String(300)) # New quote field
     price = db.Column(db.Float, nullable=False)
     duration = db.Column(db.Integer)
+    rating = db.Column(db.Float, default=4.5)
     image_url = db.Column(db.String(500))
     category = db.Column(db.String(50))
     latitude = db.Column(db.Float)

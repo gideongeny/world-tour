@@ -45,7 +45,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Database configuration for production
-DATABASE_URL = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL') or 'sqlite:///world_tour_v2.db'
+DATABASE_URL = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL') or 'sqlite:///world_tour_v3.db'
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
@@ -92,20 +92,20 @@ def seed_db():
         db.session.query(Destination).delete()
         db.session.commit()
         
-        # 1. Destinations (Expanded)
+        # 1. Destinations (Expanded with Curated High-Res Images & Realistic Data)
         destinations = [
-            Destination(name='Paris', country='France', description='The City of Light.', price=200, duration=5, image_url='https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80', category='cultural', latitude=48.8566, longitude=2.3522, climate='Temperate', best_time_to_visit='Spring'),
-            Destination(name='Bali', country='Indonesia', description='Island of the Gods.', price=150, duration=7, image_url='https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80', category='beach', latitude=-8.4095, longitude=115.1889, climate='Tropical', best_time_to_visit='Dry Season'),
-            Destination(name='Tokyo', country='Japan', description='Tradition meets future.', price=300, duration=6, image_url='https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&q=80', category='city', latitude=35.6762, longitude=139.6503, climate='Temperate', best_time_to_visit='Autumn'),
-            Destination(name='Santorini', country='Greece', description='Dramatic views and sunsets.', price=250, duration=5, image_url='https://images.unsplash.com/photo-1613395877344-13d4c79e42d0?auto=format&fit=crop&q=80', category='luxury', latitude=36.3932, longitude=25.4615, climate='Mediterranean', best_time_to_visit='Summer'),
-            Destination(name='New York', country='USA', description='The city that never sleeps.', price=280, duration=4, image_url='https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&q=80', category='city', latitude=40.7128, longitude=-74.0060, climate='Temperate', best_time_to_visit='Fall'),
-            Destination(name='Rome', country='Italy', description='The Eternal City.', price=190, duration=6, image_url='https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&q=80', category='cultural', latitude=41.9028, longitude=12.4964, climate='Mediterranean', best_time_to_visit='Spring'),
-            Destination(name='Cape Town', country='South Africa', description='Where ocean meets mountain.', price=170, duration=8, image_url='https://images.unsplash.com/photo-1580060839134-75a5edca2e99?auto=format&fit=crop&q=80', category='adventure', latitude=-33.9249, longitude=18.4241, climate='Mediterranean', best_time_to_visit='Summer'),
-            Destination(name='Dubai', country='UAE', description='Ultramodern luxury.', price=350, duration=4, image_url='https://images.unsplash.com/photo-1512453979798-5ea90b7cadc9?auto=format&fit=crop&q=80', category='luxury', latitude=25.2048, longitude=55.2708, climate='Desert', best_time_to_visit='Winter'),
-            Destination(name='Maldives', country='Maldives', description='Tropical paradise.', price=400, duration=6, image_url='https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&q=80', category='beach', latitude=3.2028, longitude=73.2207, climate='Tropical', best_time_to_visit='Winter'),
-            Destination(name='London', country='UK', description='Historic charm.', price=220, duration=5, image_url='https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80', category='city', latitude=51.5074, longitude=-0.1278, climate='Temperate', best_time_to_visit='Summer'),
-            Destination(name='Barcelona', country='Spain', description='Architecture and sea.', price=180, duration=5, image_url='https://images.unsplash.com/photo-1583422409516-2895a77efded?auto=format&fit=crop&q=80', category='city', latitude=41.3851, longitude=2.1734, climate='Mediterranean', best_time_to_visit='Spring'),
-            Destination(name='Iceland', country='Iceland', description='Fire and ice.', price=320, duration=7, image_url='https://images.unsplash.com/photo-1504893524553-b855bce32c67?auto=format&fit=crop&q=80', category='nature', latitude=64.9631, longitude=-19.0208, climate='Cold', best_time_to_visit='Summer'),
+            Destination(name='Paris', country='France', description='The City of Light. Rated 4.8/5 by travelers.', price=200, rating=4.8, duration=5, image_url='https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80', category='cultural', latitude=48.8566, longitude=2.3522, climate='Temperate', best_time_to_visit='Spring', quote="Paris is always a good idea. — Audrey Hepburn"),
+            Destination(name='Bali', country='Indonesia', description='Island of the Gods. Rated 4.9/5 by nature lovers.', price=150, rating=4.9, duration=7, image_url='https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80', category='beach', latitude=-8.4095, longitude=115.1889, climate='Tropical', best_time_to_visit='Dry Season', quote="I think I deserve something beautiful. — Elizabeth Gilbert (Eat, Pray, Love)"),
+            Destination(name='Maasai Mara', country='Kenya', description='Witness the Great Migration. Rated 5.0/5 for wildlife.', price=450, rating=5.0, duration=5, image_url='https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80', category='safari', latitude=-1.4061, longitude=35.0839, climate='Savannah', best_time_to_visit='July to October', quote="I never knew of a morning in Africa when I woke up that I was not happy. — Ernest Hemingway"),
+            Destination(name='Diani Beach', country='Kenya', description='Pristine white sands. Rated 4.8/5 for relaxation.', price=280, rating=4.8, duration=7, image_url='https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?auto=format&fit=crop&q=80', category='beach', latitude=-4.2797, longitude=39.5947, climate='Tropical', best_time_to_visit='December to March', quote="The ocean stirs the heart, inspires the imagination and brings eternal joy to the soul. — Wyland"),
+            Destination(name='Serengeti', country='Tanzania', description='Endless plains of wildlife. Rated 4.9/5 for safari.', price=480, rating=4.9, duration=6, image_url='https://images.unsplash.com/photo-1535941339077-2dd1c7963098?auto=format&fit=crop&q=80', category='safari', latitude=-2.3333, longitude=34.8333, climate='Savannah', best_time_to_visit='June to October', quote="The only man I envy is the man who has not yet been to Africa. — Richard Mullin"),
+            Destination(name='Cape Town', country='South Africa', description='Ocean meets mountain. Rated 4.8/5 for scenery.', price=170, rating=4.8, duration=8, image_url='https://images.unsplash.com/photo-1580060839134-75a5edca2e99?auto=format&fit=crop&q=80', category='adventure', latitude=-33.9249, longitude=18.4241, climate='Mediterranean', best_time_to_visit='Summer', quote="The fairest cape we saw in the whole circumference of the earth. — Sir Francis Drake"),
+            Destination(name='Dubai', country='UAE', description='Ultramodern luxury. Rated 4.5/5 for shopping.', price=350, rating=4.5, duration=4, image_url='https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&q=80', category='luxury', latitude=25.2048, longitude=55.2708, climate='Desert', best_time_to_visit='Winter', quote="The desert tells a different story every time one ventures on it. — Wilfred Thesiger"),
+            Destination(name='Santorini', country='Greece', description='Iconic sunsets. Rated 4.9/5 for romance.', price=250, rating=4.9, duration=5, image_url='https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&q=80', category='luxury', latitude=36.3932, longitude=25.4615, climate='Mediterranean', best_time_to_visit='Summer', quote="Happy is the man, I thought, who, before dying, has the good fortune to sail the Aegean sea. — Nikos Kazantzakis"),
+            Destination(name='Tokyo', country='Japan', description='Tradition meets future. Rated 4.7/5 for culture.', price=300, rating=4.7, duration=6, image_url='https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80', category='city', latitude=35.6762, longitude=139.6503, climate='Temperate', best_time_to_visit='Autumn', quote="Tokyo would probably be the art director of the world. — Terry Gilliam"),
+            Destination(name='New York', country='USA', description='The city that never sleeps. Rated 4.6/5 for energy.', price=280, rating=4.6, duration=4, image_url='https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&q=80', category='city', latitude=40.7128, longitude=-74.0060, climate='Temperate', best_time_to_visit='Fall', quote="The city seen from the Queensboro Bridge is always the city seen for the first time. — F. Scott Fitzgerald"),
+            Destination(name='Maldives', country='Maldives', description='Tropical paradise. Rated 5.0/5 for honeymooners.', price=400, rating=5.0, duration=6, image_url='https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&q=80', category='beach', latitude=3.2028, longitude=73.2207, climate='Tropical', best_time_to_visit='Winter', quote="Smell the sea and feel the sky. Let your soul and spirit fly. — Van Morrison"),
+            Destination(name='Cairo', country='Egypt', description='Home of the Pyramids. Rated 4.7/5 for history.', price=180, rating=4.7, duration=5, image_url='https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&q=80', category='cultural', latitude=30.0444, longitude=31.2357, climate='Desert', best_time_to_visit='October to April', quote="Man fears Time, yet Time fears the Pyramids. — Arab Proverb"),
         ]
         
         destinations_map = {}
@@ -195,6 +195,20 @@ def populate_data():
             if dest:
                 destinations_map[name] = dest
         
+        # Custom high-quality images for hotels
+        HOTEL_IMAGES = {
+            'The Ritz Paris': 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Ritz-Paris-Hotel-Exterior.jpg',
+            'Hotel Le Meurice': 'https://upload.wikimedia.org/wikipedia/commons/e/e0/H%C3%B4tel_Meurice_%28Paris%29.jpg',
+            'Ayana Resort': 'https://upload.wikimedia.org/wikipedia/commons/5/52/Ayana_Resort_and_Spa_Bali_-_Ocean_Beach_Pool.jpg', 
+            'Viceroy Bali': 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Viceroy_Bali_Resort_-_Pool.jpg',
+            'Aman Tokyo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/%C5%8Ctemachi_One_Tower.jpg/600px-%C5%8Ctemachi_One_Tower.jpg',
+            'Park Hyatt Tokyo': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Shinjuku_Park_Tower_close_up.jpg/600px-Shinjuku_Park_Tower_close_up.jpg',
+            'Burj Al Arab': 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Burj_Al_Arab%2C_Dubai.jpg',
+            'Atlantis The Palm': 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Atlantis_The_Palm_view.jpg/800px-Atlantis_The_Palm_view.jpg',
+            'Canaves Oia': 'https://upload.wikimedia.org/wikipedia/commons/e/e6/Canaves_Oia.jpg',
+            'Hotel Hassler Roma': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Hotel_Hassler.JPG/800px-Hotel_Hassler.JPG',
+        }
+        
         # Add Hotels
         hotels_data = [
             ('The Ritz Paris', 'Paris, France', 1200, 5.0, 'Paris'),
@@ -212,14 +226,17 @@ def populate_data():
         for name, location, price, rating, dest_name in hotels_data:
             dest = destinations_map.get(dest_name)
             if dest:
+                # Use specific image if available, else a nice generic luxury room
+                img_url = HOTEL_IMAGES.get(name, 'https://images.unsplash.com/photo-1566073771259-6a8506099945')
+                
                 hotel = Hotel(
                     name=name,
                     location=location,
                     price=price,
                     rating=rating,
                     destination_id=dest.id,
-                    image_url='https://images.unsplash.com/photo-1566073771259-6a8506099945',
-                    description=f'Luxury accommodation in {location}'
+                    image_url=img_url,
+                    description=f'Experience world-class service and luxury at {name}. Located in the heart of {location}, offering breathtaking views and exquisite dining.'
                 )
                 db.session.add(hotel)
         

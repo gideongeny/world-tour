@@ -30,7 +30,28 @@ const Map: FC<MapProps> = ({
 
         map.current = new maplibregl.Map({
             container: mapContainer.current,
-            style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+            style: {
+                version: 8,
+                sources: {
+                    'satellite-tiles': {
+                        type: 'raster',
+                        tiles: [
+                            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+                        ],
+                        tileSize: 256,
+                        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                    }
+                },
+                layers: [
+                    {
+                        id: 'simple-tiles',
+                        type: 'raster',
+                        source: 'satellite-tiles',
+                        minzoom: 0,
+                        maxzoom: 22
+                    }
+                ]
+            },
             center: center,
             zoom: zoom,
         });

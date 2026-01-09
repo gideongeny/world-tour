@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import Hero from '../components/Hero'
 import Monetag from '../components/Monetag'
 import DestinationCard from '../components/DestinationCard'
 import Map from '../components/Map'
+import PageTransition from '../components/PageTransition'
 
 interface Destination {
     id: number;
@@ -53,61 +55,81 @@ function Home() {
     }));
 
     return (
-        <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
-            <Hero />
-            <Monetag />
+        <PageTransition>
+            <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
+                <Hero />
+                <Monetag />
 
-            <section id="destinations" className="mb-20">
-                <div className="flex justify-between items-end mb-8">
-                    <div>
-                        <h2 className="text-4xl font-black mb-2 tracking-tight">World Class Destinations</h2>
-                        <p className="text-slate-500 dark:text-slate-400">Hand-picked by our experts for your next adventure</p>
+                <section id="destinations" className="mb-20">
+                    <div className="flex justify-between items-end mb-8">
+                        <div>
+                            <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">World Class Destinations</h2>
+                            <p className="text-slate-500 dark:text-slate-400">Hand-picked by our experts for your next adventure</p>
+                        </div>
+                        <Link to="/hotels" className="text-primary font-bold hover:underline">View All</Link>
                     </div>
-                    <Link to="/hotels" className="text-primary font-bold hover:underline">View All</Link>
-                </div>
 
-                {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {[1, 2, 3, 4].map(i => (
-                            <div key={i} className="h-96 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-2xl" />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {destinations.map(destination => (
-                            <DestinationCard key={destination.id} destination={destination} />
-                        ))}
-                    </div>
-                )}
-            </section>
+                    {loading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="h-96 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-2xl" />
+                            ))}
+                        </div>
+                    ) : (
+                        <motion.div
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+                            initial="hidden"
+                            animate="visible"
+                            variants={{
+                                hidden: { opacity: 0 },
+                                visible: {
+                                    opacity: 1,
+                                    transition: {
+                                        staggerChildren: 0.1
+                                    }
+                                }
+                            }}
+                        >
+                            {destinations.map(destination => (
+                                <motion.div key={destination.id} variants={{
+                                    hidden: { opacity: 0, y: 50 },
+                                    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+                                }}>
+                                    <DestinationCard destination={destination} />
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    )}
+                </section>
 
-            <section id="map" className="mb-20">
-                <div className="mb-8">
-                    <h2 className="text-4xl font-black mb-2 tracking-tight">Explore the Map</h2>
-                    <p className="text-slate-500 dark:text-slate-400">Visualise your next journey across the globe</p>
-                </div>
-                <Map markers={mapMarkers} center={[20, 10]} zoom={2} />
-            </section>
-
-            <section className="relative rounded-3xl overflow-hidden py-24 px-12 text-center text-white">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary z-10 opacity-90" />
-                <div className="absolute inset-0 z-0">
-                    <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80" className="w-full h-full object-cover" alt="CTA" />
-                </div>
-                <div className="relative z-20 max-w-2xl mx-auto">
-                    <h2 className="text-5xl font-black mb-6 drop-shadow-lg">Ready for your next adventure?</h2>
-                    <p className="text-xl mb-10 text-white/90">Join 50k+ happy travelers and start booking your dream trip today.</p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link to="/hotels" className="px-10 py-4 bg-white text-slate-900 rounded-2xl font-black shadow-2xl hover:bg-slate-50 transition-colors inline-block">
-                            Get Started
-                        </Link>
-                        <Link to="/contact" className="px-10 py-4 bg-white/20 backdrop-blur-md rounded-2xl font-black border border-white/30 hover:bg-white/30 transition-colors inline-block">
-                            Contact Sales
-                        </Link>
+                <section id="map" className="mb-20">
+                    <div className="mb-8">
+                        <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">Explore the Map</h2>
+                        <p className="text-slate-500 dark:text-slate-400">Visualise your next journey across the globe</p>
                     </div>
-                </div>
-            </section>
-        </div>
+                    <Map markers={mapMarkers} center={[20, 10]} zoom={2} />
+                </section>
+
+                <section className="relative rounded-3xl overflow-hidden py-24 px-12 text-center text-white">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary z-10 opacity-90" />
+                    <div className="absolute inset-0 z-0">
+                        <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80" className="w-full h-full object-cover" alt="CTA" />
+                    </div>
+                    <div className="relative z-20 max-w-2xl mx-auto">
+                        <h2 className="text-5xl font-black mb-6 drop-shadow-lg font-serif">Ready for your next adventure?</h2>
+                        <p className="text-xl mb-10 text-white/90">Join 50k+ happy travelers and start booking your dream trip today.</p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <Link to="/hotels" className="px-10 py-4 bg-white text-slate-900 rounded-2xl font-black shadow-2xl hover:bg-slate-50 transition-colors inline-block">
+                                Get Started
+                            </Link>
+                            <Link to="/contact" className="px-10 py-4 bg-white/20 backdrop-blur-md rounded-2xl font-black border border-white/30 hover:bg-white/30 transition-colors inline-block">
+                                Contact Sales
+                            </Link>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </PageTransition>
     )
 }
 
