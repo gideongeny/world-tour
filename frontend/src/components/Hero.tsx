@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import type { FC } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Phone, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -35,7 +34,7 @@ const Firefly = ({ delay }: { delay: number }) => (
     />
 );
 
-const Hero: FC = () => {
+const Hero: React.FC = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {

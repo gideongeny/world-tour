@@ -12,7 +12,6 @@ interface Destination {
     image_url: string;
     price: number;
     rating: number;
-    rating: number;
     category: string;
     quote?: string;
 }

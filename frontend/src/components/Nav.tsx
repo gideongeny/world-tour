@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react';
-import type { FC } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { Sun, Moon, LogOut, User as UserIcon, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
 
-const Nav: FC = () => {
+const Nav: React.FC = () => {
     const [scrolled, setScrolled] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const [langOpen, setLangOpen] = useState(false);

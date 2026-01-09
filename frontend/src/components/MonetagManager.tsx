@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
-import type { FC } from 'react';
+import React, { useEffect } from 'react';
 
-const MonetagManager: FC = () => {
+const MonetagManager: React.FC = () => {
     useEffect(() => {
         // Function to inject scripts safely
         const injectScript = (source: string, dataset?: Record<string, string>, async = true) => {

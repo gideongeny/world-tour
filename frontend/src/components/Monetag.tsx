@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
-import type { FC } from 'react';
+import React, { useEffect } from 'react';
 
-const Monetag: FC = () => {
+const Monetag: React.FC = () => {
     useEffect(() => {
         // This is a placeholder for the Monetag script the user mentioned.
         // Once the user provides the code, it should be placed here or in index.html.
