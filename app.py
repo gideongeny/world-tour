@@ -51,7 +51,7 @@ babel = Babel(app, locale_selector=get_locale)
 
 # Database configuration for production
 DATABASE_URL = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL') or 'sqlite:///world_tour_v3.db'
-if DATABASE_URL.startswith('postgres://'):
+if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'please-set-a-real-secret-key')
