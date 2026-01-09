@@ -2,7 +2,7 @@
 Subscription Model - Premium Membership
 """
 from datetime import datetime
-from extensions import db
+from db import db
 
 class Subscription(db.Model):
     __tablename__ = 'subscriptions'

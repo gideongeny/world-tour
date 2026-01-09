@@ -6,7 +6,7 @@ from flask_login import login_required, current_user
 from services.stripe_service import StripeService
 from models.subscription import Subscription
 from new_models import User
-from extensions import db
+from db import db
 from datetime import datetime
 import stripe
 import os
@@ -48,24 +48,74 @@ def create_subscription():
 @login_required
 def create_paypal_payment():
     """Create a PayPal payment (simpler alternative to Stripe)"""
+    try:
+        from services.paypal_service import PayPalService
+        
+        data = request.get_json()
+        amount = data.get('amount')
+        plan_name = data.get('plan')
+        
+        print(f"DEBUG: Creating PayPal payment for {amount} {plan_name}")
+
+        # Create PayPal payment
+        approval_url, order_id = PayPalService.create_payment(
+            amount=amount,
+            description=f"{plan_name} - World Tour Plus",
+            return_url=f'http://localhost:5173/subscription/success?plan={plan_name}',
+            cancel_url='http://localhost:5173/pricing'
+        )
+        
+        if not approval_url:
+            print("ERROR: PayPal create_payment returned None. Check credentials.")
+            return jsonify({'error': 'PayPal configuration error. Check server logs.'}), 500
+            
+        print(f"DEBUG: Payment created successfully: {order_id}")
+        return jsonify({'approval_url': approval_url, 'order_id': order_id}), 200
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+@payments_bp.route('/capture-paypal-payment', methods=['POST'])
+@login_required
+def capture_paypal_payment():
+    """Capture PayPal payment and create subscription"""
     from services.paypal_service import PayPalService
+    from datetime import timedelta
     
     data = request.get_json()
-    amount = data.get('amount')
-    plan_name = data.get('plan')
+    token = data.get('token')
+    plan = data.get('plan', 'monthly')
     
-    # Create PayPal payment
-    approval_url, order_id = PayPalService.create_payment(
-        amount=amount,
-        description=f"{plan_name} - World Tour Plus",
-        return_url='http://localhost:5173/subscription/success',
-        cancel_url='http://localhost:5173/pricing'
+    # Capture payment
+    success = PayPalService.capture_payment(token)
+    
+    if not success:
+        return jsonify({'error': 'Failed to capture payment'}), 400
+        
+    # Create subscription record
+    # Calculate duration
+    duration = timedelta(days=365) if 'year' in plan.lower() else timedelta(days=30)
+    
+    subscription = Subscription(
+        user_id=current_user.id,
+        plan=plan,
+        status='active',
+        stripe_subscription_id=f"paypal_{token}", # Store PayPal Order ID
+        current_period_start=datetime.utcnow(),
+        current_period_end=datetime.utcnow() + duration
     )
     
-    if not approval_url:
-        return jsonify({'error': 'PayPal not configured. Add PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET to .env'}), 500
+    # Remove existing if any
+    existing = Subscription.query.filter_by(user_id=current_user.id).first()
+    if existing:
+        db.session.delete(existing)
+        
+    db.session.add(subscription)
+    db.session.commit()
     
-    return jsonify({'approval_url': approval_url, 'order_id': order_id}), 200
+    return jsonify({'success': True}), 200
 
 @payments_bp.route('/cancel-subscription', methods=['POST'])
 @login_required

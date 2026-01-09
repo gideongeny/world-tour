@@ -44,6 +44,11 @@ except ImportError:
 app = Flask(__name__)
 CORS(app)
 
+def get_locale():
+    return 'en'
+
+babel = Babel(app, locale_selector=get_locale)
+
 # Database configuration for production
 DATABASE_URL = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL') or 'sqlite:///world_tour_v3.db'
 if DATABASE_URL.startswith('postgres://'):

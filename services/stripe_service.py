@@ -34,7 +34,7 @@ class StripeService:
             print(f"Stripe Error: {str(e)}")
             return None, None
 
-stripe_service = StripeService()
+
 
     # Premium Membership Methods
     @staticmethod
@@ -85,3 +85,5 @@ stripe_service = StripeService()
         except Exception as e:
             print(f"Stripe Error: {str(e)}")
             return False
+
+stripe_service = StripeService()

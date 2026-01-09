@@ -5,7 +5,7 @@ Handles affiliate link generation and click tracking
 from flask import Blueprint, request, jsonify, redirect
 from services.affiliate_service import AffiliateService
 from models.affiliate import AffiliateClick
-from extensions import db
+from db import db
 
 affiliate_bp = Blueprint('affiliate', __name__, url_prefix='/api/affiliate')
 

@@ -2,7 +2,7 @@
 Affiliate Click Tracking Model
 """
 from datetime import datetime
-from extensions import db
+from db import db
 
 class AffiliateClick(db.Model):
     __tablename__ = 'affiliate_clicks'

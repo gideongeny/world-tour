@@ -1,7 +1,7 @@
 Flask==2.2.5           # Core web framework
 Flask-SQLAlchemy==3.0.2 # ORM
 Flask-Login==0.6.2     # User authentication
-psycopg2-binary==2.9.5 # Postgres driver for Render
+# psycopg2-binary==2.9.5 # Postgres driver for Render
 Flask-Mail==0.9.1      # Email support
 Flask-Migrate==4.0.4   # DB migrations (required for flask db upgrade)
 Flask-Babel==3.1.0     # i18n/l10n
@@ -33,5 +33,5 @@ itsdangerous==2.1.2    # Security
 click==8.1.3           # CLI utils
 blinker==1.6.2         # Signals
 
-psycopg2-binary
+# psycopg2-binary
 amadeus==9.0.0
