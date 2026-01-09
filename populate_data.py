@@ -18,19 +18,19 @@ with app.app_context():
     
     # Add Hotels
     hotels_data = [
-        ('The Ritz Paris', 'Paris, France', 1200, 5.0, paris),
-        ('Hotel Le Meurice', 'Paris, France', 900, 4.9, paris),
-        ('Ayana Resort', 'Bali, Indonesia', 450, 4.8, bali),
-        ('Viceroy Bali', 'Bali, Indonesia', 600, 4.9, bali),
-        ('Aman Tokyo', 'Tokyo, Japan', 1100, 5.0, tokyo),
-        ('Park Hyatt Tokyo', 'Tokyo, Japan', 800, 4.8, tokyo),
-        ('Burj Al Arab', 'Dubai, UAE', 2500, 5.0, dubai),
-        ('Atlantis The Palm', 'Dubai, UAE', 1800, 4.7, dubai),
-        ('Canaves Oia', 'Santorini, Greece', 950, 4.9, santorini),
-        ('Hotel Hassler Roma', 'Rome, Italy', 850, 4.8, rome),
+        ('The Ritz Paris', 'Paris, France', 1200, 5.0, paris, 'https://images.unsplash.com/photo-1543967354-28b7ca51658e'),
+        ('Hotel Le Meurice', 'Paris, France', 900, 4.9, paris, 'https://images.unsplash.com/photo-1551882547-ff43c63e1c2a'),
+        ('Ayana Resort', 'Bali, Indonesia', 450, 4.8, bali, 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4'),
+        ('Viceroy Bali', 'Bali, Indonesia', 600, 4.9, bali, 'https://images.unsplash.com/photo-1537996194471-e657df975ab4'),
+        ('Aman Tokyo', 'Tokyo, Japan', 1100, 5.0, tokyo, 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26'),
+        ('Park Hyatt Tokyo', 'Tokyo, Japan', 800, 4.8, tokyo, 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb'),
+        ('Burj Al Arab', 'Dubai, UAE', 2500, 5.0, dubai, 'https://images.unsplash.com/photo-1582719478250-c89cae4df85b'),
+        ('Atlantis The Palm', 'Dubai, UAE', 1800, 4.7, dubai, 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6'),
+        ('Canaves Oia', 'Santorini, Greece', 950, 4.9, santorini, 'https://images.unsplash.com/photo-1571896349842-33c89424de2d'),
+        ('Hotel Hassler Roma', 'Rome, Italy', 850, 4.8, rome, 'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2'),
     ]
     
-    for name, location, price, rating, dest in hotels_data:
+    for name, location, price, rating, dest, img in hotels_data:
         if dest:
             hotel = Hotel(
                 name=name,
@@ -38,7 +38,7 @@ with app.app_context():
                 price=price,
                 rating=rating,
                 destination_id=dest.id,
-                image_url='https://images.unsplash.com/photo-1566073771259-6a8506099945',
+                image_url=f"{img}?auto=format&fit=crop&q=80",
                 description=f'Luxury accommodation in {location}'
             )
             db.session.add(hotel)

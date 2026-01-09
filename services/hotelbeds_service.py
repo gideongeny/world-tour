@@ -61,15 +61,31 @@ class HotelbedsService:
             data = response.json()
             
             if data.get('hotels') and data['hotels'].get('hotels'):
-                return [{
-                    'id': h.get('code'),
-                    'name': h.get('name'),
-                    'location': h.get('destinationName', destination_code),
-                    'price': h.get('minRate', 120),
-                    'rating': float(h.get('categoryCode', '4').replace('ST', '')),
-                    'image_url': 'https://images.unsplash.com/photo-1566073771259-6a8506099945',
-                    'description': 'Luxury stay via Hotelbeds'
-                } for h in data['hotels']['hotels']]
+                results = []
+                for h in data['hotels']['hotels']:
+                    # Dynamic fallback based on hotel code to avoid all looking the same
+                    code_seed = sum(ord(c) for c in h.get('code', 'Hotel'))
+                    fallbacks = [
+                        'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb',
+                        'https://images.unsplash.com/photo-1571896349842-33c89424de2d',
+                        'https://images.unsplash.com/photo-1566073771259-6a8506099945',
+                        'https://images.unsplash.com/photo-1582719478250-c89cae4df85b',
+                        'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4',
+                        'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6',
+                        'https://images.unsplash.com/photo-1551882547-ff43c63e1c2a'
+                    ]
+                    image_url = fallbacks[code_seed % len(fallbacks)]
+
+                    results.append({
+                        'id': h.get('code'),
+                        'name': h.get('name'),
+                        'location': h.get('destinationName', destination_code),
+                        'price': h.get('minRate', 120),
+                        'rating': float(h.get('categoryCode', '4').replace('ST', '')),
+                        'image_url': image_url,
+                        'description': 'Luxury stay via Hotelbeds'
+                    })
+                return results
             
             return []
         except Exception as e:
