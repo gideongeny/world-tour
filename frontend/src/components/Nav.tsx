@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { Palette, LogOut, User as UserIcon } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import CurrencySelector from './CurrencySelector';
 
 const Nav: FC = () => {
     const [scrolled, setScrolled] = useState(false);

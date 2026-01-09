@@ -180,7 +180,7 @@ function Hotels() {
                     </select>
                 </div>
                 <button
-                    onClick={handleSearch}
+                    onClick={() => handleSearch()}
                     className="bg-primary text-white px-8 rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all"
                 >
                     Search
