@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Star, MapPin, Wifi, Coffee, Globe } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
+import { useLanguage } from '../context/LanguageContext';
 
 interface Hotel {
     id: number;
@@ -73,15 +74,72 @@ function Hotels() {
     const [hotels, setHotels] = useState<Hotel[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    import { useLanguage } from '../context/LanguageContext';
-
-    // ... (in Hotels component)
     const { currency, setCurrency, rates } = useCurrency();
     const { t } = useLanguage();
-
     const [externalUrl, setExternalUrl] = useState<string | null>(null);
 
-    // ... (handleSearch remains same)
+    const handleSearch = useCallback((overriddenQuery?: string) => {
+        const activeQuery = overriddenQuery || searchQuery;
+        if (!activeQuery.trim()) return;
+        setLoading(true);
+        setExternalUrl(null);
+
+        fetch(`/booking/live/hotels/search?q=${encodeURIComponent(activeQuery)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    setHotels(data);
+                } else {
+                    fetch(`/booking/external/hotels/search?q=${encodeURIComponent(activeQuery)}`)
+                        .then(res => res.json())
+                        .then(extData => {
+                            if (extData.url) {
+                                setExternalUrl(extData.url);
+                                setHotels([]);
+                            }
+                        });
+                }
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error("LiteAPI search failed:", err);
+                setLoading(false);
+            });
+    }, [searchQuery]);
+
+    useEffect(() => {
+        if (query) {
+            setSearchQuery(query);
+            handleSearch(query);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            fetch('/booking/hotels?format=json')
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) setHotels(data);
+                    else {
+                        setHotels([
+                            { id: 1, name: 'Grand Plaza', location: 'Paris, France', price: 350, rating: 4.8, image_url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80' },
+                            { id: 2, name: 'Ocean View Resort', location: 'Bali, Indonesia', price: 220, rating: 4.9, image_url: 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&q=80' },
+                        ]);
+                    }
+                    setLoading(false);
+                })
+                .catch(() => {
+                    setLoading(false);
+                });
+        }
+    }, [query, handleSearch]);
+
+    const handleBook = (hotel: Hotel) => {
+        const params = new URLSearchParams({
+            type: 'Hotel',
+            name: hotel.name,
+            price: hotel.price.toString(),
+            image: hotel.image_url
+        });
+        navigate(`/checkout?${params.toString()}`);
+    };
 
     return (
         <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
