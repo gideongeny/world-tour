@@ -43,20 +43,36 @@ class LiteAPIService:
             
             response = requests.get(search_url, headers=self.headers, params=search_params)
             data = response.json()
-            
             if data.get('data'):
                 # Format to our Hotel interface
-                return [{
-                    'id': h.get('id'),
-                    'name': h.get('name'),
-                    'location': h.get('address', {}).get('city', destination_name),
-                    'price': h.get('price', 100), # LiteAPI returns price in data usually
-                    'rating': h.get('rating', 4.5),
-                    'image_url': h.get('images', [{}])[0].get('url', 'https://images.unsplash.com/photo-1566073771259-6a8506099945'),
-                    'description': h.get('description', 'Luxury accommodation through LiteAPI')
-                } for h in data['data']]
-                
-            return []
+                results = []
+                for h in data['data']:
+                    # Get images or use a specific fallback if missing
+                    images = h.get('images', [])
+                    if images and isinstance(images, list) and len(images) > 0:
+                        image_url = images[0].get('url')
+                    else:
+                        # Dynamic fallback based on hotel name to avoid all looking the same
+                        name_seed = sum(ord(c) for c in h.get('name', 'Hotel'))
+                        fallbacks = [
+                            'https://images.unsplash.com/photo-1566073771259-6a8506099945',
+                            'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb',
+                            'https://images.unsplash.com/photo-1571896349842-33c89424de2d',
+                            'https://images.unsplash.com/photo-1582719478250-c89cae4df85b',
+                            'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4'
+                        ]
+                        image_url = fallbacks[name_seed % len(fallbacks)]
+
+                    results.append({
+                        'id': h.get('id'),
+                        'name': h.get('name'),
+                        'location': h.get('address', {}).get('city', destination_name),
+                        'price': h.get('price', 150),
+                        'rating': h.get('rating', 4.5),
+                        'image_url': image_url,
+                        'description': h.get('description', f'Luxury accommodation in {destination_name}')
+                    })
+                return results
         except Exception as e:
             print(f"LiteAPI Error: {str(e)}")
             return []

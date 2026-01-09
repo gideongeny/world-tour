@@ -93,12 +93,12 @@ function Home() {
                     <h2 className="text-5xl font-black mb-6 drop-shadow-lg">Ready for your next adventure?</h2>
                     <p className="text-xl mb-10 text-white/90">Join 50k+ happy travelers and start booking your dream trip today.</p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-10 py-4 bg-white text-slate-900 rounded-2xl font-black shadow-2xl hover:bg-slate-50 transition-colors">
+                        <Link to="/hotels" className="px-10 py-4 bg-white text-slate-900 rounded-2xl font-black shadow-2xl hover:bg-slate-50 transition-colors inline-block">
                             Get Started
-                        </button>
-                        <button className="px-10 py-4 bg-white/20 backdrop-blur-md rounded-2xl font-black border border-white/30 hover:bg-white/30 transition-colors">
+                        </Link>
+                        <Link to="/contact" className="px-10 py-4 bg-white/20 backdrop-blur-md rounded-2xl font-black border border-white/30 hover:bg-white/30 transition-colors inline-block">
                             Contact Sales
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </section>

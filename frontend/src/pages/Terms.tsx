@@ -90,8 +90,8 @@ export default function Terms() {
                         <h2 className="text-2xl font-bold mb-4">11. Contact Information</h2>
                         <p>For questions about these Terms of Service:</p>
                         <p className="mt-2">
-                            Email: legal@worldtour.com<br />
-                            Address: 123 Travel Street, Adventure City, AC 12345
+                            Email: support@worldtour.com<br />
+                            Address: Kenyatta Avenue, CBD, Nairobi, Kenya
                         </p>
                     </section>
                 </div>

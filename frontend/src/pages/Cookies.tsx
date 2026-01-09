@@ -109,8 +109,8 @@ export default function Cookies() {
                         <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
                         <p>If you have questions about our use of cookies:</p>
                         <p className="mt-2">
-                            Email: privacy@worldtour.com<br />
-                            Address: 123 Travel Street, Adventure City, AC 12345
+                            Email: support@worldtour.com<br />
+                            Address: Kenyatta Avenue, CBD, Nairobi, Kenya
                         </p>
                     </section>
                 </div>
