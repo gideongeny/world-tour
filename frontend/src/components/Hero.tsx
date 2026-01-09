@@ -1,4 +1,5 @@
-import { FC, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Phone, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
