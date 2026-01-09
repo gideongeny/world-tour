@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Star, MapPin, Wifi, Coffee, Globe } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
+import InsuranceWidget from '../components/InsuranceWidget';
 
 interface Hotel {
     id: number;
@@ -186,6 +187,17 @@ function Hotels() {
                     {t('btn.search')}
                 </button>
             </div>
+
+            {/* Travel Insurance Widget */}
+            {!loading && hotels.length > 0 && (
+                <div className="mb-12">
+                    <InsuranceWidget
+                        destination={searchQuery || 'your destination'}
+                        tripCost={hotels[0]?.price * 3 || 1000}
+                        travelers={2}
+                    />
+                </div>
+            )}
 
             {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
