@@ -79,16 +79,25 @@ const Pricing: React.FC = () => {
                 })
             });
 
+            // Check if user is not authenticated
+            if (response.status === 401) {
+                alert('Please log in to subscribe to World Tour Plus');
+                navigate('/login');
+                return;
+            }
+
             const data = await response.json();
 
             if (data.checkout_url) {
                 window.location.href = data.checkout_url;
+            } else if (data.error) {
+                alert(`Error: ${data.error}`);
             } else {
-                alert('Failed to create checkout session');
+                alert('Stripe is not configured yet. Please complete the Stripe setup guide first.');
             }
         } catch (error) {
             console.error('Subscription error:', error);
-            alert('Something went wrong. Please try again.');
+            alert('Unable to connect to payment system. Stripe may not be configured yet.');
         } finally {
             setLoading(false);
         }
@@ -108,8 +117,8 @@ const Pricing: React.FC = () => {
                     <div
                         key={index}
                         className={`relative bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-xl border-2 transition-all hover:scale-105 ${plan.popular
-                                ? 'border-primary shadow-2xl shadow-primary/20'
-                                : 'border-slate-200 dark:border-slate-700'
+                            ? 'border-primary shadow-2xl shadow-primary/20'
+                            : 'border-slate-200 dark:border-slate-700'
                             }`}
                     >
                         {plan.popular && (
@@ -140,8 +149,8 @@ const Pricing: React.FC = () => {
                             onClick={() => handleSubscribe(plan)}
                             disabled={loading || (plan.price === 0) || isSubscribed}
                             className={`w-full py-3 rounded-xl font-bold transition-all ${plan.popular
-                                    ? 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/30'
-                                    : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600'
+                                ? 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/30'
+                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600'
                                 } disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
                             {isSubscribed ? 'Current Plan' : plan.price === 0 ? 'Current Plan' : 'Subscribe Now'}
