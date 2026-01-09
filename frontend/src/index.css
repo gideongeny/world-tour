@@ -72,3 +72,10 @@ body {
 .hover\:delay-\[7000ms\]:hover {
   transition-delay: 7000ms;
 }
+
+/* Dark Mode Styles */
+html.dark,
+html.dark body {
+  background-color: #1A1816 !important;
+  color: #F9F7F2 !important;
+}

@@ -204,7 +204,7 @@ def populate_data():
             'Aman Tokyo': 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80',
             'Park Hyatt Tokyo': 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&q=80',
             'Burj Al Arab': 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80',
-            'Atlantis The Palm': 'https://images.unsplash.com/photo-1512453979798-5ea90b7cadc9?w=800&q=80',
+            'Atlantis The Palm': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
             'Canaves Oia': 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80',
             'Hotel Hassler Roma': 'https://images.unsplash.com/photo-1587974928442-77dc3e0dba72?w=800&q=80',
         }
