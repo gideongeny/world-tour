@@ -41,12 +41,12 @@ function AppContent() {
               <Route path="/ai-assistant" element={<AIAssistant />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/pricing" element={<Pricing />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/cookies" element={<Cookies />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/checkout" element={<Checkout />} />
-              <Route path="/pricing" element={<Pricing />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/subscription/success" element={<SubscriptionSuccess />} />
               <Route path="/travel-cards" element={<TravelCards />} />

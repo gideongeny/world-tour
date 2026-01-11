@@ -1,5 +1,5 @@
 import React from 'react';
-import { CreditCard, Star, DollarSign, Plane, Gift, TrendingUp } from 'lucide-react';
+import { CreditCard, Star, DollarSign, Plane, Gift, Activity } from 'lucide-react';
 
 interface CreditCardOffer {
     name: string;
@@ -111,7 +111,7 @@ const TravelCards: React.FC = () => {
                     <p className="text-sm text-slate-600 dark:text-slate-400">Save 3% on international</p>
                 </div>
                 <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg">
-                    <TrendingUp className="w-12 h-12 text-primary mx-auto mb-3" />
+                    <Activity className="w-12 h-12 text-primary mx-auto mb-3" />
                     <h3 className="font-bold mb-2">Earn Rewards</h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400">2-4X on travel & dining</p>
                 </div>

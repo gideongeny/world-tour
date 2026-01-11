@@ -11,12 +11,17 @@ ai_bp = Blueprint('ai', __name__)
 
 @ai_bp.route('/api/chat', methods=['POST'])
 def ai_chat():
+    """AI chat endpoint with rate limiting applied in app.py"""
     try:
         data = request.get_json()
         user_message = data.get('message', '')
         
         if not user_message:
             return jsonify({'error': 'Message is required'}), 400
+        
+        # Input validation - limit message length
+        if len(user_message) > 1000:
+            return jsonify({'error': 'Message too long. Maximum 1000 characters.'}), 400
         
         # Get user context
         user_context = {
@@ -50,3 +55,4 @@ def ai_chat():
     except Exception as e:
         db.session.rollback()
         return jsonify({'status': 'error', 'message': str(e)}), 500
+

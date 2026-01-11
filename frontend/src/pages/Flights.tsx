@@ -12,6 +12,52 @@ interface Flight {
     duration: string;
 }
 
+// Airline logo mapping - using publicly available airline logos
+const airlineLogos: Record<string, string> = {
+    'Emirates': 'https://images.kiwi.com/airlines/64/EK.png',
+    'British Airways': 'https://images.kiwi.com/airlines/64/BA.png',
+    'Qatar Airways': 'https://images.kiwi.com/airlines/64/QR.png',
+    'Singapore Airlines': 'https://images.kiwi.com/airlines/64/SQ.png',
+    'Lufthansa': 'https://images.kiwi.com/airlines/64/LH.png',
+    'Air France': 'https://images.kiwi.com/airlines/64/AF.png',
+    'KLM': 'https://images.kiwi.com/airlines/64/KL.png',
+    'Turkish Airlines': 'https://images.kiwi.com/airlines/64/TK.png',
+    'Etihad Airways': 'https://images.kiwi.com/airlines/64/EY.png',
+    'Cathay Pacific': 'https://images.kiwi.com/airlines/64/CX.png',
+    'American Airlines': 'https://images.kiwi.com/airlines/64/AA.png',
+    'Delta': 'https://images.kiwi.com/airlines/64/DL.png',
+    'United': 'https://images.kiwi.com/airlines/64/UA.png',
+    'Southwest': 'https://images.kiwi.com/airlines/64/WN.png',
+    'JetBlue': 'https://images.kiwi.com/airlines/64/B6.png',
+};
+
+// Component to display airline logo with fallback
+const AirlineLogo = ({ airline }: { airline: string }) => {
+    const logoUrl = airlineLogos[airline];
+    const [imageError, setImageError] = useState(false);
+
+    if (!logoUrl || imageError) {
+        // Fallback to letter circle
+        return (
+            <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center font-black text-primary text-xl border-2 border-primary/30">
+                {airline[0]}
+            </div>
+        );
+    }
+
+    return (
+        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white p-1 border border-slate-100">
+            <img
+                src={logoUrl}
+                alt={`${airline} logo`}
+                className="w-full h-full object-contain"
+                onError={() => setImageError(true)}
+            />
+        </div>
+    );
+};
+
+
 function Flights() {
     const navigate = useNavigate();
     const [flights, setFlights] = useState<Flight[]>([]);
@@ -120,9 +166,7 @@ function Flights() {
                 {flights.map(flight => (
                     <div key={flight.id} className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-all flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-4 flex-1">
-                            <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-500">
-                                {flight.airline[0]}
-                            </div>
+                            <AirlineLogo airline={flight.airline} />
                             <div>
                                 <h3 className="font-bold text-lg">{flight.airline}</h3>
                                 <div className="flex items-center gap-2 text-slate-500 text-sm">

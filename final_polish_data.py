@@ -11,10 +11,10 @@ def final_polish_data():
                 'img': 'https://images.unsplash.com/photo-1516426122078-c23e76319801',
                 'desc': 'Experience the heart of the wild with the Great Migration.'
             },
-            'Diani Beach': {
-                'lat': -4.2797, 'lng': 39.5947, 
-                'img': 'https://images.unsplash.com/photo-1589192329731-00d98e16bb6e',
-                'desc': 'Voted Africa\'s leading beach destination with crystal-clear waters.'
+            'Zanzibar': {
+                'lat': -6.1659, 'lng': 39.2026, 
+                'img': 'https://images.unsplash.com/photo-1540656554792-7411bb583321',
+                'desc': 'Exotic spice island with pristine white sands and historic Stone Town.'
             },
             'Santorini': {
                 'lat': 36.3932, 'lng': 25.4615, 

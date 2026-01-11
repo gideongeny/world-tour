@@ -5,11 +5,12 @@ from new_models import Destination
 
 class AIEngine:
     def __init__(self):
-        self.api_key = os.getenv('GOOGLE_API_KEY', 'AIzaSyDcwojg2ngA1ZW0-votJyiPp1MhV7MI1u0')
-        self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={self.api_key}"
+        self.api_key = os.getenv('OPENAI_API_KEY')
+        self.api_url = "https://api.openai.com/v1/chat/completions"
+        self.model = "gpt-4o"
     
     def generate_response(self, user_message, context=None):
-        """Generate AI response using Gemini API with local database knowledge"""
+        """Generate AI response using OpenAI API with local database knowledge"""
         
         # 1. Try to find local information first
         local_info = ""
@@ -26,7 +27,6 @@ class AIEngine:
         except Exception as e:
             # Fallback for testing outside of flask context
             try:
-                from db import db
                 from app import app
                 with app.app_context():
                     all_dest = Destination.query.all()
@@ -62,41 +62,41 @@ Guidelines:
 - Keep responses concise but informative
 - Always end with a helpful follow-up question or suggestion"""
 
-        # Build the full prompt
+        messages = [
+            {"role": "system", "content": system_prompt}
+        ]
+        
         if context:
-            user_info = f"\n\nUser Context: {json.dumps(context)}"
-            full_prompt = f"{system_prompt}{user_info}\n\nUser: {user_message}\n\nAssistant:"
-        else:
-            full_prompt = f"{system_prompt}\n\nUser: {user_message}\n\nAssistant:"
+            messages.append({"role": "system", "content": f"User Context: {json.dumps(context)}"})
+            
+        messages.append({"role": "user", "content": user_message})
         
         try:
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}"
+            }
+            
             payload = {
-                "contents": [{
-                    "parts": [{
-                        "text": full_prompt
-                    }]
-                }],
-                "generationConfig": {
-                    "temperature": 0.9,
-                    "topK": 40,
-                    "topP": 0.95,
-                    "maxOutputTokens": 800,
-                }
+                "model": self.model,
+                "messages": messages,
+                "temperature": 0.7,
+                "max_tokens": 800
             }
             
             response = requests.post(
                 self.api_url,
-                headers={'Content-Type': 'application/json'},
+                headers=headers,
                 json=payload,
-                timeout=10
+                timeout=30
             )
             
             if response.status_code == 200:
                 data = response.json()
-                if 'candidates' in data and data['candidates']:
-                    return data['candidates'][0]['content']['parts'][0]['text']
+                if 'choices' in data and data['choices']:
+                    return data['choices'][0]['message']['content']
             else:
-                print(f"Gemini API Error: {response.status_code} - {response.text}")
+                print(f"OpenAI API Error: {response.status_code} - {response.text}")
             
             # If API fails or is slow, return a smart local response
             if local_info:

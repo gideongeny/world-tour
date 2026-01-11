@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Hero from '../components/Hero'
+import InfiniteGallery from '../components/blocks/3d-gallery-photography'
+import ScrollExpandMedia from '../components/blocks/scroll-expansion-hero'
 import Monetag from '../components/Monetag'
 import DestinationCard from '../components/DestinationCard'
 import Map from '../components/Map'
@@ -18,7 +20,17 @@ interface Destination {
     category: string;
     latitude: number;
     longitude: number;
+    description?: string; // Added description
 }
+
+const sampleImages = [
+    { src: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&auto=format&fit=crop&q=60', alt: 'Travel 1' },
+    { src: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&auto=format&fit=crop&q=60', alt: 'Travel 2' },
+    { src: 'https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?w=600&auto=format&fit=crop&q=60', alt: 'Travel 3' },
+    { src: 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=600&auto=format&fit=crop&q=60', alt: 'Travel 4' },
+    { src: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=600&auto=format&fit=crop&q=60', alt: 'Travel 5' },
+    { src: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&auto=format&fit=crop&q=60', alt: 'Travel 6' },
+];
 
 function Home() {
     const [destinations, setDestinations] = useState<Destination[]>([]);
@@ -56,83 +68,192 @@ function Home() {
         description: `Starting from $${d.price}`
     }));
 
+    const galleryImages = destinations.length > 0
+        ? destinations.map(d => ({ src: d.image_url, alt: d.name }))
+        : sampleImages;
+
     return (
         <PageTransition>
-            <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
-                <Hero />
-                <Monetag />
-
-                <section id="destinations" className="mb-20">
-                    <div className="flex justify-between items-end mb-8">
-                        <div>
-                            <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">{t('home.destinations.title')}</h2>
-                            <p className="text-slate-500 dark:text-slate-400">{t('home.destinations.subtitle')}</p>
+            <div className="relative">
+                {/* 3D Gallery Hero */}
+                {/* 3D Gallery Hero */}
+                {/* 3D Gallery Hero */}
+                <div className="relative h-[85vh] w-full overflow-hidden mb-0">
+                    <InfiniteGallery
+                        images={galleryImages}
+                        speed={1.0}
+                        zSpacing={2.5}
+                        visibleCount={18}
+                        className="h-full w-full"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none z-[15]" />
+                    <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-20">
+                        <div className="text-center px-6 max-w-4xl mx-auto">
+                            <motion.h1
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-6xl md:text-8xl font-black text-white drop-shadow-[0_0_25px_rgba(0,0,0,0.7)] mb-6 tracking-tight leading-tight"
+                            >
+                                Explore the World
+                            </motion.h1>
+                            <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                                className="text-xl md:text-2xl text-white font-medium drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] max-w-2xl mx-auto mb-10 leading-relaxed"
+                            >
+                                Discover your next adventure with World Tour.
+                            </motion.p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center pointer-events-auto">
+                                <Link to="/signup" className="px-10 py-5 bg-white text-black rounded-full font-black text-lg hover:bg-slate-100 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                                    Start Journey
+                                </Link>
+                                <a href="#destinations" className="px-10 py-5 bg-black/30 backdrop-blur-md border-[1.5px] border-white/40 text-white rounded-full font-bold text-lg hover:bg-black/50 transition-all hover:border-white">
+                                    View Destinations
+                                </a>
+                            </div>
                         </div>
-                        <Link to="/hotels" className="text-primary font-bold hover:underline">{t('common.view_all')}</Link>
                     </div>
+                </div>
 
-                    {loading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {[1, 2, 3, 4].map(i => (
-                                <div key={i} className="h-96 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-2xl" />
-                            ))}
-                        </div>
-                    ) : (
-                        <motion.div
-                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-                            initial="hidden"
-                            animate="visible"
-                            variants={{
-                                hidden: { opacity: 0 },
-                                visible: {
-                                    opacity: 1,
-                                    transition: {
-                                        staggerChildren: 0.1
-                                    }
-                                }
-                            }}
-                        >
-                            {destinations.map(destination => (
-                                <motion.div key={destination.id} variants={{
-                                    hidden: { opacity: 0, y: 50 },
-                                    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
-                                }}>
-                                    <DestinationCard destination={destination} />
+                <div className="relative z-10 bg-background">
+                    <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
+                        <Monetag />
+
+                        <section id="destinations" className="mb-20">
+                            <div className="flex justify-between items-end mb-8">
+                                <div>
+                                    <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">{t('home.destinations.title')}</h2>
+                                    <p className="text-slate-500 dark:text-slate-400">{t('home.destinations.subtitle')}</p>
+                                </div>
+                                <Link to="/hotels" className="text-primary font-bold hover:underline">{t('common.view_all')}</Link>
+                            </div>
+
+                            {loading ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                    {[1, 2, 3, 4].map(i => (
+                                        <div key={i} className="h-96 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-2xl" />
+                                    ))}
+                                </div>
+                            ) : (
+                                <motion.div
+                                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+                                    initial="hidden"
+                                    animate="visible"
+                                    variants={{
+                                        hidden: { opacity: 0 },
+                                        visible: {
+                                            opacity: 1,
+                                            transition: {
+                                                staggerChildren: 0.1
+                                            }
+                                        }
+                                    }}
+                                >
+                                    {destinations.map(destination => (
+                                        <motion.div key={destination.id} variants={{
+                                            hidden: { opacity: 0, y: 50 },
+                                            visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
+                                        }}>
+                                            <DestinationCard destination={destination} />
+                                        </motion.div>
+                                    ))}
                                 </motion.div>
-                            ))}
-                        </motion.div>
-                    )}
-                </section>
-
-                <section id="map" className="mb-20">
-                    <div className="mb-8">
-                        <h2 className="text-4xl font-black mb-2 tracking-tight font-serif">{t('home.map.title')}</h2>
-                        <p className="text-slate-500 dark:text-slate-400">{t('home.map.subtitle')}</p>
+                            )}
+                        </section>
                     </div>
-                    <Map markers={mapMarkers} center={[20, 10]} zoom={2} />
-                </section>
 
-                <section className="relative rounded-3xl overflow-hidden py-24 px-12 text-center text-white">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary z-10 opacity-90" />
-                    <div className="absolute inset-0 z-0">
-                        <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80" className="w-full h-full object-cover" alt="CTA" />
-                    </div>
-                    <div className="relative z-20 max-w-2xl mx-auto">
-                        <h2 className="text-5xl font-black mb-6 drop-shadow-lg font-serif">{t('home.cta.title')}</h2>
-                        <p className="text-xl mb-10 text-white/90">{t('home.cta.subtitle')}</p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link to="/hotels" className="px-10 py-4 bg-white text-slate-900 rounded-2xl font-black shadow-2xl hover:bg-slate-50 transition-colors inline-block">
-                                {t('common.get_started')}
-                            </Link>
-                            <Link to="/contact" className="px-10 py-4 bg-white/20 backdrop-blur-md rounded-2xl font-black border border-white/30 hover:bg-white/30 transition-colors inline-block">
-                                {t('common.contact_sales')}
+                    {/* Full-Width Video Section with Centered Button */}
+                    <section className="relative w-screen h-screen overflow-hidden -mx-6">
+                        {/* Video Background */}
+                        <video
+                            src="/assets/world-view.mp4"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover"
+                        />
+
+                        {/* Dark Overlay */}
+                        <div className="absolute inset-0 bg-black/40" />
+
+                        {/* Centered Content */}
+                        <div className="absolute inset-0 flex items-center justify-center z-10">
+                            <div className="text-center text-white px-6">
+                                <motion.h2
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    className="text-5xl md:text-7xl font-black mb-6 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]"
+                                >
+                                    Unlock the Globe
+                                </motion.h2>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.1 }}
+                                    className="text-xl md:text-2xl mb-12 max-w-2xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
+                                >
+                                    Get exclusive access to premium destinations worldwide
+                                </motion.p>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.2 }}
+                                >
+                                    <Link
+                                        to="/pricing"
+                                        className="inline-block px-16 py-6 bg-white text-black rounded-full font-black text-xl hover:bg-slate-100 transition-all transform hover:scale-110 shadow-[0_10px_40px_rgba(0,0,0,0.5)] hover:shadow-[0_15px_50px_rgba(0,0,0,0.6)]"
+                                    >
+                                        Join Premium
+                                    </Link>
+                                </motion.div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div className="pt-24 pb-20 px-0 max-w-full overflow-hidden bg-black text-white">
+                        <div className="max-w-7xl mx-auto px-6 mb-12 text-center">
+                            <h2 className="text-4xl font-black mb-4">World Tour Premium</h2>
+                            <p className="text-xl text-gray-400 mb-8">Join thousands of travelers exploring the world's most exclusive locations.</p>
+                            <Link to="/pricing" className="px-10 py-4 bg-primary text-white rounded-full font-bold shadow-2xl hover:bg-primary/90 transition-all transform hover:scale-105 inline-block">
+                                Join Now - Start Your Journey
                             </Link>
                         </div>
+
+                        {/* Auto Scrolling Marquee */}
+                        <div className="relative flex overflow-x-hidden group">
+                            <motion.div
+                                className="flex gap-4 animate-marquee whitespace-nowrap"
+                                animate={{ x: [0, -2000] }}
+                                transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
+                            >
+                                {[...destinations, ...destinations, ...destinations].map((dest, i) => (
+                                    <div key={`${dest.id}-${i}`} className="w-80 h-56 rounded-xl overflow-hidden flex-shrink-0 relative">
+                                        <img src={dest.image_url} alt={dest.name} className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-black/30 flex items-end p-4">
+                                            <span className="font-bold text-white text-lg">{dest.name}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </motion.div>
+                        </div>
+
+                        <style>{`
+                            @keyframes marquee {
+                                0% { transform: translateX(0); }
+                                100% { transform: translateX(-50%); }
+                            }
+                        `}</style>
                     </div>
-                </section>
+                </div>
             </div>
         </PageTransition>
     )
 }
 
 export default Home
+
