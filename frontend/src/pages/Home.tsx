@@ -68,9 +68,21 @@ function Home() {
         description: `Starting from $${d.price}`
     }));
 
-    const galleryImages = destinations.length > 0
-        ? destinations.map(d => ({ src: d.image_url, alt: d.name }))
-        : sampleImages;
+    // Use curated high-quality images for the Hero mainly to ensure the 3D effect works perfectly
+    // and isn't dependent on user-generated content or potential broken links in the database.
+    const heroImages = [
+        { src: '/assets/hero/dakar-hero.jpg', alt: 'Dakar' }, // 1st
+        { src: '/assets/hero/maasai-mara-hero.jpg', alt: 'Maasai Mara' }, // 2nd
+        { src: '/assets/hero/shanghai-hero.jpg', alt: 'Shanghai' }, // 3rd
+        { src: '/assets/hero/zanzibar-hero.jpg', alt: 'Zanzibar' }, // 4th
+        // Fill remaining slots with trusted static images to keep the 3D effect full
+        { src: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80', alt: 'Paris' },
+        { src: 'https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&q=80', alt: 'Dubai' },
+        { src: 'https://images.unsplash.com/photo-1502791451862-7bd8c1df43a7?auto=format&fit=crop&q=80', alt: 'Tropical Beach' },
+        { src: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&q=80', alt: 'Safari' },
+    ];
+
+    const galleryImages = heroImages;
 
     return (
         <PageTransition>

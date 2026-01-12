@@ -34,9 +34,8 @@ const airlineLogos: Record<string, string> = {
 // Component to display airline logo with fallback
 const AirlineLogo = ({ airline }: { airline: string }) => {
     const logoUrl = airlineLogos[airline];
-    const [imageError, setImageError] = useState(false);
 
-    if (!logoUrl || imageError) {
+    if (!logoUrl) {
         // Fallback to letter circle
         return (
             <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center font-black text-primary text-xl border-2 border-primary/30">
@@ -46,12 +45,16 @@ const AirlineLogo = ({ airline }: { airline: string }) => {
     }
 
     return (
-        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white p-1 border border-slate-100">
-            <img
+        <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white p-1 border border-slate-100 overflow-hidden">
+            <ImageWithFallback
                 src={logoUrl}
                 alt={`${airline} logo`}
                 className="w-full h-full object-contain"
-                onError={() => setImageError(true)}
+                fallbackComponent={
+                    <div className="w-full h-full flex items-center justify-center font-bold text-slate-500">
+                        {airline[0]}
+                    </div>
+                }
             />
         </div>
     );

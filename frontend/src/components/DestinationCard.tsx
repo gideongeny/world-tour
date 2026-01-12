@@ -4,6 +4,7 @@ import Price from './Price';
 import { Sparkles, Heart } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { useState } from 'react';
+import ImageWithFallback from './ui/image-with-fallback';
 
 interface Destination {
     id: number;
@@ -73,14 +74,11 @@ const DestinationCard: React.FC<{ destination: Destination }> = ({ destination }
                 {/* Front Face (Image) */}
                 <div className="absolute inset-0 backface-hidden rounded-2xl overflow-hidden glass-card">
                     <div className="relative h-64 overflow-hidden">
-                        <img
-                            src={destination.image_url || 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80'}
+                        <ImageWithFallback
+                            src={destination.image_url}
+                            fallbackSrc="https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80"
                             alt={destination.name}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = 'https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&q=80';
-                            }}
                         />
                         <div className="absolute top-4 right-4 bg-white/90 dark:bg-slate-800/90 px-3 py-1 rounded-full text-sm font-bold shadow-lg backdrop-blur-md">
                             <Price amount={destination.price} />

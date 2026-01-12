@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CreditCard, ShieldCheck, Mail, User, Phone, CheckCircle2 } from 'lucide-react';
+import ImageWithFallback from '../components/ui/image-with-fallback';
 
 function Checkout() {
     const location = useLocation();
@@ -165,7 +166,7 @@ function Checkout() {
                 <div className="w-full lg:w-96">
                     <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden sticky top-32 border border-slate-100 dark:border-slate-700">
                         <div className="h-40 overflow-hidden relative">
-                            <img src={itemImage} alt={itemName} className="w-full h-full object-cover" />
+                            <ImageWithFallback src={itemImage!} alt={itemName} className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                             <div className="absolute bottom-4 left-6">
                                 <span className="text-primary-foreground bg-primary/20 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest leading-none mb-1 inline-block">

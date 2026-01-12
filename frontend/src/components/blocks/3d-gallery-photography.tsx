@@ -510,6 +510,31 @@ function FallbackGallery({ images }: { images: ImageItem[] }) {
     );
 }
 
+class GalleryErrorBoundary extends React.Component<
+    { children: React.ReactNode; fallback: React.ReactNode },
+    { hasError: boolean }
+> {
+    constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError() {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error: any) {
+        console.error("Gallery 3D Error:", error);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return this.props.fallback;
+        }
+        return this.props.children;
+    }
+}
+
 export default function InfiniteGallery({
     images,
     className = 'h-96 w-full',
@@ -550,16 +575,18 @@ export default function InfiniteGallery({
 
     return (
         <div className={className} style={style}>
-            <Canvas
-                camera={{ position: [0, 0, 0], fov: 55 }}
-                gl={{ antialias: true, alpha: true }}
-            >
-                <GalleryScene
-                    images={images}
-                    fadeSettings={fadeSettings}
-                    blurSettings={blurSettings}
-                />
-            </Canvas>
+            <GalleryErrorBoundary fallback={<FallbackGallery images={images} />}>
+                <Canvas
+                    camera={{ position: [0, 0, 0], fov: 55 }}
+                    gl={{ antialias: true, alpha: true }}
+                >
+                    <GalleryScene
+                        images={images}
+                        fadeSettings={fadeSettings}
+                        blurSettings={blurSettings}
+                    />
+                </Canvas>
+            </GalleryErrorBoundary>
         </div>
     );
 }

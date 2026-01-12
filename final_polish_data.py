@@ -13,7 +13,7 @@ def final_polish_data():
             },
             'Zanzibar': {
                 'lat': -6.1659, 'lng': 39.2026, 
-                'img': 'https://images.unsplash.com/photo-1540656554792-7411bb583321',
+                'img': 'https://images.unsplash.com/photo-1539651044670-315229da9d2f',
                 'desc': 'Exotic spice island with pristine white sands and historic Stone Town.'
             },
             'Santorini': {
