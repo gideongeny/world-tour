@@ -88,7 +88,7 @@ function Home() {
 
     return (
         <PageTransition>
-            <div className="relative">
+            <div className="relative overflow-x-hidden">
                 {/* 3D Gallery Hero */}
                 {/* 3D Gallery Hero */}
                 {/* 3D Gallery Hero */}
@@ -176,19 +176,27 @@ function Home() {
                             )}
                         </section>
 
-                        {/* Interactive Satellite Map */}
-                        <section className="mb-20">
-                            <h2 className="text-3xl font-black mb-6 flex items-center gap-3">
-                                <span className="text-primary">🌍</span> Global View
+                    </div>
+
+                    {/* Interactive Satellite Map - Full Width */}
+                    <section className="mb-0 relative w-full h-[600px] overflow-hidden">
+                        <div className="absolute top-10 left-6 z-10 pointer-events-none">
+                            <h2 className="text-3xl font-black text-white drop-shadow-md flex items-center gap-3">
+                                <span className="text-primary filter drop-shadow-lg">🌍</span> <span className="drop-shadow-lg">Global View</span>
                             </h2>
-                            <Map zoom={1.5} markers={destinations.map(d => ({
+                        </div>
+                        <Map
+                            zoom={1.8}
+                            className="h-full w-full rounded-none"
+                            center={[20, 0]}
+                            markers={destinations.map(d => ({
                                 lat: d.latitude,
                                 lng: d.longitude,
                                 title: d.name,
                                 description: d.country
-                            }))} />
-                        </section>
-                    </div>
+                            }))}
+                        />
+                    </section>
 
                     {/* Full-Width Video Section with Centered Button */}
                     <section className="relative w-full h-[80vh] md:h-screen overflow-hidden">
