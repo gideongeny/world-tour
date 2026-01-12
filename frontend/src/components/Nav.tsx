@@ -65,13 +65,7 @@ const Nav: React.FC = () => {
                     WORLD<span className="text-secondary group-hover:text-primary transition-colors">TOUR</span>
                 </Link>
 
-                {/* Mobile Menu Toggle */}
-                <button
-                    className="md:hidden p-2 text-slate-800 dark:text-white z-50"
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                >
-                    {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
-                </button>
+
 
                 <div className="hidden md:flex items-center gap-8 font-medium">
                     <Link to="/" className={`${isActive('/')} transition-colors`}>{t('nav.destinations')}</Link>
@@ -179,6 +173,14 @@ const Nav: React.FC = () => {
                             </Link>
                         </>
                     )}
+
+                    {/* Mobile Menu Toggle */}
+                    <button
+                        className="md:hidden p-2 text-slate-800 dark:text-white z-50 ml-2"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    >
+                        {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+                    </button>
                 </div>
 
                 {/* Mobile Menu Overlay */}
