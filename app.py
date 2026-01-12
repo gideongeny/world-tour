@@ -186,16 +186,17 @@ def seed_db():
         db.session.commit()
         
         # 2. Hotels
+        # 2. Hotels
         hotels_data = [
-            ('The Ritz Paris', 'Paris, France', 1200, 5.0, 'Paris'),
-            ('Hotel Le Meurice', 'Paris, France', 900, 4.9, 'Paris'),
-            ('Ayana Resort', 'Bali, Indonesia', 450, 4.8, 'Bali'),
-            ('Viceroy Bali', 'Bali, Indonesia', 600, 4.9, 'Bali'),
-            ('Aman Tokyo', 'Tokyo, Japan', 1100, 5.0, 'Tokyo'),
-            ('Burj Al Arab', 'Dubai, UAE', 2500, 5.0, 'Dubai'),
+            ('The Ritz Paris', 'Paris, France', 1200, 5.0, 'Paris', 'https://images.unsplash.com/photo-1560624052-449f5ddf0c31?auto=format&fit=crop&q=80'),
+            ('Hotel Le Meurice', 'Paris, France', 900, 4.9, 'Paris', 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&q=80'),
+            ('Ayana Resort', 'Bali, Indonesia', 450, 4.8, 'Bali', 'https://images.unsplash.com/photo-1573790387438-4da905039392?auto=format&fit=crop&q=80'),
+            ('Viceroy Bali', 'Bali, Indonesia', 600, 4.9, 'Bali', 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&q=80'),
+            ('Aman Tokyo', 'Tokyo, Japan', 1100, 5.0, 'Tokyo', 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80'),
+            ('Burj Al Arab', 'Dubai, UAE', 2500, 5.0, 'Dubai', 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80'),
         ]
         
-        for name, location, price, rating, dest_name in hotels_data:
+        for name, location, price, rating, dest_name, img_url in hotels_data:
             dest = destinations_map.get(dest_name)
             if dest:
                 hotel = Hotel(
@@ -204,7 +205,7 @@ def seed_db():
                     price=price,
                     rating=rating,
                     destination_id=dest.id,
-                    image_url='https://images.unsplash.com/photo-1566073771259-6a8506099945',
+                    image_url=img_url,
                     description=f'Luxury accommodation in {location}'
                 )
                 db.session.add(hotel)

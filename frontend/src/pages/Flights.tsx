@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plane, Calendar, Clock } from 'lucide-react';
+import ImageWithFallback from '../components/ui/image-with-fallback';
 
 interface Flight {
     id: number;
