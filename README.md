@@ -5,6 +5,8 @@ A next-generation travel booking application featuring 3D visualization, AI-powe
 ## 🟢 Live Demo
 **Website**: [https://world-tour-f6f23.web.app/](https://world-tour-f6f23.web.app/)
 
+![World Tour](https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=1200)
+
 ---
 
 ## ✨ New Features (Jan 2026 Update)
