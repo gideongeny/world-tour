@@ -31,6 +31,18 @@
             "dest": "api/index.py"
         },
         {
+            "src": "/ai/(.*)",
+            "dest": "api/index.py"
+        },
+        {
+            "src": "/finance/(.*)",
+            "dest": "api/index.py"
+        },
+        {
+            "src": "/admin/(.*)",
+            "dest": "api/index.py"
+        },
+        {
             "src": "/assets/(.*)",
             "dest": "/frontend/dist/assets/$1"
         },
