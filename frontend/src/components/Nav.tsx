@@ -65,13 +65,7 @@ const Nav: React.FC = () => {
                     WORLD<span className="text-secondary group-hover:text-primary transition-colors">TOUR</span>
                 </Link>
 
-                {/* Mobile Menu Toggle - Absolute Center */}
-                <button
-                    className="md:hidden absolute left-1/2 -translate-x-1/2 p-2 text-slate-800 dark:text-white z-50"
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                >
-                    {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
-                </button>
+
 
 
 
@@ -82,7 +76,7 @@ const Nav: React.FC = () => {
                     <Link to="/ai-assistant" className={`${isActive('/ai-assistant')} transition-colors`}>{t('nav.ai_assistant')}</Link>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="hidden md:flex items-center gap-4">
                     {/* Dark/Light Mode Toggle */}
                     <button
                         onClick={toggleDarkMode}
@@ -185,6 +179,14 @@ const Nav: React.FC = () => {
 
                 </div>
 
+                {/* Mobile Menu Toggle (RightAligned) */}
+                <button
+                    className="md:hidden ml-auto p-2 text-slate-800 dark:text-white z-50"
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                >
+                    {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+                </button>
+
                 {/* Mobile Menu Overlay */}
                 <div className={`fixed inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-8 transition-all duration-300 md:hidden ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                     <div className="flex flex-col gap-6 text-center text-2xl font-bold">
@@ -194,24 +196,47 @@ const Nav: React.FC = () => {
                         <Link to="/ai-assistant" onClick={() => setMobileMenuOpen(false)} className={`${isActive('/ai-assistant')}`}>{t('nav.ai_assistant')}</Link>
                     </div>
 
-                    <div className="flex flex-col gap-4 w-64">
+                    <div className="flex flex-col gap-4 w-64 items-center">
+                        {/* Mobile Settings Controls */}
+                        <div className="flex items-center gap-4 mb-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 w-full justify-center">
+                            <button
+                                onClick={toggleDarkMode}
+                                className="p-3 rounded-full bg-white dark:bg-slate-700 shadow-sm"
+                            >
+                                {darkMode ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-slate-700" />}
+                            </button>
+                            <button
+                                onClick={() => setLangOpen(!langOpen)}
+                                className="flex items-center gap-2 bg-white dark:bg-slate-700 px-4 py-2 rounded-full shadow-sm font-bold text-sm"
+                            >
+                                <span className="text-lg">{currentLang.flag}</span>
+                                <span>{currentLang.code.toUpperCase()}</span>
+                            </button>
+                            <button
+                                onClick={() => setCurrencyOpen(!currencyOpen)}
+                                className="flex items-center gap-2 bg-white dark:bg-slate-700 px-4 py-2 rounded-full shadow-sm font-bold text-sm"
+                            >
+                                <span>{currency}</span>
+                            </button>
+                        </div>
+
                         {isAuthenticated ? (
                             <button
                                 onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
-                                className="px-6 py-4 rounded-xl font-bold border-2 border-red-500/20 text-red-600 flex items-center justify-center gap-2"
+                                className="px-6 py-4 rounded-xl font-bold border-2 border-red-500/20 text-red-600 flex items-center justify-center gap-2 w-full"
                             >
                                 <LogOut className="w-5 h-5" />
                                 {t('nav.logout')}
                             </button>
                         ) : (
-                            <>
-                                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 rounded-xl font-bold border-2 border-slate-200 dark:border-slate-700 text-center">
+                            <div className="flex flex-col gap-3 w-full">
+                                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 rounded-xl font-bold border-2 border-slate-200 dark:border-slate-700 text-center w-full">
                                     {t('nav.login')}
                                 </Link>
-                                <Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 rounded-xl font-bold bg-primary text-white text-center shadow-xl">
+                                <Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 rounded-xl font-bold bg-primary text-white text-center shadow-xl w-full">
                                     {t('nav.signup')}
                                 </Link>
-                            </>
+                            </div>
                         )}
                     </div>
                 </div>
