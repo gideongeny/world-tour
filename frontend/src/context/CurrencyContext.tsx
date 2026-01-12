@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 import type { ReactNode } from 'react';
 
 interface CurrencyContextType {
@@ -46,7 +47,7 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
 
     const fetchRates = async () => {
         try {
-            const res = await fetch('/api/currency/rates');
+            const res = await fetch(`${API_BASE_URL}/api/currency/rates`);
             const data = await res.json();
             if (data.success && data.rates) {
                 setRates(data.rates);

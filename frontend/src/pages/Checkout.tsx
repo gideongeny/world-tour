@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CreditCard, ShieldCheck, Mail, User, Phone, CheckCircle2 } from 'lucide-react';
 import ImageWithFallback from '../components/ui/image-with-fallback';
+import { API_BASE_URL } from '../config';
 
 function Checkout() {
     const location = useLocation();
@@ -24,7 +25,7 @@ function Checkout() {
         setLoading(true);
 
         try {
-            const response = await fetch('/booking/create-checkout-session', {
+            const response = await fetch(`${API_BASE_URL}/booking/create-checkout-session`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

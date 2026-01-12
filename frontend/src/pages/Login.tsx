@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { useUser } from '../context/UserContext';
+import { API_BASE_URL } from '../config';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -17,7 +18,7 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const res = await fetch('/auth/login', {
+            const res = await fetch(`${API_BASE_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })

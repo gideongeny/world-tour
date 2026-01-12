@@ -1,51 +1,16 @@
 {
-    "hosting": {
-        "public": "frontend/dist",
-        "ignore": [
-            "firebase.json",
-            "**/.*",
-            "**/node_modules/**"
-        ],
-        "rewrites": [
-            {
-                "source": "/auth/**",
-                "run": {
-                    "serviceId": "world-tour-backend",
-                    "region": "us-central1"
-                }
-            },
-            {
-                "source": "/booking/**",
-                "run": {
-                    "serviceId": "world-tour-backend",
-                    "region": "us-central1"
-                }
-            },
-            {
-                "source": "/ai/**",
-                "run": {
-                    "serviceId": "world-tour-backend",
-                    "region": "us-central1"
-                }
-            },
-            {
-                "source": "/finance/**",
-                "run": {
-                    "serviceId": "world-tour-backend",
-                    "region": "us-central1"
-                }
-            },
-            {
-                "source": "/admin/**",
-                "run": {
-                    "serviceId": "world-tour-backend",
-                    "region": "us-central1"
-                }
-            },
-            {
-                "source": "**",
-                "destination": "/index.html"
-            }
-        ]
-    }
+  "hosting": {
+    "public": "frontend/dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
 }

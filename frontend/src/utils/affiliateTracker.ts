@@ -1,5 +1,6 @@
 // Affiliate Tracking Utilities
 // Client-side tracking for affiliate link clicks
+import { API_BASE_URL } from '../config';
 
 export interface AffiliateClickData {
     affiliateType: 'booking' | 'skyscanner' | 'insurance' | 'activity';
@@ -9,7 +10,7 @@ export interface AffiliateClickData {
 
 export const trackAffiliateClick = async (data: AffiliateClickData): Promise<void> => {
     try {
-        await fetch('/api/affiliate/track', {
+        await fetch(`${API_BASE_URL}/api/affiliate/track`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

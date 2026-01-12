@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plane, Calendar, Clock } from 'lucide-react';
 import ImageWithFallback from '../components/ui/image-with-fallback';
+import { API_BASE_URL } from '../config';
 
 interface Flight {
     id: number;
@@ -70,7 +71,7 @@ function Flights() {
     const [date, setDate] = useState('');
 
     useEffect(() => {
-        fetch('/booking/flights?format=json')
+        fetch(`${API_BASE_URL}/booking/flights?format=json`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setFlights(data);

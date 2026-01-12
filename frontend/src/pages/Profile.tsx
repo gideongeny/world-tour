@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { API_BASE_URL } from '../config';
 import { Navigate, Link } from 'react-router-dom';
 import { Heart, User, Package, Calendar, MapPin, Trash2, ShieldCheck, CreditCard } from 'lucide-react';
 import Price from '../components/Price';
@@ -41,7 +42,7 @@ const Profile = () => {
 
     const fetchProfile = async () => {
         try {
-            const res = await fetch('/api/user/profile', {
+            const res = await fetch(`${API_BASE_URL}/api/user/profile`, {
                 credentials: 'include'
             });
             if (res.ok) {
@@ -55,7 +56,7 @@ const Profile = () => {
 
     const fetchWishlist = async () => {
         try {
-            const res = await fetch('/api/user/wishlist', {
+            const res = await fetch(`${API_BASE_URL}/api/user/wishlist`, {
                 credentials: 'include'
             });
             if (res.ok) {
@@ -72,7 +73,7 @@ const Profile = () => {
     const handleRemove = async (id: number) => {
         if (!confirm('Remove this saved trip?')) return;
         try {
-            const res = await fetch(`/api/user/wishlist/${id}`, {
+            const res = await fetch(`${API_BASE_URL}/api/user/wishlist/${id}`, {
                 method: 'DELETE',
                 credentials: 'include'
             });

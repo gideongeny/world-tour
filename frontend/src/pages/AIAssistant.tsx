@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, User, Bot } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -30,7 +31,7 @@ function AIAssistant() {
         setIsTyping(true);
 
         // Mock API call or real one
-        fetch('/ai/api/chat', {
+        fetch(`${API_BASE_URL}/ai/api/chat`, {
             // Endpoint path validation needed later, assumes /booking/ai/chat or similar. 
             // Based on blueprints/ai/routes.py it's likely /ai/chat if registered properly.
             // Let's assume /ai/chat at root + blueprint prefix.

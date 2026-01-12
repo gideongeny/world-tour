@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Shield, Check, X } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 interface InsuranceWidgetProps {
     destination: string;
@@ -31,7 +32,7 @@ const InsuranceWidget: React.FC<InsuranceWidgetProps> = ({
         const url = `https://www.worldnomads.com/travel-insurance?affiliate=${affiliateId}&destination=${encodeURIComponent(destination)}&travelers=${travelers}&trip_cost=${tripCost}`;
 
         // Track affiliate click
-        fetch('/api/affiliate/track', {
+        fetch(`${API_BASE_URL}/api/affiliate/track`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

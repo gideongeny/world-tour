@@ -5,6 +5,7 @@ import { Sparkles, Heart } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { useState } from 'react';
 import ImageWithFallback from './ui/image-with-fallback';
+import { API_BASE_URL } from '../config';
 
 interface Destination {
     id: number;
@@ -27,7 +28,7 @@ const DestinationCard: React.FC<{ destination: Destination }> = ({ destination }
         if (!isAuthenticated) return alert('Please login to save trips!');
 
         try {
-            const res = await fetch('/api/user/wishlist', {
+            const res = await fetch(`${API_BASE_URL}/api/user/wishlist`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

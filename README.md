@@ -2,6 +2,9 @@
 
 A modern, full-stack travel booking application with AI-powered recommendations, multi-currency support, and real-time data.
 
+## 🟢 Live Demo
+**Website**: [https://world-tour-f6f23.web.app/](https://world-tour-f6f23.web.app/)
+
 ![World Tour](https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=1200)
 
 ## ✨ Features
@@ -26,7 +29,41 @@ A modern, full-stack travel booking application with AI-powered recommendations,
 - **Premium Subscription**: PayPal / Stripe integration
 - **Ad Network**: Monetag integration
 
-## 🚀 Quick Start (Local)
+---
+
+## 🛠️ Architecture
+
+This project uses a **Hybrid Cloud Architecture** for maximum performance and zero cost:
+
+- **Frontend**: Hosted on **Firebase Hosting** (Fast global CDN)
+- **Backend**: Hosted on **Render.com** (Python/Flask API)
+- **Database**: **Neon** (Serverless Postgres)
+
+## 🚀 Deployment Guide
+
+### 1. Backend (Render)
+The backend runs on Render Web Services.
+- **Build Command**: `pip install -r requirements.txt`
+- **Start Command**: `gunicorn app:app`
+- **Env Vars**: `DATABASE_URL`, `SECRET_KEY`, `OPENAI_API_KEY`
+
+### 2. Frontend (Firebase)
+The frontend connects to the backend via environmental variables.
+
+**To Deploy Updates:**
+```bash
+# 1. Build the frontend
+cd frontend
+npm run build
+cd ..
+
+# 2. Deploy to Firebase
+firebase deploy
+```
+
+---
+
+## 💻 Local Development
 
 ### Backend
 ```bash
@@ -44,60 +81,6 @@ npm install
 npm run dev
 # App runs at http://localhost:5173
 ```
-
-## 📦 Deployment Guide (Vercel)
-
-This project is configured for **Vercel Monorepo Deployment** (Frontend + Backend in one project).
-
-### Step 1: Push to GitHub
-Ensure your code is pushed to your GitHub repository.
-
-### Step 2: Import to Vercel
-1. Go to [Vercel Dashboard](https://vercel.com).
-2. Click **Add New** > **Project**.
-3. Import your `world-tour` repository.
-
-### Step 3: Configure Project
-- **Framework Preset**: Vite (should auto-detect).
-- **Root Directory**: `./` (Keep default).
-- **Build Command**: `npm run build` (in frontend).
-- **Output Directory**: `frontend/dist`.
-
-> **Note**: The included `vercel.json` handles the routing between Frontend and Backend automatically!
-
-### Step 4: Environment Variables (Critical!)
-Add these in Vercel **Settings > Environment Variables**:
-
-**Application:**
-- `FLASK_ENV`: `production`
-- `SECRET_KEY`: (Generate a random string)
-- `FRONTEND_URL`: `https://your-project-name.vercel.app` (Your production Vercel URL)
-
-**Database (Neon/Postgres):**
-- `DATABASE_URL`: `postgres://user:password@host/dbname?sslmode=require`
-*(If using Neon, it provides this connection string)*
-
-**Monetization Keys:**
-- `PAYPAL_CLIENT_ID`: (From PayPal Developer)
-- `PAYPAL_CLIENT_SECRET`: (From PayPal Developer)
-- `PAYPAL_MODE`: `live` (or `sandbox`)
-- `STRIPE_SECRET_KEY`: (Optional)
-- `STRIPE_PUBLISHABLE_KEY`: (Optional)
-
-**Affiliate IDs:**
-- `BOOKING_COM_AFFILIATE_ID`
-- `SKYSCANNER_AFFILIATE_ID`
-
-**AI:**
-- `GOOGLE_API_KEY`: (Gemini API Key)
-
-### Step 5: Deploy
-Click **Deploy**. Vercel will build the frontend and set up the serverless backend.
-
-### ⚠️ Common Issues
-- **"Backend Not Connected"**: Ensure you added `FRONTEND_URL` and `DATABASE_URL`.
-- **"Database Error"**: Verify your Neon connection string.
-- **"CORS Error"**: This template uses relative paths (`/api/...`), so CORS is usually not an issue if deployed as a single project.
 
 ---
 

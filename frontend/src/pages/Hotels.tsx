@@ -4,6 +4,7 @@ import { Star, MapPin, Wifi, Coffee, Globe } from 'lucide-react';
 import { useCurrency } from '../context/CurrencyContext';
 import { useLanguage } from '../context/LanguageContext';
 import InsuranceWidget from '../components/InsuranceWidget';
+import { API_BASE_URL } from '../config';
 
 interface Hotel {
     id: number;
@@ -86,13 +87,13 @@ function Hotels() {
         setLoading(true);
         setExternalUrl(null);
 
-        fetch(`/booking/live/hotels/search?q=${encodeURIComponent(activeQuery)}`)
+        fetch(`${API_BASE_URL}/booking/live/hotels/search?q=${encodeURIComponent(activeQuery)}`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data) && data.length > 0) {
                     setHotels(data);
                 } else {
-                    fetch(`/booking/external/hotels/search?q=${encodeURIComponent(activeQuery)}`)
+                    fetch(`${API_BASE_URL}/booking/external/hotels/search?q=${encodeURIComponent(activeQuery)}`)
                         .then(res => res.json())
                         .then(extData => {
                             if (extData.url) {
@@ -115,7 +116,7 @@ function Hotels() {
             handleSearch(query);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            fetch('/booking/hotels?format=json')
+            fetch(`${API_BASE_URL}/booking/hotels?format=json`)
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) setHotels(data);

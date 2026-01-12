@@ -9,6 +9,7 @@ import DestinationCard from '../components/DestinationCard'
 import Map from '../components/Map'
 import PageTransition from '../components/PageTransition'
 import { useLanguage } from '../context/LanguageContext'
+import { API_BASE_URL } from '../config';
 
 interface Destination {
     id: number;
@@ -32,13 +33,14 @@ const sampleImages = [
     { src: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&auto=format&fit=crop&q=60', alt: 'Travel 6' },
 ];
 
+
 function Home() {
     const [destinations, setDestinations] = useState<Destination[]>([]);
     const [loading, setLoading] = useState(true);
     const { t } = useLanguage();
 
     useEffect(() => {
-        fetch('/booking/destinations?format=json')
+        fetch(`${API_BASE_URL}/booking/destinations?format=json`)
             .then((res: Response) => {
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 return res.json();
