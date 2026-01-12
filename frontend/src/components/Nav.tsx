@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { Sun, Moon, LogOut, User as UserIcon, ChevronDown } from 'lucide-react';
+import { Sun, Moon, LogOut, User as UserIcon, ChevronDown, Menu, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
 
@@ -10,6 +10,7 @@ const Nav: React.FC = () => {
     const [darkMode, setDarkMode] = useState(false);
     const [langOpen, setLangOpen] = useState(false);
     const [currencyOpen, setCurrencyOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const { user, logout, isAuthenticated } = useUser();
@@ -60,9 +61,17 @@ const Nav: React.FC = () => {
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 py-4 ${scrolled ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-xl py-3' : 'bg-transparent'
             }`}>
             <div className="max-w-7xl mx-auto flex justify-between items-center">
-                <Link to="/" className="text-3xl font-black tracking-tighter text-primary group cursor-pointer">
+                <Link to="/" className="text-3xl font-black tracking-tighter text-primary group cursor-pointer z-50">
                     WORLD<span className="text-secondary group-hover:text-primary transition-colors">TOUR</span>
                 </Link>
+
+                {/* Mobile Menu Toggle */}
+                <button
+                    className="md:hidden p-2 text-slate-800 dark:text-white z-50"
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                >
+                    {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+                </button>
 
                 <div className="hidden md:flex items-center gap-8 font-medium">
                     <Link to="/" className={`${isActive('/')} transition-colors`}>{t('nav.destinations')}</Link>
@@ -170,6 +179,37 @@ const Nav: React.FC = () => {
                             </Link>
                         </>
                     )}
+                </div>
+
+                {/* Mobile Menu Overlay */}
+                <div className={`fixed inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-8 transition-all duration-300 md:hidden ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                    <div className="flex flex-col gap-6 text-center text-2xl font-bold">
+                        <Link to="/" onClick={() => setMobileMenuOpen(false)} className={`${isActive('/')}`}>{t('nav.destinations')}</Link>
+                        <Link to="/hotels" onClick={() => setMobileMenuOpen(false)} className={`${isActive('/hotels')}`}>{t('nav.hotels')}</Link>
+                        <Link to="/flights" onClick={() => setMobileMenuOpen(false)} className={`${isActive('/flights')}`}>{t('nav.flights')}</Link>
+                        <Link to="/ai-assistant" onClick={() => setMobileMenuOpen(false)} className={`${isActive('/ai-assistant')}`}>{t('nav.ai_assistant')}</Link>
+                    </div>
+
+                    <div className="flex flex-col gap-4 w-64">
+                        {isAuthenticated ? (
+                            <button
+                                onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                                className="px-6 py-4 rounded-xl font-bold border-2 border-red-500/20 text-red-600 flex items-center justify-center gap-2"
+                            >
+                                <LogOut className="w-5 h-5" />
+                                {t('nav.logout')}
+                            </button>
+                        ) : (
+                            <>
+                                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 rounded-xl font-bold border-2 border-slate-200 dark:border-slate-700 text-center">
+                                    {t('nav.login')}
+                                </Link>
+                                <Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 rounded-xl font-bold bg-primary text-white text-center shadow-xl">
+                                    {t('nav.signup')}
+                                </Link>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </nav>

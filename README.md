@@ -1,64 +1,63 @@
-# 🌍 World Tour - Travel Booking Platform
+# 🌍 World Tour - Premium Travel Platform
 
-A modern, full-stack travel booking application with AI-powered recommendations, multi-currency support, and real-time data.
+A next-generation travel booking application featuring 3D visualization, AI-powered planning, and seamless payments.
 
 ## 🟢 Live Demo
 **Website**: [https://world-tour-f6f23.web.app/](https://world-tour-f6f23.web.app/)
 
-![World Tour](https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=1200)
+---
 
-## ✨ Features
+## ✨ New Features (Jan 2026 Update)
 
-### 🔐 Authentication System
-- User registration and login
-- User Profile Dashboard
-- Saved Trips & Wishlist
+### 💳 Enhanced Payment System
+- **PayPal Integration**: Users can now choose between **Credit Card (Stripe)** and **PayPal** at checkout.
+- **Smart Checkout**: Dynamic payment method switching with secure processing.
 
-### 💱 Multi-Currency Support
-- **9 Currencies**: USD, EUR, GBP, KES, ZAR, etc.
-- Real-time exchange rates
+### 🌍 Global Satellite View
+- **Interactive 3D Map**: A full-width, edge-to-edge satellite map integrated into the homepage.
+- **Real-time Markers**: Visualizes all 19+ available destinations globally.
 
-### 🏨 Travel Services
-- **Destinations**: 32+ world-class locations
-- **Hotels**: Booking.com / Google Hotels integration
-- **Flights**: Scanner/Kayak integration
-- **AI Assistant**: Gemini-powered planning
+### 🤖 Advanced AI Assistant
+- **Real API Integration**: The AI now connects to backend services (OpenAI) instead of using mock responses.
+- **Personalized Planning**: Generates custom itineraries based on user preferences.
 
-### 💰 Monetization
-- **Affiliate System**: Booking.com, Skyscanner, etc.
-- **Premium Subscription**: PayPal / Stripe integration
-- **Ad Network**: Monetag integration
+### 📱 Perfect Mobile Experience
+- **Responsive Layout**: Fixed horizontal scrolling issues on Android.
+- **Optimized UI**: Typography and spacing adjusted for all screen sizes.
+
+### 🔐 Full Authentication
+- **Traveler Signup**: Complete registration flow integrated with the backend.
+- **Secure Sessions**: Protected routes for profile and booking management.
 
 ---
 
-## 🛠️ Architecture
+## 🛠️ Architecture & Deployment
 
-This project uses a **Hybrid Cloud Architecture** for maximum performance and zero cost:
+This project uses a **Hybrid Cloud Architecture**:
 
-- **Frontend**: Hosted on **Firebase Hosting** (Fast global CDN)
-- **Backend**: Hosted on **Render.com** (Python/Flask API)
-- **Database**: **Neon** (Serverless Postgres)
+- **Frontend**: Hosted on **Firebase Hosting** (CDNs for speed).
+- **Backend**: Hosted on **Render** (Python/Flask API).
+- **Database**: **SQLite** (Development) / **PostgreSQL** (Recommended for Production).
 
-## 🚀 Deployment Guide
+### ⚠️ Important Note on Data
+The current backend on Render uses an ephemeral file system. **This means the database resets when the server restarts.**
+To fix this permanently for production, connect a remote PostgreSQL database (like Neon or Render Postgres) by setting the `DATABASE_URL` environment variable.
 
-### 1. Backend (Render)
-The backend runs on Render Web Services.
-- **Build Command**: `pip install -r requirements.txt`
-- **Start Command**: `gunicorn app:app`
-- **Env Vars**: `DATABASE_URL`, `SECRET_KEY`, `OPENAI_API_KEY`
+### Deployment Commands
 
-### 2. Frontend (Firebase)
-The frontend connects to the backend via environmental variables.
-
-**To Deploy Updates:**
+**1. Deploy Frontend (Firebase)**
 ```bash
-# 1. Build the frontend
 cd frontend
 npm run build
 cd ..
-
-# 2. Deploy to Firebase
 firebase deploy
+```
+
+**2. Manage Backend**
+The backend auto-deploys from GitHub. To restore data after a restart:
+```bash
+# Seed the database manually if needed
+curl https://world-tour-ngmj.onrender.com/seed
 ```
 
 ---
@@ -67,11 +66,9 @@ firebase deploy
 
 ### Backend
 ```bash
-# Install dependencies
 pip install -r requirements.txt
-
-# Run server (http://localhost:5000)
 python app.py
+# Runs on http://localhost:5000
 ```
 
 ### Frontend
@@ -79,7 +76,7 @@ python app.py
 cd frontend
 npm install
 npm run dev
-# App runs at http://localhost:5173
+# Runs on http://localhost:5173
 ```
 
 ---
