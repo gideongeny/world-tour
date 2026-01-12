@@ -88,7 +88,7 @@ const Map: FC<MapProps> = ({
 
     return (
         <div className="relative group">
-            <div ref={mapContainer} className={`${className} shadow-2xl glass-card overflow-hidden`} />
+            <div ref={mapContainer} className={`${className} shadow-2xl bg-slate-900 overflow-hidden`} />
         </div>
     );
 };
