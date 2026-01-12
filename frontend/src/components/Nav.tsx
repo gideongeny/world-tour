@@ -65,9 +65,9 @@ const Nav: React.FC = () => {
                     WORLD<span className="text-secondary group-hover:text-primary transition-colors">TOUR</span>
                 </Link>
 
-                {/* Mobile Menu Toggle - Centered */}
+                {/* Mobile Menu Toggle - Absolute Center */}
                 <button
-                    className="md:hidden p-2 text-slate-800 dark:text-white z-50 translate-x-12"
+                    className="md:hidden absolute left-1/2 -translate-x-1/2 p-2 text-slate-800 dark:text-white z-50"
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 >
                     {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
