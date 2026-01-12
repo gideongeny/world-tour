@@ -8,12 +8,12 @@ def final_polish_data():
         premium_destinations = {
             'Maasai Mara': {
                 'lat': -1.4061, 'lng': 35.0839, 
-                'img': 'https://images.unsplash.com/photo-1516426122078-c23e76319801',
+                'img': '/assets/hero/maasai-mara-hero.jpg',
                 'desc': 'Experience the heart of the wild with the Great Migration.'
             },
             'Zanzibar': {
                 'lat': -6.1659, 'lng': 39.2026, 
-                'img': 'https://images.unsplash.com/photo-1539651044670-315229da9d2f',
+                'img': '/assets/hero/zanzibar-hero.jpg',
                 'desc': 'Exotic spice island with pristine white sands and historic Stone Town.'
             },
             'Santorini': {
@@ -30,6 +30,16 @@ def final_polish_data():
                 'lat': 40.6333, 'lng': 14.6029, 
                 'img': 'https://images.unsplash.com/photo-1533105079780-92b9be482077',
                 'desc': 'Italy\'s most iconic coastline with dramatic cliffs.'
+            },
+            'Shanghai': {
+                'lat': 31.2304, 'lng': 121.4737, 
+                'img': '/assets/hero/shanghai-hero.jpg',
+                'desc': 'The Pearl of the Orient. Rated 4.7/5 for modern wonders.'
+            },
+            'Dakar': {
+                'lat': 14.7167, 'lng': -17.4677, 
+                'img': '/assets/hero/dakar-hero.jpg',
+                'desc': 'Gateway to Africa. Rated 4.5/5 for vibrance.'
             },
             'Dubai': {
                 'lat': 25.2048, 'lng': 55.2708, 
