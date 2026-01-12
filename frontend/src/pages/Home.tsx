@@ -106,7 +106,7 @@ function Home() {
                             <motion.h1
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="text-6xl md:text-8xl font-black text-white drop-shadow-[0_0_25px_rgba(0,0,0,0.7)] mb-6 tracking-tight leading-tight"
+                                className="text-4xl sm:text-6xl md:text-8xl font-black text-white drop-shadow-[0_0_25px_rgba(0,0,0,0.7)] mb-4 md:mb-6 tracking-tight leading-tight"
                             >
                                 Explore the World
                             </motion.h1>
@@ -114,15 +114,15 @@ function Home() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="text-xl md:text-2xl text-white font-medium drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] max-w-2xl mx-auto mb-10 leading-relaxed"
+                                className="text-lg sm:text-xl md:text-2xl text-white font-medium drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed px-4"
                             >
                                 Discover your next adventure with World Tour.
                             </motion.p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center pointer-events-auto">
-                                <Link to="/signup" className="px-10 py-5 bg-white text-black rounded-full font-black text-lg hover:bg-slate-100 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center pointer-events-auto px-6">
+                                <Link to="/signup" className="px-8 py-4 sm:px-10 sm:py-5 bg-white text-black rounded-full font-black text-base sm:text-lg hover:bg-slate-100 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.3)]">
                                     Start Journey
                                 </Link>
-                                <a href="#destinations" className="px-10 py-5 bg-black/30 backdrop-blur-md border-[1.5px] border-white/40 text-white rounded-full font-bold text-lg hover:bg-black/50 transition-all hover:border-white">
+                                <a href="#destinations" className="px-8 py-4 sm:px-10 sm:py-5 bg-black/30 backdrop-blur-md border-[1.5px] border-white/40 text-white rounded-full font-bold text-base sm:text-lg hover:bg-black/50 transition-all hover:border-white">
                                     View Destinations
                                 </a>
                             </div>
@@ -178,7 +178,7 @@ function Home() {
                     </div>
 
                     {/* Full-Width Video Section with Centered Button */}
-                    <section className="relative w-screen h-screen overflow-hidden -mx-6">
+                    <section className="relative w-full h-[80vh] md:h-screen overflow-hidden">
                         {/* Video Background */}
                         <video
                             src="/assets/world-view.mp4"
@@ -199,7 +199,7 @@ function Home() {
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
-                                    className="text-5xl md:text-7xl font-black mb-6 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]"
+                                    className="text-4xl sm:text-6xl md:text-7xl font-black mb-4 md:mb-6 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]"
                                 >
                                     Unlock the Globe
                                 </motion.h2>
@@ -208,7 +208,7 @@ function Home() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: 0.1 }}
-                                    className="text-xl md:text-2xl mb-12 max-w-2xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
+                                    className="text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
                                 >
                                     Get exclusive access to premium destinations worldwide
                                 </motion.p>
@@ -220,7 +220,7 @@ function Home() {
                                 >
                                     <Link
                                         to="/pricing"
-                                        className="inline-block px-16 py-6 bg-white text-black rounded-full font-black text-xl hover:bg-slate-100 transition-all transform hover:scale-110 shadow-[0_10px_40px_rgba(0,0,0,0.5)] hover:shadow-[0_15px_50px_rgba(0,0,0,0.6)]"
+                                        className="inline-block px-10 py-4 sm:px-16 sm:py-6 bg-white text-black rounded-full font-black text-lg sm:text-xl hover:bg-slate-100 transition-all transform hover:scale-110 shadow-[0_10px_40px_rgba(0,0,0,0.5)] hover:shadow-[0_15px_50px_rgba(0,0,0,0.6)]"
                                     >
                                         Join Premium
                                     </Link>
