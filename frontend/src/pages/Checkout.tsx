@@ -122,13 +122,53 @@ function Checkout() {
                     </form>
 
                     <form onSubmit={handleConfirmBooking} className={step === 2 ? 'block' : 'hidden'}>
-                                    <div className="w-32">
-                                        <label className="block text-xs font-bold text-slate-400 uppercase mb-2">CVC</label>
-                                        <input required type="text" className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 outline-none focus:border-primary font-mono" placeholder="123" />
+                        <div className="mb-8">
+                            <h3 className="text-lg font-bold mb-4">Select Payment Method</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label className="cursor-pointer">
+                                    <input type="radio" name="payment" value="stripe" className="peer sr-only" defaultChecked />
+                                    <div className="p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 transition-all flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center">
+                                            <CreditCard className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold">Credit Card</p>
+                                            <p className="text-xs text-slate-500">Powered by Stripe</p>
+                                        </div>
                                     </div>
-                                </div>
+                                </label>
+
+                                <label className="cursor-pointer">
+                                    <input type="radio" name="payment" value="paypal" className="peer sr-only" />
+                                    <div className="p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 transition-all flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-indigo-800 text-white rounded-lg flex items-center justify-center font-black italic">
+                                            P
+                                        </div>
+                                        <div>
+                                            <p className="font-bold">PayPal</p>
+                                            <p className="text-xs text-slate-500">Fast & Secure</p>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
                         </div>
+
+                        {/* Card Form Mockup */}
+                        <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl mb-8 border border-slate-200 dark:border-slate-700">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-3 bg-primary/10 rounded-xl text-primary">
+                                    <ShieldCheck className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold">Secure Payment</h3>
+                                    <p className="text-xs text-slate-500">Encrypted & Trusted by Millions</p>
+                                </div>
+                            </div>
+                            <div className="p-4 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-center text-slate-500 text-sm">
+                                You will be redirected to the secure payment provider to complete this transaction.
+                            </div>
+                        </div>
+
                         <div className="flex flex-col gap-4">
                             <button
                                 disabled={loading}
@@ -140,46 +180,46 @@ function Checkout() {
                                 Back to Traveler Details
                             </button>
                         </div>
-                    </form >
-                </div >
+                    </form>
+                </div>
 
-        {/* Right Side: Summary Card */ }
-        < div className = "w-full lg:w-96" >
-            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden sticky top-32 border border-slate-100 dark:border-slate-700">
-                <div className="h-40 overflow-hidden relative">
-                    <ImageWithFallback src={itemImage!} alt={itemName} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div className="absolute bottom-4 left-6">
-                        <span className="text-primary-foreground bg-primary/20 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest leading-none mb-1 inline-block">
-                            {itemType}
-                        </span>
-                        <h3 className="text-white font-bold text-xl">{itemName}</h3>
+                {/* Right Side: Summary Card */}
+                < div className="w-full lg:w-96" >
+                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden sticky top-32 border border-slate-100 dark:border-slate-700">
+                        <div className="h-40 overflow-hidden relative">
+                            <ImageWithFallback src={itemImage!} alt={itemName} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div className="absolute bottom-4 left-6">
+                                <span className="text-primary-foreground bg-primary/20 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest leading-none mb-1 inline-block">
+                                    {itemType}
+                                </span>
+                                <h3 className="text-white font-bold text-xl">{itemName}</h3>
+                            </div>
+                        </div>
+                        <div className="p-8">
+                            <div className="space-y-4 mb-6">
+                                <div className="flex justify-between text-slate-500">
+                                    <span>Subtotal</span>
+                                    <span className="font-bold text-slate-900 dark:text-white">${itemPrice}</span>
+                                </div>
+                                <div className="flex justify-between text-slate-500">
+                                    <span>Service Fee</span>
+                                    <span className="font-bold text-slate-900 dark:text-white">$25.00</span>
+                                </div>
+                                <div className="flex justify-between text-slate-500">
+                                    <span>Taxes</span>
+                                    <span className="font-bold text-slate-900 dark:text-white">$12.50</span>
+                                </div>
+                            </div>
+                            <div className="pt-6 border-t border-slate-100 dark:border-slate-700 flex justify-between items-end">
+                                <div>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
+                                    <p className="text-3xl font-black text-primary">${(parseFloat(itemPrice) + 37.5).toFixed(2)}</p>
+                                </div>
+                                <ShieldCheck className="w-8 h-8 text-green-500 mb-1" />
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div className="p-8">
-                    <div className="space-y-4 mb-6">
-                        <div className="flex justify-between text-slate-500">
-                            <span>Subtotal</span>
-                            <span className="font-bold text-slate-900 dark:text-white">${itemPrice}</span>
-                        </div>
-                        <div className="flex justify-between text-slate-500">
-                            <span>Service Fee</span>
-                            <span className="font-bold text-slate-900 dark:text-white">$25.00</span>
-                        </div>
-                        <div className="flex justify-between text-slate-500">
-                            <span>Taxes</span>
-                            <span className="font-bold text-slate-900 dark:text-white">$12.50</span>
-                        </div>
-                    </div>
-                    <div className="pt-6 border-t border-slate-100 dark:border-slate-700 flex justify-between items-end">
-                        <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
-                            <p className="text-3xl font-black text-primary">${(parseFloat(itemPrice) + 37.5).toFixed(2)}</p>
-                        </div>
-                        <ShieldCheck className="w-8 h-8 text-green-500 mb-1" />
-                    </div>
-                </div>
-            </div>
                 </div >
             </div >
         </div >
