@@ -42,7 +42,14 @@ except ImportError:
 # Stripe configuration is managed in services/stripe_service.py
 
 app = Flask(__name__)
-CORS(app)
+# Allow specific frontend domain for credentials (cookies/auth) to work
+CORS(app, resources={r"/*": {
+    "origins": [
+        "https://world-tour-f6f23.web.app",
+        "http://localhost:5173", 
+        "http://127.0.0.1:5173"
+    ]
+}}, supports_credentials=True)
 
 # Security Headers
 @app.after_request
