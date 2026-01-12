@@ -45,12 +45,10 @@ function AIAssistant() {
                 setMessages(prev => [...prev, { role: 'assistant', content: data.response || "I found some interesting options for you..." }]);
                 setIsTyping(false);
             })
-            .catch(() => {
-                // Fallback for demo if backend not fully wired
-                setTimeout(() => {
-                    setMessages(prev => [...prev, { role: 'assistant', content: "That sounds like a great plan! I recommend visiting Paris or Tokyo for that experience. Would you like to see some hotels?" }]);
-                    setIsTyping(false);
-                }, 1500);
+            .catch((err) => {
+                console.error("AI Error:", err);
+                setMessages(prev => [...prev, { role: 'assistant', content: "I'm having trouble connecting to the server. Please check your internet or try again later. 🔌" }]);
+                setIsTyping(false);
             });
     };
 

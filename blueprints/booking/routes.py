@@ -77,19 +77,31 @@ def live_hotel_search():
 @booking_bp.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
     from services.stripe_service import stripe_service
+    from services.paypal_service import PayPalService
+    
     data = request.json
     item_name = data.get('name', 'Travel Booking')
     amount = data.get('price', 0)
+    payment_method = data.get('paymentMethod', 'stripe') # Default to Stripe
     
     # In a real app, success/cancel URLs would be your production domain
     host = request.host_url.rstrip('/')
     success_url = f"{host}/checkout?success=true"
     cancel_url = f"{host}/checkout?cancel=true"
     
-    url, session_id = stripe_service.create_checkout_session(item_name, amount, success_url, cancel_url)
-    
-    if url:
-        return jsonify({'url': url, 'sessionId': session_id})
+    if payment_method == 'paypal':
+        # Create PayPal Order
+        approval_url, order_id = PayPalService.create_payment(amount, item_name, success_url, cancel_url)
+        if approval_url:
+            return jsonify({'url': approval_url, 'sessionId': order_id, 'provider': 'paypal'})
+        else:
+             return jsonify({'error': 'Failed to create PayPal session'}), 500
+    else:
+        # Default Stripe
+        url, session_id = stripe_service.create_checkout_session(item_name, amount, success_url, cancel_url)
+        if url:
+             return jsonify({'url': url, 'sessionId': session_id, 'provider': 'stripe'})
+        
     return jsonify({'error': 'Failed to create checkout session'}), 500
 @booking_bp.route('/external/flights/search')
 def external_flight_search():

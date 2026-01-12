@@ -31,7 +31,8 @@ function Checkout() {
                 body: JSON.stringify({
                     name: itemName,
                     price: itemPrice,
-                    type: itemType
+                    type: itemType,
+                    paymentMethod: (document.querySelector('input[name="payment"]:checked') as HTMLInputElement)?.value === 'paypal' ? 'paypal' : 'stripe'
                 })
             });
             const data = await response.json();
@@ -121,27 +122,6 @@ function Checkout() {
                     </form>
 
                     <form onSubmit={handleConfirmBooking} className={step === 2 ? 'block' : 'hidden'}>
-                        <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl mb-8 border border-slate-200 dark:border-slate-700">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="p-3 bg-primary/10 rounded-xl text-primary">
-                                    <CreditCard className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold">Secure Payment</h3>
-                                    <p className="text-xs text-slate-500">Industry standard SSL encrypted payment</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Card Number</label>
-                                    <input required type="text" className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 outline-none focus:border-primary font-mono" placeholder="4242 4242 4242 4242" />
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="flex-1">
-                                        <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Expiry Date</label>
-                                        <input required type="text" className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 outline-none focus:border-primary font-mono" placeholder="MM / YY" />
-                                    </div>
                                     <div className="w-32">
                                         <label className="block text-xs font-bold text-slate-400 uppercase mb-2">CVC</label>
                                         <input required type="text" className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 outline-none focus:border-primary font-mono" placeholder="123" />
@@ -160,49 +140,49 @@ function Checkout() {
                                 Back to Traveler Details
                             </button>
                         </div>
-                    </form>
-                </div>
+                    </form >
+                </div >
 
-                {/* Right Side: Summary Card */}
-                <div className="w-full lg:w-96">
-                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden sticky top-32 border border-slate-100 dark:border-slate-700">
-                        <div className="h-40 overflow-hidden relative">
-                            <ImageWithFallback src={itemImage!} alt={itemName} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                            <div className="absolute bottom-4 left-6">
-                                <span className="text-primary-foreground bg-primary/20 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest leading-none mb-1 inline-block">
-                                    {itemType}
-                                </span>
-                                <h3 className="text-white font-bold text-xl">{itemName}</h3>
-                            </div>
+        {/* Right Side: Summary Card */ }
+        < div className = "w-full lg:w-96" >
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden sticky top-32 border border-slate-100 dark:border-slate-700">
+                <div className="h-40 overflow-hidden relative">
+                    <ImageWithFallback src={itemImage!} alt={itemName} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-4 left-6">
+                        <span className="text-primary-foreground bg-primary/20 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest leading-none mb-1 inline-block">
+                            {itemType}
+                        </span>
+                        <h3 className="text-white font-bold text-xl">{itemName}</h3>
+                    </div>
+                </div>
+                <div className="p-8">
+                    <div className="space-y-4 mb-6">
+                        <div className="flex justify-between text-slate-500">
+                            <span>Subtotal</span>
+                            <span className="font-bold text-slate-900 dark:text-white">${itemPrice}</span>
                         </div>
-                        <div className="p-8">
-                            <div className="space-y-4 mb-6">
-                                <div className="flex justify-between text-slate-500">
-                                    <span>Subtotal</span>
-                                    <span className="font-bold text-slate-900 dark:text-white">${itemPrice}</span>
-                                </div>
-                                <div className="flex justify-between text-slate-500">
-                                    <span>Service Fee</span>
-                                    <span className="font-bold text-slate-900 dark:text-white">$25.00</span>
-                                </div>
-                                <div className="flex justify-between text-slate-500">
-                                    <span>Taxes</span>
-                                    <span className="font-bold text-slate-900 dark:text-white">$12.50</span>
-                                </div>
-                            </div>
-                            <div className="pt-6 border-t border-slate-100 dark:border-slate-700 flex justify-between items-end">
-                                <div>
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
-                                    <p className="text-3xl font-black text-primary">${(parseFloat(itemPrice) + 37.5).toFixed(2)}</p>
-                                </div>
-                                <ShieldCheck className="w-8 h-8 text-green-500 mb-1" />
-                            </div>
+                        <div className="flex justify-between text-slate-500">
+                            <span>Service Fee</span>
+                            <span className="font-bold text-slate-900 dark:text-white">$25.00</span>
                         </div>
+                        <div className="flex justify-between text-slate-500">
+                            <span>Taxes</span>
+                            <span className="font-bold text-slate-900 dark:text-white">$12.50</span>
+                        </div>
+                    </div>
+                    <div className="pt-6 border-t border-slate-100 dark:border-slate-700 flex justify-between items-end">
+                        <div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
+                            <p className="text-3xl font-black text-primary">${(parseFloat(itemPrice) + 37.5).toFixed(2)}</p>
+                        </div>
+                        <ShieldCheck className="w-8 h-8 text-green-500 mb-1" />
                     </div>
                 </div>
             </div>
-        </div>
+                </div >
+            </div >
+        </div >
     );
 }
 

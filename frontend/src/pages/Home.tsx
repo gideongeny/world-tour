@@ -175,6 +175,19 @@ function Home() {
                                 </motion.div>
                             )}
                         </section>
+
+                        {/* Interactive Satellite Map */}
+                        <section className="mb-20">
+                            <h2 className="text-3xl font-black mb-6 flex items-center gap-3">
+                                <span className="text-primary">🌍</span> Global View
+                            </h2>
+                            <Map zoom={1.5} markers={destinations.map(d => ({
+                                lat: d.latitude,
+                                lng: d.longitude,
+                                title: d.name,
+                                description: d.country
+                            }))} />
+                        </section>
                     </div>
 
                     {/* Full-Width Video Section with Centered Button */}
