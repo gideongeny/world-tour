@@ -51,6 +51,10 @@ CORS(app, resources={r"/*": {
     ]
 }}, supports_credentials=True)
 
+@app.route('/healthz')
+def healthz():
+    return jsonify({"status": "ok"}), 200
+
 # Security Headers
 @app.after_request
 def add_security_headers(response):
