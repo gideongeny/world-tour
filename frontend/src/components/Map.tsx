@@ -87,7 +87,7 @@ const Map: FC<MapProps> = ({
     }, [center, zoom, markers]);
 
     return (
-        <div className="relative group">
+        <div className="relative group w-full h-full">
             <div ref={mapContainer} className={`${className} shadow-2xl bg-slate-900 overflow-hidden`} />
         </div>
     );
