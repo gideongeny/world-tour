@@ -36,6 +36,11 @@ def final_polish_data():
                 'img': '/assets/hero/shanghai-hero.jpg',
                 'desc': 'The Pearl of the Orient. Rated 4.7/5 for modern wonders.'
             },
+            'Los Angeles': {
+                'lat': 34.0522, 'lng': -118.2437, 
+                'img': '/assets/hero/los-angeles-hero.jpg',
+                'desc': 'City of Angels. Rated 4.6/5 for entertainment.'
+            },
             'Dakar': {
                 'lat': 14.7167, 'lng': -17.4677, 
                 'img': '/assets/hero/dakar-hero.jpg',
