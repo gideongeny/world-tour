@@ -46,6 +46,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {
     "origins": [
         "https://world-tour-f6f23.web.app",
+        "https://world-tour-f6f23.firebaseapp.com",
         "http://localhost:5173", 
         "http://127.0.0.1:5173"
     ]
