@@ -34,32 +34,59 @@ const sampleImages = [
 ];
 
 
+// Fallback destinations data for when backend is unavailable
+const FALLBACK_DESTINATIONS: Destination[] = [
+    { id: 1, name: 'Paris', country: 'France', image_url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80', price: 200, rating: 4.8, category: 'cultural', latitude: 48.8566, longitude: 2.3522 },
+    { id: 2, name: 'Bali', country: 'Indonesia', image_url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80', price: 150, rating: 4.9, category: 'beach', latitude: -8.4095, longitude: 115.1889 },
+    { id: 3, name: 'Maasai Mara', country: 'Kenya', image_url: '/assets/hero/maasai-mara-hero.jpg', price: 450, rating: 5.0, category: 'safari', latitude: -1.4061, longitude: 35.0839 },
+    { id: 4, name: 'Zanzibar', country: 'Tanzania', image_url: '/assets/hero/zanzibar-hero.jpg', price: 280, rating: 4.8, category: 'beach', latitude: -6.1659, longitude: 39.2026 },
+    { id: 5, name: 'Tokyo', country: 'Japan', image_url: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80', price: 300, rating: 4.7, category: 'city', latitude: 35.6762, longitude: 139.6503 },
+    { id: 6, name: 'New York', country: 'USA', image_url: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&q=80', price: 280, rating: 4.6, category: 'city', latitude: 40.7128, longitude: -74.0060 },
+    { id: 7, name: 'Maldives', country: 'Maldives', image_url: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&q=80', price: 400, rating: 5.0, category: 'beach', latitude: 3.2028, longitude: 73.2207 },
+    { id: 8, name: 'Dubai', country: 'UAE', image_url: 'https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&q=80', price: 350, rating: 4.5, category: 'luxury', latitude: 25.2048, longitude: 55.2708 },
+    { id: 9, name: 'Santorini', country: 'Greece', image_url: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&q=80', price: 250, rating: 4.9, category: 'luxury', latitude: 36.3932, longitude: 25.4615 },
+    { id: 10, name: 'Shanghai', country: 'China', image_url: '/assets/hero/shanghai-hero.jpg', price: 280, rating: 4.7, category: 'city', latitude: 31.2304, longitude: 121.4737 },
+    { id: 11, name: 'Sydney', country: 'Australia', image_url: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80', price: 350, rating: 4.9, category: 'beach', latitude: -33.8688, longitude: 151.2093 },
+    { id: 12, name: 'Rio de Janeiro', country: 'Brazil', image_url: 'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&q=80', price: 220, rating: 4.8, category: 'beach', latitude: -22.9068, longitude: -43.1729 },
+];
+
 function Home() {
     const [destinations, setDestinations] = useState<Destination[]>([]);
     const [loading, setLoading] = useState(true);
     const { t } = useLanguage();
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/booking/destinations?format=json`)
+        // Use a timeout to avoid hanging if backend is slow
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        fetch(`${API_BASE_URL}/booking/destinations?format=json`, {
+            signal: controller.signal,
+        })
             .then((res: Response) => {
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 return res.json();
             })
             .then((data: any) => {
-                if (Array.isArray(data)) {
+                if (Array.isArray(data) && data.length > 0) {
                     setDestinations(data);
-                } else if (data && typeof data === 'object' && Array.isArray(data.destinations)) {
+                } else if (data && typeof data === 'object' && Array.isArray(data.destinations) && data.destinations.length > 0) {
                     setDestinations(data.destinations);
                 } else {
-                    console.error("Data is not an array:", data);
-                    setDestinations([]);
+                    // Use fallback data
+                    console.warn("Backend returned empty data, using fallback destinations");
+                    setDestinations(FALLBACK_DESTINATIONS);
                 }
                 setLoading(false);
             })
             .catch((err: Error) => {
-                console.error("Failed to fetch destinations:", err);
-                setDestinations([]);
+                console.warn("Failed to fetch destinations from backend, using fallback data:", err);
+                // Use fallback data when backend is unavailable
+                setDestinations(FALLBACK_DESTINATIONS);
                 setLoading(false);
+            })
+            .finally(() => {
+                clearTimeout(timeoutId);
             });
     }, []);
 
