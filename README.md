@@ -45,7 +45,26 @@ This project uses a **Hybrid Cloud Architecture**:
 The current backend on Render uses an ephemeral file system. **This means the database resets when the server restarts.**
 To fix this permanently for production, connect a remote PostgreSQL database (like Neon or Render Postgres) by setting the `DATABASE_URL` environment variable.
 
-### Deployment Commands
+### 🚀 Automated Deployment (One Command)
+
+**Deploy Everything (Frontend + GitHub)**
+```bash
+# Windows
+deploy_all.bat
+
+# Mac/Linux
+python deploy_all.py
+```
+
+This automatically:
+- ✅ Builds the frontend
+- ✅ Deploys to Firebase
+- ✅ Pushes to GitHub
+
+**Backend Auto-Running**
+The backend runs automatically in the background on Render. No action needed! It auto-deploys from GitHub.
+
+**Manual Deployment (If Needed)**
 
 **1. Deploy Frontend (Firebase)**
 ```bash
