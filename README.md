@@ -66,20 +66,45 @@ curl https://world-tour-ngmj.onrender.com/seed
 
 ## 💻 Local Development
 
-### Backend
+### Quick Start (Run Both Backend & Frontend Together)
+
+**Option 1: Using the Start Script (Recommended)**
+```bash
+# Windows
+start_dev.bat
+
+# Mac/Linux
+python start_dev.py
+```
+
+**Option 2: Using npm (requires npm install in root)**
+```bash
+npm install
+npm start
+```
+
+**Option 3: Manual Start (Separate Terminals)**
+
+Backend:
 ```bash
 pip install -r requirements.txt
 python app.py
 # Runs on http://localhost:5000
 ```
 
-### Frontend
+Frontend:
 ```bash
 cd frontend
 npm install
 npm run dev
 # Runs on http://localhost:5173
 ```
+
+The start scripts automatically:
+- ✅ Check if Python and Node.js are installed
+- ✅ Install dependencies if needed
+- ✅ Run both backend and frontend simultaneously
+- ✅ Color-coded terminal output for easy debugging
 
 ---
 
