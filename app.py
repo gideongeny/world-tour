@@ -115,8 +115,22 @@ babel = Babel(app, locale_selector=get_locale)
 
 # Database configuration for production
 DATABASE_URL = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL') or 'sqlite:///world_tour_v3.db'
-if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
-    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+# Clean up DATABASE_URL - remove any prefixes like "psql " and quotes
+if DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.strip()
+    # Remove common prefixes that might be added by mistake
+    prefixes_to_remove = ['psql ', 'postgres ', 'pg ']
+    for prefix in prefixes_to_remove:
+        if DATABASE_URL.startswith(prefix):
+            DATABASE_URL = DATABASE_URL[len(prefix):].strip()
+    # Remove surrounding quotes if present
+    if (DATABASE_URL.startswith("'") and DATABASE_URL.endswith("'")) or \
+       (DATABASE_URL.startswith('"') and DATABASE_URL.endswith('"')):
+        DATABASE_URL = DATABASE_URL[1:-1].strip()
+    # Convert postgres:// to postgresql:// if needed
+    if DATABASE_URL.startswith('postgres://'):
+        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'please-set-a-real-secret-key')
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
