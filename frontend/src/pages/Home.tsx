@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import Hero from '../components/Hero'
 import InfiniteGallery from '../components/blocks/3d-gallery-photography'
 import ScrollExpandMedia from '../components/blocks/scroll-expansion-hero'
-import Monetag from '../components/Monetag'
+
 import DestinationCard from '../components/DestinationCard'
 import Map from '../components/Map'
 import PageTransition from '../components/PageTransition'
@@ -159,7 +159,7 @@ function Home() {
 
                 <div className="relative z-10 bg-background">
                     <div className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
-                        <Monetag />
+
 
                         <section id="destinations" className="mb-20">
                             <div className="flex justify-between items-end mb-8">
